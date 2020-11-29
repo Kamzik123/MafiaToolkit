@@ -587,7 +587,7 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\TEA.cs" />
     <Compile Include="ResourceTypes\ModelHelpers\M2TStructure.cs" />
     <Compile Include="ResourceTypes\ModelHelpers\M3_Experiments.cs" />
-    <Compile Include="ResourceTypes\ModelHelpers\ModelDefinition.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\ModelWrapper.cs" />
     <Compile Include="Rendering\Core\GizmoTool.cs" />
     <Compile Include="Rendering\Core\Profiler.cs" />
     <Compile Include="Rendering\Graphics\ConstantBufferFactory.cs" />
@@ -608,6 +608,10 @@
     <Compile Include="Rendering\RenderPrefabs.cs" />
     <Compile Include="Rendering\Core\SpatialCell.cs" />
     <Compile Include="Rendering\Core\SpatialGrid.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_Lod.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_Object.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_ObjectBundle.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_ObjectHandler.cs" />
     <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
     <Compile Include="Utils\Helpers\BoundExtensions.cs" />
     <Compile Include="ResourceTypes\ModelHelpers\Enums.cs" />

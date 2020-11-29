@@ -6,10 +6,14 @@ using ResourceTypes.FrameResource;
 using Utils.SharpDXExtensions;
 using ResourceTypes.BufferPools;
 using Utils.Types;
+using ResourceTypes.ModelHelpers.ModelExporter;
+using System.IO;
+using Utils.Settings;
+using System.Windows.Forms;
 
 namespace Utils.Models
 {
-    public class Model
+    public class ModelWrapper
     {
         
         FrameObjectSingleMesh frameMesh; //model can be either "FrameObjectSingleMesh"
@@ -21,7 +25,7 @@ namespace Utils.Models
         FrameSkeletonHierachy skeletonHierarchy;
         IndexBuffer[] indexBuffers; //Holds the buffer which will then be saved/replaced later
         VertexBuffer[] vertexBuffers; //Holds the buffers which will then be saved/replaced later
-        M2TStructure model; //split from this file; it now includes M2T format.
+        MT_Object modelObject;
         private bool useSingleMesh; //False means ModelMesh, True means SingleMesh;
         
         public FrameObjectSingleMesh FrameMesh {
@@ -69,26 +73,25 @@ namespace Utils.Models
             set { vertexBuffers = value; }
         }
 
-        public M2TStructure ModelStructure {
-            get { return model; }
-            set { model = value; }
+        public MT_Object ModelObject {
+            get { return modelObject; }
+            set { modelObject = value; }
         }
 
-        public Model(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
+        public ModelWrapper(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             this.frameMesh = frameMesh;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
             frameGeometry = frameMesh.Geometry;
             frameMaterial = frameMesh.Material;
-            model = new M2TStructure();
-            model.IsSkinned = false;
-            model.Name = frameMesh.Name.ToString();
-            model.AOTexture = frameMesh.OMTextureHash.String;
-            model.BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
+            modelObject = new MT_Object();
+            modelObject.ObjectName = frameMesh.Name.ToString();
+            //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
+            modelObject.BuildFromCooked(frameMesh, vertexBuffers, indexBuffers);
         }
 
-        public Model(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
+        public ModelWrapper(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             this.frameModel = frameModel;
             this.indexBuffers = indexBuffers;
@@ -98,19 +101,18 @@ namespace Utils.Models
             blendInfo = frameModel.BlendInfo;
             skeleton = frameModel.Skeleton;
             skeletonHierarchy = frameModel.SkeletonHierarchy;
-            model = new M2TStructure();
-            model.IsSkinned = true;
-            model.Name = frameModel.Name.ToString();
-            model.AOTexture = frameModel.OMTextureHash.String;
-            model.BuildLods(frameModel, indexBuffers, vertexBuffers);
+            modelObject = new MT_Object();
+            modelObject.ObjectName = frameMesh.Name.ToString();
+            //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
+            modelObject.BuildFromCooked(frameMesh, vertexBuffers, indexBuffers);
         }
 
         /// <summary>
         /// Construct an empty model.
         /// </summary>
-        public Model()
+        public ModelWrapper()
         {
-            ModelStructure = new M2TStructure();
+            ModelObject = new MT_Object();
         }
 
         /// <summary>
@@ -119,7 +121,7 @@ namespace Utils.Models
         public void CalculateDecompression()
         {
             float minFloatf = 0.000016f;
-            SharpDX.Vector3 minFloat = new SharpDX.Vector3(minFloatf);
+            Vector3 minFloat = new Vector3(minFloatf);
 
             BoundingBox bounds = new BoundingBox();
             bounds.Minimum = frameMesh.Boundings.Minimum - minFloat;
@@ -142,14 +144,17 @@ namespace Utils.Models
 
         public void BuildIndexBuffer()
         {
-            if (model.Lods == null)
-                return;
-
-            for (int i = 0; i < model.Lods.Length; i++)
+            if (ModelObject.Lods == null)
             {
-                var indexFormat = (model.Lods[i].Over16BitLimit() ? 2 : 1);
-                IndexBuffers[i] = new IndexBuffer(FNV64.Hash("M2TK." + model.Name + ".IB" + i));
-                indexBuffers[i].SetData(model.Lods[i].Indices);
+                return;
+            }
+
+            for (int i = 0; i < ModelObject.Lods.Length; i++)
+            {
+                MT_Lod LodObject = ModelObject.Lods[i];
+                var indexFormat = (LodObject.Over16BitLimit() ? 2 : 1);
+                IndexBuffers[i] = new IndexBuffer(FNV64.Hash("M2TK." + ModelObject.ObjectName + ".IB" + i));
+                indexBuffers[i].SetData(LodObject.Indices);
                 indexBuffers[i].SetFormat(indexFormat);
             }
         }
@@ -159,19 +164,21 @@ namespace Utils.Models
         /// </summary>
         public void BuildVertexBuffer()
         {
-            if (model.Lods == null)
+            if (ModelObject.Lods == null)
+            {
                 return;
+            }
 
-            for (int i = 0; i != model.Lods.Length; i++)
+            for (int i = 0; i != ModelObject.Lods.Length; i++)
             {
                 FrameLOD frameLod = frameGeometry.LOD[i];
                 int vertexSize;
                 Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out vertexSize);
                 byte[] vBuffer = new byte[vertexSize * frameLod.NumVerts];
 
-                for (int v = 0; v != model.Lods[i].Vertices.Length; v++)
+                for (int v = 0; v != ModelObject.Lods[i].Vertices.Length; v++)
                 {
-                    Vertex vert = model.Lods[i].Vertices[v];
+                    Vertex vert = ModelObject.Lods[i].Vertices[v];
 
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
@@ -235,77 +242,153 @@ namespace Utils.Models
 
                 }
 
-                VertexBuffers[i] = new VertexBuffer(FNV64.Hash("M2TK." + model.Name + ".VB" + i));
+                VertexBuffers[i] = new VertexBuffer(FNV64.Hash("M2TK." + ModelObject.ObjectName + ".VB" + i));
                 VertexBuffers[i].Data = vBuffer;
             }
         }
 
+        public void ReadObjectFromFbx(string file)
+        {
+            // Change extension, pass to M2FBX
+            string m2tFile = file.Remove(file.Length - 4, 4) + ".m2t";
+            int result = FBXHelper.ConvertFBX(file, m2tFile);
+
+            // Read the MT object.
+            ModelObject = MT_ObjectHandler.ReadObjectFromFile(file);
+
+            // Delete the recently-created MT file.
+            if (File.Exists(m2tFile))
+            {
+                File.Delete(m2tFile);
+            }
+        }
+
+        public void ReadObjectFromM2T(string file)
+        {
+            ModelObject = MT_ObjectHandler.ReadObjectFromFile(file);
+        }
+
+        public void ExportObject()
+        {
+            string SavePath = ToolkitSettings.ExportPath + "\\" + ModelObject.ObjectName;
+
+            
+            if (!Directory.Exists(SavePath))
+            {
+                // Ask if we can create it
+                DialogResult Result = MessageBox.Show("The path does not exist. Do you want to create it?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (Result == DialogResult.Yes)
+                {
+                    Directory.CreateDirectory(SavePath);
+                }
+                else
+                {
+                    // Can't export file with no valid directory.
+                    MessageBox.Show("Cannot export a mesh with no valid directory. Please change your directory.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            // Export Object
+            string FileName = ToolkitSettings.ExportPath + "\\" + ModelObject.ObjectName;
+            ExportObjectToM2T(FileName);
+            switch (ToolkitSettings.Format)
+            {
+                case 0:
+                    ExportObjectToFbx(FileName, false);
+                    break;
+                case 1:
+                    ExportObjectToFbx(FileName, true);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void ExportObjectToFbx(string File, bool bIsBinary)
+        {
+            FBXHelper.ConvertM2T(File + ".m2t", File + ".fbx");
+        }
+
+        private void ExportObjectToM2T(string FileToWrite)
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileToWrite + ".mto", FileMode.Create)))
+            {
+                MT_ObjectHandler.WriteObjectToFile(writer, ModelObject);
+            }        
+        }
+
         public void UpdateObjectsFromModel()
         {
-            frameGeometry.NumLods = (byte)model.Lods.Length;
+            frameGeometry.NumLods = (byte)ModelObject.Lods.Length;
 
             if (frameGeometry.LOD == null)
-                frameGeometry.LOD = new FrameLOD[model.Lods.Length];
+                frameGeometry.LOD = new FrameLOD[ModelObject.Lods.Length];
 
-            frameMaterial.NumLods = (byte)model.Lods.Length;
-            frameMaterial.LodMatCount = new int[model.Lods.Length];
+            frameMaterial.NumLods = (byte)ModelObject.Lods.Length;
+            frameMaterial.LodMatCount = new int[ModelObject.Lods.Length];
             frameMaterial.Materials = new List<MaterialStruct[]>();
 
-            for (int x = 0; x < model.Lods.Length; x++)
+            for (int x = 0; x < ModelObject.Lods.Length; x++)
             {
                 frameMaterial.Materials.Add(new MaterialStruct[frameMaterial.LodMatCount[x]]);
             }
-            for (int x = 0; x < model.Lods.Length; x++)
+            for (int x = 0; x < ModelObject.Lods.Length; x++)
             {
+                MT_Lod LodObject = ModelObject.Lods[x];
+
                 var lod = new FrameLOD();
                 lod.Distance = 1E+12f;
                 lod.BuildNewPartition();
                 lod.BuildNewMaterialSplit();
-                lod.SplitInfo.NumVerts = model.Lods[x].Vertices.Length;
-                lod.NumVerts = model.Lods[x].Vertices.Length;
-                lod.SplitInfo.NumFaces = model.Lods[x].Indices.Length / 3;
-                lod.VertexDeclaration = model.Lods[x].VertexDeclaration;
+                lod.SplitInfo.NumVerts = LodObject.Vertices.Length;
+                lod.NumVerts = LodObject.Vertices.Length;
+                lod.SplitInfo.NumFaces = LodObject.Indices.Length / 3;
+                lod.VertexDeclaration = LodObject.VertexDeclaration;
 
                 //burst split info.
-                lod.SplitInfo.IndexStride = (model.Lods[x].Over16BitLimit() ? 4 : 2);
-                lod.SplitInfo.NumMatSplit = model.Lods[x].Parts.Length;
-                lod.SplitInfo.NumMatBurst = model.Lods[x].Parts.Length;
-                lod.SplitInfo.MaterialSplits = new FrameLOD.MaterialSplit[model.Lods[x].Parts.Length];
-                lod.SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[model.Lods[x].Parts.Length];
+                lod.SplitInfo.IndexStride = (LodObject.Over16BitLimit() ? 4 : 2);
+                lod.SplitInfo.NumMatSplit = LodObject.FaceGroups.Length;
+                lod.SplitInfo.NumMatBurst = LodObject.FaceGroups.Length;
+                lod.SplitInfo.MaterialSplits = new FrameLOD.MaterialSplit[LodObject.FaceGroups.Length];
+                lod.SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[LodObject.FaceGroups.Length];
                 frameGeometry.LOD[x] = lod;
 
                 int faceIndex = 0;
-                frameMaterial.LodMatCount[x] = model.Lods[x].Parts.Length;
-                frameMaterial.Materials[x] = new MaterialStruct[model.Lods[x].Parts.Length];
-                for (int i = 0; i != model.Lods[x].Parts.Length; i++)
+                frameMaterial.LodMatCount[x] = LodObject.FaceGroups.Length;
+                frameMaterial.Materials[x] = new MaterialStruct[LodObject.FaceGroups.Length];
+                for (int i = 0; i < LodObject.FaceGroups.Length; i++)
                 {
                     frameMaterial.Materials[x][i] = new MaterialStruct();
-                    frameMaterial.Materials[x][i].StartIndex = (int)model.Lods[x].Parts[i].StartIndex;
-                    frameMaterial.Materials[x][i].NumFaces = (int)model.Lods[x].Parts[i].NumFaces;
+                    frameMaterial.Materials[x][i].StartIndex = (int)LodObject.FaceGroups[x].StartIndex;
+                    frameMaterial.Materials[x][i].NumFaces = (int)LodObject.FaceGroups[x].NumFaces;
                     frameMaterial.Materials[x][i].Unk3 = 0;
-                    frameMaterial.Materials[x][i].MaterialHash = model.Lods[x].Parts[i].Hash;
+                    frameMaterial.Materials[x][i].MaterialHash = FNV64.Hash(LodObject.FaceGroups[x].Material.Name);
                     //frameMaterial.Materials[0][i].MaterialName = model.Lods[0].Parts[i].Material;
-                    faceIndex += (int)model.Lods[x].Parts[i].NumFaces;
+                    faceIndex += (int)LodObject.FaceGroups[x].NumFaces;
 
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].Bounds = new short[6]
                     {
-                    Convert.ToInt16(model.Lods[x].Parts[i].Bounds.Minimum.X),
-                    Convert.ToInt16(model.Lods[x].Parts[i].Bounds.Minimum.Y),
-                    Convert.ToInt16(model.Lods[x].Parts[i].Bounds.Minimum.Z),
-                    Convert.ToInt16(model.Lods[x].Parts[i].Bounds.Maximum.X),
-                    Convert.ToInt16(model.Lods[x].Parts[i].Bounds.Maximum.Y),
-                    Convert.ToInt16(model.Lods[x].Parts[i].Bounds.Maximum.Z)
-
+                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Minimum.X),
+                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Minimum.Y),
+                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Minimum.Z),
+                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Maximum.X),
+                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Maximum.Y),
+                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Maximum.Z)
                     };
-                    if (model.Lods[x].Parts.Length == 1)
-                        frameGeometry.LOD[x].SplitInfo.Hash = model.Lods[0].Parts[0].Hash;
+
+                    if (ModelObject.Lods[x].FaceGroups.Length == 1)
+                    {
+                        string MaterialName = ModelObject.Lods[0].FaceGroups[0].Material.Name;
+                        frameGeometry.LOD[x].SplitInfo.Hash = FNV64.Hash(MaterialName);
+                    }
 
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].FirstIndex = 0;                  
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].LeftIndex = -1;
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].RightIndex = -1;
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].SecondIndex =
-                        Convert.ToUInt16(model.Lods[x].Parts[i].NumFaces - 1);
-                    frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].BaseIndex = (int)model.Lods[x].Parts[i].StartIndex;
+                        Convert.ToUInt16(LodObject.FaceGroups[x].NumFaces - 1);
+                    frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].BaseIndex = (int)LodObject.FaceGroups[x].StartIndex;
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].FirstBurst = i;
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].NumBurst = 1;
                 }
@@ -322,13 +405,13 @@ namespace Utils.Models
           
 
             //set lods for all data.
-            indexBuffers = new IndexBuffer[model.Lods.Length];
-            vertexBuffers = new VertexBuffer[model.Lods.Length];
+            indexBuffers = new IndexBuffer[ModelObject.Lods.Length];
+            vertexBuffers = new VertexBuffer[ModelObject.Lods.Length];
 
             List<Vertex[]> vertData = new List<Vertex[]>();
-            for (int i = 0; i != model.Lods.Length; i++)
+            for (int i = 0; i != ModelObject.Lods.Length; i++)
             {
-                vertData.Add(model.Lods[i].Vertices);
+                vertData.Add(ModelObject.Lods[i].Vertices);
             }
 
             frameMesh.Boundings = BoundingBoxExtenders.CalculateBounds(vertData);
@@ -338,25 +421,27 @@ namespace Utils.Models
             BuildIndexBuffer();
             BuildVertexBuffer();
 
-            for(int i = 0; i < model.Lods.Length; i++)
+            for(int i = 0; i < ModelObject.Lods.Length; i++)
             {
                 var lod = frameGeometry.LOD[i];
 
                 var size = 0;
                 lod.GetVertexOffsets(out size);
                 if (vertexBuffers[i].Data.Length != (size * lod.NumVerts)) throw new SystemException();
-                lod.IndexBufferRef = new HashName("M2TK." + model.Name + ".IB" + i);
-                lod.VertexBufferRef = new HashName("M2TK." + model.Name + ".VB" + i);
+                lod.IndexBufferRef = new HashName("M2TK." + ModelObject.ObjectName + ".IB" + i);
+                lod.VertexBufferRef = new HashName("M2TK." + ModelObject.ObjectName + ".VB" + i);
             }
 
+            /*
             if(model.IsSkinned)
             {
                 CreateSkinnedObjectsFromModel();
-            }
+            }*/
         }
 
         private void CreateSkinnedObjectsFromModel()
         {
+            /*
             blendInfo = new FrameBlendInfo();
             skeleton = new FrameSkeleton();
             skeletonHierarchy = new FrameSkeletonHierachy();
@@ -401,7 +486,7 @@ namespace Utils.Models
                 skeletonHierarchy.ParentIndices[i] = model.SkeletonData.Joints[i].ParentIndex;
                 skeletonHierarchy.UnkData[i] = (byte)(i != jointCount ? i : 0);
                 skeleton.JointTransforms[i] = model.SkeletonData.Joints[i].LocalTransform;
-            }
+            }*/
         }
     }
 }

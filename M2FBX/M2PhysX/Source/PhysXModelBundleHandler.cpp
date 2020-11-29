@@ -44,6 +44,7 @@ PhysXModel* PhysXModelBundleHandler::LoadModel(const char* ModelFile)
 
 	PhysXModel* NewModel = new PhysXModel();
 	NewModel = InternalLoadModel(InFile);
+	fclose(InFile);
 	return NewModel;
 }
 

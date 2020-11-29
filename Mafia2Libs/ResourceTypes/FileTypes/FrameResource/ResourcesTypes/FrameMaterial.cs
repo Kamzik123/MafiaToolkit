@@ -5,7 +5,6 @@ using System.IO;
 using SharpDX;
 using Utils.SharpDXExtensions;
 using ResourceTypes.Materials;
-using System.ComponentModel;
 using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
@@ -18,12 +17,10 @@ namespace ResourceTypes.FrameResource
         BoundingBox bounds;
         List<MaterialStruct[]> materials;
 
-        //[Browsable(false)]
         public uint NumLods {
             get { return numLods; }
             set { numLods = value; }
         }
-        //[Browsable(false)]
         public int[] LodMatCount {
             get { return lodMatCount; }
             set { lodMatCount = value; }
@@ -119,10 +116,13 @@ namespace ResourceTypes.FrameResource
         string materialName;
         int unk3;
 
+        // TODO: Make this UInt32
         public int NumFaces {
             get { return numFaces; }
             set { numFaces = value; }
         }
+
+        // TODO: Make this UInt32
         public int StartIndex {
             get { return startIndex; }
             set { startIndex = value; }
@@ -139,6 +139,9 @@ namespace ResourceTypes.FrameResource
             get { return unk3; }
             set { unk3 = value; }
         }
+
+        // TODO: Maybe have a reference to the Material?
+        // This would require less lookups.
 
         public MaterialStruct(MemoryStream reader, bool isBigEndian)
         {
@@ -172,10 +175,14 @@ namespace ResourceTypes.FrameResource
 
             IMaterial mat = MaterialsManager.LookupMaterialByHash(materialHash);
 
-            if(mat != null)
+            if (mat != null)
+            {
                 materialName = mat.GetMaterialName();
+            }
             else
-                materialName = "UNABLE TO GET FROM MTLs";
+            {
+                materialName = "Invalid_MTL";
+            }
         }
 
         public void WriteToFile(BinaryWriter writer)

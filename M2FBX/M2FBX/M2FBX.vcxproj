@@ -95,12 +95,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)SDKs\Cooking\include;$(ProjectDir)SDKs\Physics\include;$(ProjectDir)SDKs\Foundation\include;$(ProjectDir)SDKs\PhysXLoader\include;$(ProjectDir)SDKs\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)SDKs\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDKs\libs\vs2015\x86\debug;$(ProjectDir)SDKs\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libfbxsdk-md.lib;PhysXLoaderDEBUG.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDKs\libs\vs2015\x86\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -111,11 +111,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)SDKs\Cooking\include;$(ProjectDir)SDKs\Physics\include;$(ProjectDir)SDKs\Foundation\include;$(ProjectDir)SDKs\PhysXLoader\include;$(ProjectDir)SDKs\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)SDKs\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libfbxsdk-md.lib;PhysXLoader64.lib;PhysXCooking64.lib;PhysXCore64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDKs\libs\Win64;$(ProjectDir)SDKs\libs\vs2015\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDKs\libs\vs2015\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,13 +126,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)SDKs\Cooking\include;$(ProjectDir)SDKs\Physics\include;$(ProjectDir)SDKs\Foundation\include;$(ProjectDir)SDKs\PhysXLoader\include;$(ProjectDir)SDKs\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)SDKs\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>libfbxsdk-md.lib;PhysXLoader.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDKs\libs\vs2015\x86\release;$(ProjectDir)SDKs\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDKs\libs\vs2015\x86\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,34 +143,36 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)SDKs\Cooking\include;$(ProjectDir)SDKs\Physics\include;$(ProjectDir)SDKs\Foundation\include;$(ProjectDir)SDKs\PhysXLoader\include;$(ProjectDir)SDKs\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)SDKs\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDKs\libs\Win64;$(ProjectDir)SDKs\libs\vs2015\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libfbxsdk-md.lib;PhysXLoader64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDKs\libs\vs2015\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CPhysXCooking.cpp" />
-    <ClCompile Include="CStream.cpp" />
     <ClCompile Include="FbxUtilities.cpp" />
     <ClCompile Include="FBXWrangler.cpp" />
     <ClCompile Include="M2Model.cpp" />
     <ClCompile Include="M2TWrangler.cpp" />
     <ClCompile Include="main.cxx" />
+    <ClCompile Include="Source\MTObject\MT_Lod.cpp" />
+    <ClCompile Include="Source\MTObject\MT_Object.cpp" />
+    <ClCompile Include="Source\MTObject\MT_ObjectHandler.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
-    <ClInclude Include="CPhysXCooking.h" />
-    <ClInclude Include="CStream.h" />
     <ClInclude Include="DataTypes.h" />
     <ClInclude Include="FbxUtilities.h" />
     <ClInclude Include="FbxWrangler.h" />
     <ClInclude Include="M2Model.h" />
     <ClInclude Include="M2TWrangler.h" />
+    <ClInclude Include="Source\MTObject\MT_Lod.h" />
+    <ClInclude Include="Source\MTObject\MT_Object.h" />
+    <ClInclude Include="Source\MTObject\MT_ObjectHandler.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

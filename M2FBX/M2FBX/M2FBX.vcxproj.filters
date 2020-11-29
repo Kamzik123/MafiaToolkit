@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\MTObject">
+      <UniqueIdentifier>{1180ac4f-adaa-4edc-bf82-313284ca2450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MTObject">
+      <UniqueIdentifier>{5739ac70-19f5-4272-b413-18b17c330fb5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="M2Model.cpp">
@@ -33,11 +39,14 @@
     <ClCompile Include="FbxUtilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CStream.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\MTObject\MT_Object.cpp">
+      <Filter>Source Files\MTObject</Filter>
     </ClCompile>
-    <ClCompile Include="CPhysXCooking.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\MTObject\MT_Lod.cpp">
+      <Filter>Source Files\MTObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MTObject\MT_ObjectHandler.cpp">
+      <Filter>Source Files\MTObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -59,14 +68,17 @@
     <ClInclude Include="Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CPhysXCooking.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DataTypes.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MTObject\MT_Object.h">
+      <Filter>Header Files\MTObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MTObject\MT_Lod.h">
+      <Filter>Header Files\MTObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MTObject\MT_ObjectHandler.h">
+      <Filter>Header Files\MTObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,15 +1,14 @@
 #include <fbxsdk.h>
 #include "FbxWrangler.h"
 #include "M2TWrangler.h"
-#include "CPhysXCooking.h"
 #include "M2Model.h"
+#include "Source/MTObject/MT_Object.h"
+#include "Source/MTObject/MT_ObjectHandler.h"
 #include <conio.h>
 
 extern "C" int  __declspec(dllexport) _stdcall RunConvertFBX(const char* source, const char* dest);
 extern "C" int  __declspec(dllexport) _stdcall RunConvertM2T(const char* source, const char* dest, unsigned char isBin);
 extern "C" int  __declspec(dllexport) _stdcall RunConvertType(const char* source, const char* dest);
-extern "C" int  __declspec(dllexport) _stdcall RunCookTriangleCollision(const char* source, const char* dest);
-extern "C" int  __declspec(dllexport) _stdcall RunCookConvexCollision(const char* source, const char* dest);
 
 extern int _stdcall RunConvertFBX(const char* source, const char* dest)
 {
@@ -25,16 +24,6 @@ int _stdcall RunConvertType(const char* source, const char* dest)
 {
 	WriteLine("Called RunConvertType");
 	return ConvertType(source, dest);
-}
-extern int _stdcall RunCookTriangleCollision(const char* source, const char* dest)
-{
-	WriteLine("Called RunCookTriangleCollision");
-	return CookTriangle(source, dest);
-}
-extern int _stdcall RunCookConvexCollision(const char* source, const char* dest)
-{
-	WriteLine("Called RunCookConvexCollision");
-	return CookConvex(source, dest);
 }
 
 int main(int argc, char** argv)
@@ -53,13 +42,13 @@ int main(int argc, char** argv)
 	{
 		result = ConvertType(argv[2], argv[3]);
 	}
-	else if ((strcmp(argv[1], "-CookTriangle") == 0) && (argc >= 4))
+	else if ((strcmp(argv[1], "-ConvertMTO") == 0) && (argc >= 4))
 	{
-		result = CookTriangle(argv[2], argv[3]);
-	}
-	else if ((strcmp(argv[1], "-CookConvex") == 0) && (argc >= 4))
-	{
-		result = CookConvex(argv[2], argv[3]);
+		MT_Object* ModelObject = MT_ObjectHandler::ReadObjectFromFile(argv[2]);
+		MT_ObjectHandler::WriteObjectToFile(argv[3], *ModelObject);
+		ModelObject->Cleanup();
+		ModelObject = nullptr;
+		result = ConvertType(argv[2], argv[3]);
 	}
 	else
 	{

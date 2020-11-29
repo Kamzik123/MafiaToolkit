@@ -28,6 +28,7 @@ using Utils.Extensions;
 using Rendering.Core;
 using Rendering.Factories;
 using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.ModelHelpers.ModelExporter;
 
 namespace Mafia2Tool
 {
@@ -992,7 +993,7 @@ namespace Mafia2Tool
             if (obj is FrameObjectArea)
             {
                 FrameObjectArea area = (obj as FrameObjectArea);
-                area.FillPlanesArray();
+                //area.FillPlanesArray();
                 RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
                 bbox.Update(area.Bounds);
             }
@@ -1006,7 +1007,7 @@ namespace Mafia2Tool
             else if (obj is FrameObjectSector)
             {
                 FrameObjectSector sector = (obj as FrameObjectSector);
-                sector.FillPlanesArray();
+                //sector.FillPlanesArray();
                 RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
                 bbox.Update(sector.Bounds);
             }
@@ -1024,9 +1025,9 @@ namespace Mafia2Tool
             }
         }
 
-        private Model LoadModelFromFile()
+        private ModelWrapper LoadModelFromFile()
         {
-            Model model = new Model();
+            ModelWrapper model = new ModelWrapper();
 
             if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
             {
@@ -1035,23 +1036,17 @@ namespace Mafia2Tool
 
             if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
             {
-                if (!model.ModelStructure.ReadFromFbx(MeshBrowser.FileName))
-                {
-                    return null;
-                }
+                model.ReadObjectFromFbx(MeshBrowser.FileName);
             }
             else if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
             {
-                using (BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
-                {
-                    model.ModelStructure.ReadFromM2T(reader);
-                }
+                model.ReadObjectFromM2T(MeshBrowser.FileName);
             }
 
-            for (int i = 0; i < model.ModelStructure.Lods.Length; i++)
+            for (int i = 0; i < model.ModelObject.Lods.Length; i++)
             {
-                var lod = model.ModelStructure.Lods[i];
-                var is32bit = model.ModelStructure.Lods[i].Over16BitLimit();
+                var lod = model.ModelObject.Lods[i];
+                var is32bit = model.ModelObject.Lods[i].Over16BitLimit();
                 FrameResourceModelOptions modelForm = new FrameResourceModelOptions(lod.VertexDeclaration, i, is32bit);
                 if (modelForm.ShowDialog() != DialogResult.OK)
                 {
@@ -1073,7 +1068,7 @@ namespace Mafia2Tool
             return model;
         }
 
-        private void CreateMeshBuffers(Model model)
+        private void CreateMeshBuffers(ModelWrapper model)
         {
             for (int i = 0; i < model.FrameGeometry.NumLods; i++)
             {
@@ -1082,7 +1077,7 @@ namespace Mafia2Tool
             }
         }
 
-        private FrameObjectBase CreateSingleMesh(Model model)
+        private FrameObjectBase CreateSingleMesh(ModelWrapper model)
         {
             // The model is invalid; we should not continue;
             // TODO:: Ideally we should move this check somewhere else..
@@ -1098,7 +1093,7 @@ namespace Mafia2Tool
 
             Debug.Assert(sm != null && model != null, "Failed to load model from file!");
 
-            sm.Name.Set(model.ModelStructure.Name);
+            sm.Name.Set(model.ModelObject.ObjectName);
             model.CreateObjectsFromModel();
             sm.AddRef(FrameEntryRefTypes.Geometry, model.FrameGeometry.RefID);
             sm.Geometry = model.FrameGeometry;
@@ -1114,7 +1109,7 @@ namespace Mafia2Tool
             return sm;
         }
 
-        private FrameObjectBase CreateSkinnedMesh(Model model)
+        private FrameObjectBase CreateSkinnedMesh(ModelWrapper model)
         {
             // We use the single mesh and convert to skinned and replace the old data on the model
             FrameObjectSingleMesh sm = (CreateSingleMesh(model) as FrameObjectSingleMesh);
@@ -1752,34 +1747,17 @@ namespace Mafia2Tool
                 vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(model.Geometry.LOD[c].VertexBufferRef.Hash);
             }
 
-            Model newModel = null;
+            ModelWrapper newModel = null;
             if (tag is FrameObjectModel)
             {
-                newModel = new Model(tag as FrameObjectModel, indexBuffers, vertexBuffers);
+                newModel = new ModelWrapper(tag as FrameObjectModel, indexBuffers, vertexBuffers);
             }
             else
             {
-                newModel = new Model(tag as FrameObjectSingleMesh, indexBuffers, vertexBuffers);
+                newModel = new ModelWrapper(tag as FrameObjectSingleMesh, indexBuffers, vertexBuffers);
             }
 
-            for (int c = 0; c != newModel.ModelStructure.Lods.Length; c++)
-            {
-                newModel.ModelStructure.ExportToM2T(ToolkitSettings.ExportPath + "\\");
-                switch (ToolkitSettings.Format)
-                {
-                    case 0:
-                        newModel.ModelStructure.ExportToFbx(ToolkitSettings.ExportPath + "\\", false);
-                        break;
-                    case 1:
-                        newModel.ModelStructure.ExportToFbx(ToolkitSettings.ExportPath + "\\", true);
-                        break;
-                    case 2:
-                        newModel.ModelStructure.ExportToM2T(ToolkitSettings.ExportPath + "\\");
-                        break;
-                    default:
-                        break;
-                }
-            }
+            newModel.ExportObject();
         }
 
         private void AddButtonOnClick(object sender, EventArgs e)
