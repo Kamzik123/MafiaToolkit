@@ -192,7 +192,7 @@ namespace ResourceTypes.Navigation
                 connection.NodeID = reader.ReadUInt32() & 0x7FFFFFFF;
                 connection.ConnectedNodeID = reader.ReadUInt32() & 0x7FFFFFFF;
                 connections[i] = connection;
-                //writer.WriteLine(string.Format("{0} {1} {2}", connection.Flags, connection.NodeID, connection.ConnectedNodeID));
+                writer.WriteLine(string.Format("{0} {1} {2}", connection.Flags, connection.NodeID, connection.ConnectedNodeID));
             }
 
             //Read KynogonRuntimeMesh

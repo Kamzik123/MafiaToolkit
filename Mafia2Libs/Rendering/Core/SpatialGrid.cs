@@ -142,17 +142,11 @@ namespace Rendering.Core
         {
             if (bIsReady)
             {
-                if (currentCell != -1)
-                {
-                    cells[currentCell].Render(device, deviceContext, camera);
-                }
-
-                /*
                 foreach (var cell in cells)
                 {
                     cell.Render(device, deviceContext, camera);
                 }
-
+                /*
                 cellBoundingBox.Render(device, deviceContext, camera);
                 currentCell = GetCell(camera.Position);
                 //cells[currentCell].Render(device, deviceContext, camera);
@@ -166,9 +160,9 @@ namespace Rendering.Core
                     cellBoundingBox.Update(newBounds);
                     cellBoundingBox.UpdateBuffers(device, deviceContext);
                     previousCell = currentCell;
-                }
+                }*/
                 boundingBox.Render(device, deviceContext, camera);
-                */
+                
             }
         }
 
