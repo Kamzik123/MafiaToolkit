@@ -76,7 +76,7 @@ namespace ResourceTypes.FrameResource
             set { bounds.Maximum.Z = value; }
         }
 
-        public FrameObjectSector() : base()
+        public FrameObjectSector(FrameResource OwningResource) : base(OwningResource)
         {
             bounds = new BoundingBox();
             unk_13_vector3 = new Vector3(0);
@@ -97,11 +97,6 @@ namespace ResourceTypes.FrameResource
             unk_13_vector3 = other.unk_13_vector3;
             unk_14_vector3 = other.unk_14_vector3;
             sectorName = new HashName(other.sectorName.String);
-        }
-
-        public FrameObjectSector(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public override void ReadFromFile(MemoryStream reader, bool isBigEndian)

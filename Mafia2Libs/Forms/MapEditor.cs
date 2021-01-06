@@ -314,14 +314,14 @@ namespace Mafia2Tool
         private void UpdateParent_Click(object sender, EventArgs e)
         {
             string name = (sender as ToolStripMenuItem).Name;
-            int parent = (name == "UpdateParent1Button" ? 0 : 1);
+            ParentInfo.ParentType ParentType = (name == "UpdateParent1Button" ? ParentInfo.ParentType.ParentIndex1 : ParentInfo.ParentType.ParentIndex2);
             ListWindow window = new ListWindow();
-            window.PopulateForm(parent);
+            window.PopulateForm(ParentType);
             
             if (window.ShowDialog() == DialogResult.OK)
             {
                 FrameEntry obj = (window.chosenObject as FrameEntry);
-                UpdateObjectParents(parent, obj.RefID, obj);
+                UpdateObjectParents(ParentType, obj.RefID, obj);
             }
         }
 
@@ -1077,110 +1077,9 @@ namespace Mafia2Tool
             }
         }
 
-        private FrameObjectBase CreateSingleMesh(Model model)
+        private void CreateNewEntry(FrameResourceObjectType SelectedType, string name, bool addToNameTable)
         {
-            // The model is invalid; we should not continue;
-            // TODO:: Ideally we should move this check somewhere else..
-            if(model == null)
-            {
-                return null;
-
-            }
-
-            // Create a new SM and assign the frame mesh onto the model for future frame construction.
-            FrameObjectSingleMesh sm = new FrameObjectSingleMesh();
-            model.FrameMesh = sm;
-
-            Debug.Assert(sm != null && model != null, "Failed to load model from file!");
-
-            sm.Name.Set(model.ModelStructure.Name);
-            model.CreateObjectsFromModel();
-            sm.AddRef(FrameEntryRefTypes.Geometry, model.FrameGeometry.RefID);
-            sm.Geometry = model.FrameGeometry;
-            sm.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
-            sm.Material = model.FrameMaterial;
-            SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
-            SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
-
-            sm.LocalTransform = Matrix.Identity;
-            sm.WorldTransform = Matrix.Identity;
-
-            CreateMeshBuffers(model);
-            return sm;
-        }
-
-        private FrameObjectBase CreateSkinnedMesh(Model model)
-        {
-            // We use the single mesh and convert to skinned and replace the old data on the model
-            FrameObjectSingleMesh sm = (CreateSingleMesh(model) as FrameObjectSingleMesh);
-            FrameObjectModel rigged = new FrameObjectModel(sm);
-            model.FrameMesh = sm;
-            model.FrameModel = rigged;
-
-            rigged.AddRef(FrameEntryRefTypes.BlendInfo, model.BlendInfoBlock.RefID);
-            rigged.BlendInfo = model.BlendInfoBlock;
-            rigged.AddRef(FrameEntryRefTypes.Skeleton, model.SkeletonBlock.RefID);
-            rigged.Skeleton = model.SkeletonBlock;
-            rigged.AddRef(FrameEntryRefTypes.SkeletonHierachy, model.SkeletonHierachyBlock.RefID);
-            rigged.SkeletonHierarchy = model.SkeletonHierachyBlock;
-
-            SceneData.FrameResource.FrameBlendInfos.Add(rigged.BlendInfo.RefID, rigged.BlendInfo);
-            SceneData.FrameResource.FrameSkeletons.Add(rigged.Skeleton.RefID, rigged.Skeleton);
-            SceneData.FrameResource.FrameSkeletonHierachies.Add(rigged.SkeletonHierarchy.RefID, rigged.SkeletonHierarchy);
-
-            return rigged;
-        }
-
-        private void CreateNewEntry(int selected, string name, bool addToNameTable)
-        {
-            FrameObjectBase frame;
-
-            switch (selected)
-            {
-                case 0:
-                    frame = CreateSingleMesh(LoadModelFromFile());
-                    break;
-                case 1:
-                    frame = new FrameObjectFrame();
-                    break;
-                case 2:
-                    frame = new FrameObjectLight();
-                    break;
-                case 3:
-                    frame = new FrameObjectCamera();
-                    break;
-                case 4:
-                    frame = new FrameObjectComponent_U005();
-                    break;
-                case 5:
-                    frame = new FrameObjectSector();
-                    break;
-                case 6:
-                    frame = new FrameObjectDummy();
-                    break;
-                case 7:
-                    frame = new FrameObjectDeflector();
-                    break;
-                case 8:
-                    frame = new FrameObjectArea();
-                    break;
-                case 9:
-                    frame = new FrameObjectTarget();
-                    break;
-                case 10:
-                    frame = CreateSkinnedMesh(LoadModelFromFile());
-                    break;
-                case 11:
-                    frame = new FrameObjectCollision();
-                    break;
-                case 12:
-                    frame = new FrameObjectJoint();
-                    break;
-                default:
-                    frame = new FrameObjectBase();
-                    Console.WriteLine("Unknown type selected");
-                    break;
-            }
+            FrameObjectBase frame = FrameFactory.ConstructFrameByObjectID(SceneData.FrameResource, SelectedType);
 
             // Frame was not valid, there is no need to carry on.
             if (frame == null)
@@ -1188,15 +1087,25 @@ namespace Mafia2Tool
                 return;
             }
 
+
             Debug.Assert(frame != null, "Frame was null!");
 
             frame.Name.Set(name);
             frame.IsOnFrameTable = addToNameTable;
-            SceneData.FrameResource.FrameObjects.Add(frame.RefID, frame);
             TreeNode node = new TreeNode(frame.Name.String);
             node.Tag = frame;
             node.Name = frame.RefID.ToString();
             dSceneTree.AddToTree(node, frameResourceRoot);
+
+            if(frame is FrameObjectSingleMesh)
+            {
+                FrameObjectSingleMesh SingleMesh = (frame as FrameObjectSingleMesh);
+                Model LoadedModel = LoadModelFromFile();
+                SingleMesh.CreateMeshFromRawModel(LoadedModel);
+
+                // TODO: This will need to live elsewhere one day!
+                CreateMeshBuffers(LoadedModel);
+            }
 
             IRenderer renderer = BuildRenderObjectFromFrame(frame);
             if(renderer != null)
@@ -1331,7 +1240,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void UpdateObjectParents(int parent, int refID, FrameEntry entry = null)
+        private void UpdateObjectParents(ParentInfo.ParentType ParentType, int refID, FrameEntry entry = null)
         {
             FrameObjectBase obj = (dSceneTree.SelectedNode.Tag as FrameObjectBase);
             //make sure refID is not root.
@@ -1348,11 +1257,11 @@ namespace Mafia2Tool
                     }
                 }
 
-                SceneData.FrameResource.SetParentOfObject(parent, obj, entry);
+                SceneData.FrameResource.SetParentOfObject(ParentType, obj, entry);
             }
             else
             {
-                SceneData.FrameResource.SetParentOfObject(parent, obj, null);
+                SceneData.FrameResource.SetParentOfObject(ParentType, obj, null);
             }
 
             dSceneTree.RemoveNode(dSceneTree.SelectedNode);
@@ -1425,9 +1334,9 @@ namespace Mafia2Tool
                 }
                 else if (e.ChangedItem.Label == "RefID")
                 {
-                    //used just incase the user wants to set the parent to "root"
-                    int parent = (e.ChangedItem.Parent.Label == "ParentIndex1" ? 0 : 1);
-                    UpdateObjectParents(parent, (int)e.ChangedItem.Value);
+                    // Used just in case the user wants to set the parent to "root"
+                    ParentInfo.ParentType ParentType = (e.ChangedItem.Parent.Label == "ParentIndex1" ? ParentInfo.ParentType.ParentIndex1 : ParentInfo.ParentType.ParentIndex2);
+                    UpdateObjectParents(ParentType, (int)e.ChangedItem.Value);
                 }
                 
                 ApplyChangesToRenderable((FrameObjectBase)pGrid.SelectedObject);
@@ -1788,7 +1697,7 @@ namespace Mafia2Tool
             if(form.ShowDialog() == DialogResult.OK)
             {
                 ControlOptionFrameAdd window = (form.control as ControlOptionFrameAdd);
-                int selection = window.GetSelectedType();
+                FrameResourceObjectType selection = window.GetSelectedType();
                 CreateNewEntry(selection, form.GetInputText(), window.GetAddToNameTable());
             }
         }

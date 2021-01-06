@@ -6,6 +6,7 @@ using Utils.Extensions;
 using Utils.Types;
 using Rendering.Factories;
 using Rendering.Graphics;
+using Utils.Models;
 
 namespace ResourceTypes.FrameResource
 {
@@ -76,11 +77,6 @@ namespace ResourceTypes.FrameResource
             set { material = value; }
         }
 
-        public FrameObjectSingleMesh(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
-        }
-
         public FrameObjectSingleMesh(FrameObjectSingleMesh other) : base(other)
         {
             flags = other.flags;
@@ -96,7 +92,7 @@ namespace ResourceTypes.FrameResource
             geometry = other.geometry;
         }
 
-        public FrameObjectSingleMesh() : base()
+        public FrameObjectSingleMesh(FrameResource OwningResource) : base(OwningResource)
         {
             flags = SingleMeshFlags.Unk14_Flag | SingleMeshFlags.flag_32 | SingleMeshFlags.flag_67108864;
             bounds = new BoundingBox();
@@ -164,6 +160,29 @@ namespace ResourceTypes.FrameResource
                 flags |= SingleMeshFlags.OM_Flag;
             }
             /* End check regarding OM Flag */
+        }
+
+        public FrameMaterial ConstructMaterialObject()
+        {
+            Material = OwningResource.ConstructFrameAssetOfType<FrameMaterial>();
+            AddRef(FrameEntryRefTypes.Material, Material.RefID);
+            return Material;
+        }
+
+        public FrameGeometry ConstructGeometryObject()
+        {
+            geometry = OwningResource.ConstructFrameAssetOfType<FrameGeometry>();
+            AddRef(FrameEntryRefTypes.Geometry, geometry.RefID);
+            return geometry;
+        }
+
+        public virtual void CreateMeshFromRawModel(Model NewModel)
+        {
+            ConstructMaterialObject();
+            ConstructGeometryObject();
+
+            NewModel.FrameMesh = this;
+            NewModel.CreateObjectsFromModel();
         }
 
         public override string ToString()

@@ -317,10 +317,6 @@ namespace Utils.Models
         /// </summary>
         public void CreateObjectsFromModel()
         {
-            frameGeometry = new FrameGeometry();
-            frameMaterial = new FrameMaterial();
-          
-
             //set lods for all data.
             indexBuffers = new IndexBuffer[model.Lods.Length];
             vertexBuffers = new VertexBuffer[model.Lods.Length];
@@ -355,12 +351,8 @@ namespace Utils.Models
             }
         }
 
-        private void CreateSkinnedObjectsFromModel()
+        public void CreateSkinnedObjectsFromModel()
         {
-            blendInfo = new FrameBlendInfo();
-            skeleton = new FrameSkeleton();
-            skeletonHierarchy = new FrameSkeletonHierachy();
-
             int jointCount = model.SkeletonData.Joints.Length;
             skeleton.BoneNames = new HashName[jointCount];
             skeleton.NumBones = new int[4];
