@@ -207,30 +207,38 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        public void SetParent(ParentInfo.ParentType ParentType, FrameObjectBase NewParent)
+        public void SetParent(ParentInfo.ParentType ParentType, FrameEntry NewParent)
         {
-            // If we have a Parent, then remove it.
-            if(Parent != null)
+            // Fix any parent-children relationships.
+            if (Parent != null)
             {
                 Parent.children.Remove(this);
                 Parent = null;
             }
 
-            if(NewParent != null)
+            // This is if the user wants to change parent
+            if (NewParent != null)
             {
-                // Update Parent
-                InternalSetParent(ParentType, NewParent);
+                int index = (NewParent is FrameHeaderScene) ? OwningResource.FrameScenes.IndexOfValue(NewParent.RefID) : OwningResource.GetIndexOfObject(NewParent.RefID);
+                FrameObjectBase ParentObject = (NewParent as FrameObjectBase);
 
-                // Update world transform
-                NewParent.SetWorldTransform();
+                // Fix any parent relationships only if ParentObj is not null.
+                if (ParentObject != null)
+                {
+                    ParentObject.children.Add(this);
+                    Parent = ParentObject;
+                }
+
+                // Update Parent
+                InternalSetParent(ParentType, NewParent, index);
             }
-            else
+            else // this is if the user wants to remove the parent relationship, therefore -1 = root.
             {
                 RemoveParent(ParentType);
             }
         }
 
-        private void InternalSetParent(ParentInfo.ParentType ParentType, FrameObjectBase NewParent)
+        private void InternalSetParent(ParentInfo.ParentType ParentType, FrameEntry NewParent, int ParentIndex)
         {
             // Get type of FrameEntryRefType we want to replace/add
             FrameEntryRefTypes ParentRef = (ParentType == ParentInfo.ParentType.ParentIndex1) ?
@@ -238,14 +246,18 @@ namespace ResourceTypes.FrameResource
 
             ReplaceRef(ParentRef, NewParent.RefID);
 
+            int index = (NewParent is FrameHeaderScene) ? OwningResource.FrameScenes.IndexOfValue(NewParent.RefID) : OwningResource.GetIndexOfObject(NewParent.RefID);
+
             // Update ParentInfo
             if (ParentType == ParentInfo.ParentType.ParentIndex1)
             {
-                ParentIndex1.SetParent(NewParent, /*todo*/0);
+                ParentIndex1.SetParent(NewParent, ParentIndex);
+                ReplaceRef(FrameEntryRefTypes.Parent1, NewParent.RefID);
             }
             else
             {
-                ParentIndex2.SetParent(NewParent, /*todo*/0);
+                ParentIndex2.SetParent(NewParent, ParentIndex);
+                ReplaceRef(FrameEntryRefTypes.Parent2, NewParent.RefID);
             }
         }
 

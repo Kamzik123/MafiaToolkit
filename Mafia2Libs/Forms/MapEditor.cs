@@ -1070,7 +1070,10 @@ namespace Mafia2Tool
 
         private void CreateMeshBuffers(Model model)
         {
-            for (int i = 0; i < model.FrameGeometry.NumLods; i++)
+            // TODO: I want to move this into FrameObjectSingleMesh.
+            FrameGeometry MeshGeometry = model.FrameMesh.Geometry;
+
+            for (int i = 0; i < MeshGeometry.NumLods; i++)
             {
                bool bAdded = SceneData.VertexBufferPool.TryAddBuffer(model.VertexBuffers[i]);
                bAdded = SceneData.IndexBufferPool.TryAddBuffer(model.IndexBuffers[i]);
@@ -1095,17 +1098,26 @@ namespace Mafia2Tool
             TreeNode node = new TreeNode(frame.Name.String);
             node.Tag = frame;
             node.Name = frame.RefID.ToString();
-            dSceneTree.AddToTree(node, frameResourceRoot);
 
-            if(frame is FrameObjectSingleMesh)
+            if (frame is FrameObjectSingleMesh)
             {
                 FrameObjectSingleMesh SingleMesh = (frame as FrameObjectSingleMesh);
                 Model LoadedModel = LoadModelFromFile();
+
+                if (LoadedModel == null)
+                {
+                    // failed to load model
+                    return;
+                }
+
                 SingleMesh.CreateMeshFromRawModel(LoadedModel);
 
                 // TODO: This will need to live elsewhere one day!
                 CreateMeshBuffers(LoadedModel);
             }
+
+            // If everything was succesful, then we would have reached this point.
+            dSceneTree.AddToTree(node, frameResourceRoot);
 
             IRenderer renderer = BuildRenderObjectFromFrame(frame);
             if(renderer != null)

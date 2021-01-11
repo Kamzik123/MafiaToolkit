@@ -26,7 +26,7 @@ namespace Mafia2Tool
             frameMode = true;
             listBox1.Items.Add(ROOT_STRING);
 
-            if (ParentType == ParentInfo.ParentType.ParentIndex1)
+            if (ParentType == ParentInfo.ParentType.ParentIndex2)
             {
                 foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
                 {

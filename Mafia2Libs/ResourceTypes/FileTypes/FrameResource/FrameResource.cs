@@ -332,51 +332,7 @@ namespace ResourceTypes.FrameResource
         {
             //get the index and child object
             FrameObjectBase obj = (childEntry as FrameObjectBase);
-
-            //fix any parent-children relationships.
-            if (obj.Parent != null)
-            {
-                obj.Parent.Children.Remove(obj);
-                obj.Parent = null;
-            }
-
-            if (parentEntry != null) //this is if the user wants to change parent
-            {
-                int index = (parentEntry is FrameHeaderScene) ? frameScenes.IndexOfValue(parentEntry.RefID) : GetIndexOfObject(parentEntry.RefID);
-                FrameObjectBase parentObj = (parentEntry as FrameObjectBase);
-
-                //fix any parent relationships only if ParentObj is not null.
-                if (parentObj != null)
-                {
-                    parentObj.Children.Add(obj);
-                    obj.Parent = parentObj;
-                }
-
-                //set parent indexes.
-                if (ParentType == ParentInfo.ParentType.ParentIndex1)
-                {
-                    obj.ParentIndex1.SetParent(index, parentEntry);
-                    obj.ReplaceRef(FrameEntryRefTypes.Parent1, parentEntry.RefID);
-                }
-                else if (ParentType == ParentInfo.ParentType.ParentIndex2)
-                {
-                    obj.ParentIndex2.SetParent(index, parentEntry);
-                    obj.ReplaceRef(FrameEntryRefTypes.Parent2, parentEntry.RefID);
-                }
-            }
-            else //this is if the user wants to remove the parent relationship, therefore -1 = root.
-            {
-                if (ParentType == ParentInfo.ParentType.ParentIndex1)
-                {
-                    obj.ParentIndex1.RemoveParent();
-                    obj.SubRef(FrameEntryRefTypes.Parent1);
-                }
-                else if (ParentType == ParentInfo.ParentType.ParentIndex2)
-                {
-                    obj.ParentIndex2.RemoveParent();
-                    obj.SubRef(FrameEntryRefTypes.Parent2);
-                }
-            }
+            obj.SetParent(ParentType, parentEntry);
 
             // Update world transform
             foreach (var pair in frameObjects)

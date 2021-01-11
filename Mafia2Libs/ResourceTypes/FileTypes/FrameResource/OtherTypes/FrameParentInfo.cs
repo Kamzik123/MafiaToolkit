@@ -42,16 +42,9 @@ namespace ResourceTypes.FrameResource
             refID = other.refID;
         }
 
-        public void SetParent(FrameObjectBase FrameObject, int IndexOfObject)
+        public void SetParent(FrameEntry ParentEntry, int IndexOfParent)
         {
-            index = IndexOfObject;
-            name = FrameObject.ToString();
-            RefID = FrameObject.RefID;
-        }
-
-        public void SetParent(int index, FrameEntry entry)
-        {
-            SetParent(index, entry.ToString(), entry.RefID);
+            SetParent(IndexOfParent, ParentEntry.ToString(), ParentEntry.RefID);
         }
 
         public void SetParent(int index, string name, int refID)

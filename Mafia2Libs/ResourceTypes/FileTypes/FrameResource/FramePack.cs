@@ -177,9 +177,9 @@ namespace ResourceTypes.FrameResource
                 FrameObjectSingleMesh SingleMesh = (parent as FrameObjectSingleMesh);
 
                 // Read the required blocks;
-                FrameGeometry geometry = SingleMesh.ConstructGeometryObject();
+                FrameGeometry geometry = SingleMesh.GetGeometry();
                 geometry.ReadFromFile(stream, false);
-                FrameMaterial material = SingleMesh.ConstructMaterialObject();
+                FrameMaterial material = SingleMesh.GetMaterial();
                 material.ReadFromFile(stream, false);
 
                 if (parent is FrameObjectModel)
@@ -187,11 +187,11 @@ namespace ResourceTypes.FrameResource
                     FrameObjectModel RiggedMesh = (parent as FrameObjectModel);
 
                     // Read the rigged specific blocks
-                    FrameBlendInfo blendInfo = RiggedMesh.ConstructBlendInfoObject();
+                    FrameBlendInfo blendInfo = RiggedMesh.BlendInfo;
                     blendInfo.ReadFromFile(stream, false);
-                    FrameSkeleton skeleton = RiggedMesh.ConstructSkeletonObject();
+                    FrameSkeleton skeleton = RiggedMesh.Skeleton;
                     skeleton.ReadFromFile(stream, false);
-                    FrameSkeletonHierachy hierarchy = RiggedMesh.ConstructSkeletonHierarchyObject();
+                    FrameSkeletonHierachy hierarchy = RiggedMesh.SkeletonHierarchy;
                     hierarchy.ReadFromFile(stream, false);
 
                     // read end of mesh

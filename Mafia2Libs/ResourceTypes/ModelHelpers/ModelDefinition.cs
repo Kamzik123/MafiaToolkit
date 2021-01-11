@@ -14,49 +14,13 @@ namespace Utils.Models
         
         FrameObjectSingleMesh frameMesh; //model can be either "FrameObjectSingleMesh"
         FrameObjectModel frameModel; //Or "FrameObjectModel"
-        FrameGeometry frameGeometry; //Holds geometry data, all content is built into here.
-        FrameMaterial frameMaterial; //Data related to material goes into here.
-        FrameBlendInfo blendInfo;
-        FrameSkeleton skeleton;
-        FrameSkeletonHierachy skeletonHierarchy;
         IndexBuffer[] indexBuffers; //Holds the buffer which will then be saved/replaced later
         VertexBuffer[] vertexBuffers; //Holds the buffers which will then be saved/replaced later
         M2TStructure model; //split from this file; it now includes M2T format.
         private bool useSingleMesh; //False means ModelMesh, True means SingleMesh;
-        
+
         public FrameObjectSingleMesh FrameMesh {
             get { return frameMesh; }
-            set { frameMesh = value; }
-        }
-
-        public FrameObjectModel FrameModel {
-            get { return frameModel; }
-            set { frameModel = value; }
-        }
-
-        public FrameGeometry FrameGeometry {
-            get { return frameGeometry; }
-            set { frameGeometry = value; }
-        }
-
-        public FrameMaterial FrameMaterial {
-            get { return frameMaterial; }
-            set { frameMaterial = value; }
-        }
-
-        public FrameBlendInfo BlendInfoBlock {
-            get { return blendInfo; }
-            set { blendInfo = value; }
-        }
-
-        public FrameSkeleton SkeletonBlock {
-            get { return skeleton; }
-            set { skeleton = value; }
-        }
-
-        public FrameSkeletonHierachy SkeletonHierachyBlock {
-            get { return skeletonHierarchy; }
-            set { skeletonHierarchy = value; }
         }
 
         public IndexBuffer[] IndexBuffers {
@@ -79,13 +43,11 @@ namespace Utils.Models
             this.frameMesh = frameMesh;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
-            frameGeometry = frameMesh.Geometry;
-            frameMaterial = frameMesh.Material;
             model = new M2TStructure();
             model.IsSkinned = false;
             model.Name = frameMesh.Name.ToString();
             model.AOTexture = frameMesh.OMTextureHash.String;
-            model.BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
+            model.BuildLods(frameMesh, vertexBuffers, indexBuffers);
         }
 
         public Model(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
@@ -93,11 +55,6 @@ namespace Utils.Models
             this.frameModel = frameModel;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
-            frameGeometry = frameModel.Geometry;
-            frameMaterial = frameModel.Material;
-            blendInfo = frameModel.BlendInfo;
-            skeleton = frameModel.Skeleton;
-            skeletonHierarchy = frameModel.SkeletonHierarchy;
             model = new M2TStructure();
             model.IsSkinned = true;
             model.Name = frameModel.Name.ToString();
@@ -113,11 +70,18 @@ namespace Utils.Models
             ModelStructure = new M2TStructure();
         }
 
+        public void SetFrameMesh(FrameObjectSingleMesh Mesh)
+        {
+            frameMesh = Mesh;
+        }
+
         /// <summary>
         /// Update decompression offset and position.
         /// </summary>
         public void CalculateDecompression()
         {
+            FrameGeometry frameGeometry = frameMesh.Geometry;
+
             float minFloatf = 0.000016f;
             SharpDX.Vector3 minFloat = new SharpDX.Vector3(minFloatf);
 
@@ -159,8 +123,12 @@ namespace Utils.Models
         /// </summary>
         public void BuildVertexBuffer()
         {
+            FrameGeometry frameGeometry = frameMesh.Geometry;
+
             if (model.Lods == null)
+            {
                 return;
+            }
 
             for (int i = 0; i != model.Lods.Length; i++)
             {
@@ -242,10 +210,15 @@ namespace Utils.Models
 
         public void UpdateObjectsFromModel()
         {
+            FrameGeometry frameGeometry = frameMesh.Geometry;
+            FrameMaterial frameMaterial = frameMesh.Material;
+
             frameGeometry.NumLods = (byte)model.Lods.Length;
 
             if (frameGeometry.LOD == null)
+            {
                 frameGeometry.LOD = new FrameLOD[model.Lods.Length];
+            }
 
             frameMaterial.NumLods = (byte)model.Lods.Length;
             frameMaterial.LodMatCount = new int[model.Lods.Length];
@@ -317,6 +290,9 @@ namespace Utils.Models
         /// </summary>
         public void CreateObjectsFromModel()
         {
+            FrameGeometry frameGeometry = frameMesh.Geometry;
+            FrameMaterial frameMaterial = frameMesh.Material;
+
             //set lods for all data.
             indexBuffers = new IndexBuffer[model.Lods.Length];
             vertexBuffers = new VertexBuffer[model.Lods.Length];
@@ -328,7 +304,7 @@ namespace Utils.Models
             }
 
             frameMesh.Boundings = BoundingBoxExtenders.CalculateBounds(vertData);
-            frameMaterial.Bounds = FrameMesh.Boundings;
+            frameMaterial.Bounds = frameMesh.Boundings;
             CalculateDecompression();
             UpdateObjectsFromModel();
             BuildIndexBuffer();
@@ -353,6 +329,9 @@ namespace Utils.Models
 
         public void CreateSkinnedObjectsFromModel()
         {
+            FrameSkeleton skeleton = (frameMesh as FrameObjectModel).Skeleton;
+            FrameSkeletonHierachy skeletonHierarchy = (frameMesh as FrameObjectModel).SkeletonHierarchy;
+
             int jointCount = model.SkeletonData.Joints.Length;
             skeleton.BoneNames = new HashName[jointCount];
             skeleton.NumBones = new int[4];
