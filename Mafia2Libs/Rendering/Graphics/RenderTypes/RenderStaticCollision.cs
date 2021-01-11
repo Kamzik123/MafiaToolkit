@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ResourceTypes.Collisions.Opcode;
 using Utils.Extensions;
+using Gibbed.Illusion.FileFormats.Hashing;
+using Rendering.Graphics.Utils;
+using System.Diagnostics;
 
 namespace Rendering.Graphics
 {
@@ -16,6 +19,7 @@ namespace Rendering.Graphics
         public VertexLayouts.CollisionLayout.Vertex[] Vertices { get; private set; }
         public uint[] Indices { get; private set; }
         public BaseShader Shader;
+        private ulong CollisionNameHash;
         private CollisionMaterials[] materials;
         public Color SelectionColour { get; private set; }
         public RenderStaticCollision()
@@ -27,8 +31,16 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(Device d3d, DeviceContext context)
         {
-            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, Vertices);
-            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, Indices);
+            // sanity checks
+            Debug.Assert(CollisionNameHash != 0, "CollisionNameHash is zero!");
+
+            ulong IndexBufferHash = FNV64.Hash(string.Format("IB_{0}.COL.IB0", CollisionNameHash));
+            ulong VertexBufferHash = FNV64.Hash(string.Format("VB_{0}.COL.VB0", CollisionNameHash));
+
+            // construct buffers
+            indexBuffer = RenderUtils.ConstructIndexBuffer(d3d, IndexBufferHash, Indices);
+            vertexBuffer = RenderUtils.ConstructVertexBuffer(d3d, VertexBufferHash, Vertices);
+
             Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[2];
         }
 
@@ -50,10 +62,12 @@ namespace Rendering.Graphics
             }
             CalculateNormals();
         }
-        public void ConvertCollisionToRender(TriangleMesh triangleMesh)
+
+        public void ConvertCollisionToRender(ulong CollisionName, TriangleMesh triangleMesh)
         { 
             DoRender = true;
             BoundingBox = triangleMesh.BoundingBox;
+            CollisionNameHash = CollisionName;
 
             Indices = triangleMesh.Triangles.SelectMany(t => new[] { t.v0, t.v1, t.v2 }).ToArray();
             Vertices = new VertexLayouts.CollisionLayout.Vertex[triangleMesh.Vertices.Count];

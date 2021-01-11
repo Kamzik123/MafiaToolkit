@@ -11,6 +11,8 @@ namespace Rendering.Graphics
         public Dictionary<ulong, RenderStaticCollision> StaticCollisions;
         public Dictionary<ulong, ShaderResourceView> TextureCache;
         public Dictionary<ulong, Image> TextureThumbnails;
+        public Dictionary<ulong, Buffer> IndexBuffers;
+        public Dictionary<ulong, Buffer> VertexBuffers;
         public ShaderManager ShaderManager;
         public RenderPrefabs Prefabs;
         private bool isInit;
@@ -21,6 +23,8 @@ namespace Rendering.Graphics
             StaticCollisions = new Dictionary<ulong, RenderStaticCollision>();
             TextureCache = new Dictionary<ulong, ShaderResourceView>();
             TextureThumbnails = new Dictionary<ulong, Image>();
+            IndexBuffers = new Dictionary<ulong, Buffer>();
+            VertexBuffers = new Dictionary<ulong, Buffer>();
             ShaderManager = new ShaderManager();
             Prefabs = new RenderPrefabs();
         }
@@ -56,6 +60,16 @@ namespace Rendering.Graphics
                 texture.Value.Dispose();
             }
 
+            foreach (var IndexBuffer in IndexBuffers)
+            {
+                IndexBuffer.Value.Dispose();
+            }
+
+            foreach (var VertexBuffer in VertexBuffers)
+            {
+                VertexBuffer.Value.Dispose();
+            }
+
             foreach (RenderLine line in SplineStorage)
             {
                 line.Shutdown();
@@ -70,6 +84,8 @@ namespace Rendering.Graphics
             StaticCollisions.Clear();
             TextureCache.Clear();
             TextureThumbnails.Clear();
+            IndexBuffers.Clear();
+            VertexBuffers.Clear();
             ShaderManager.Shutdown();
             isInit = false;
         }

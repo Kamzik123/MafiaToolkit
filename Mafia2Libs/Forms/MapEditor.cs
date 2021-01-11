@@ -748,7 +748,7 @@ namespace Mafia2Tool
                 {
                     Collision.CollisionModel data = SceneData.Collisions.Models.ElementAt(i).Value;
                     RenderStaticCollision collision = new RenderStaticCollision();
-                    collision.ConvertCollisionToRender(data.Mesh);
+                    collision.ConvertCollisionToRender(data.Hash, data.Mesh);
                     RenderStorageSingleton.Instance.StaticCollisions.Add(SceneData.Collisions.Models.ElementAt(i).Key, collision);
                     TreeNode treeNode = new TreeNode(data.Hash.ToString());
                     treeNode.Text = data.Hash.ToString();
@@ -1964,7 +1964,7 @@ namespace Mafia2Tool
                 // Create a new renderable for collision object
                 Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromM2TStructure(m2tColModel);
                 RenderStaticCollision collision = new RenderStaticCollision();
-                collision.ConvertCollisionToRender(collisionModel.Mesh);
+                collision.ConvertCollisionToRender(collisionModel.Hash, collisionModel.Mesh);
                 RenderStorageSingleton.Instance.StaticCollisions.TryAdd(collisionModel.Hash, collision);
 
                 // Push it onto the collisions dictionary

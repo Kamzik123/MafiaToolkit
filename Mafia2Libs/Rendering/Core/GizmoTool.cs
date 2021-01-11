@@ -1,7 +1,6 @@
 ﻿using Rendering.Graphics;
 using SharpDX;
 using SharpDX.Direct3D11;
-using SharpDX.Mathematics;
 using System;
 
 namespace Rendering.Core
