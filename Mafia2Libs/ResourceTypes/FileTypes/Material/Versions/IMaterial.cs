@@ -10,6 +10,7 @@ namespace ResourceTypes.Materials
     public class IMaterial
     {
         public HashName MaterialName { get; set; }
+        public string MaterialGUID { get { return MaterialName.ConstructGUID(); } }
 
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public MaterialFlags Flags { get; set; }
@@ -32,6 +33,8 @@ namespace ResourceTypes.Materials
         public virtual void ReadFromFile(BinaryReader reader, VersionsEnumerator version) { }
 
         public virtual void WriteToFile(BinaryWriter writer, VersionsEnumerator version) { }
+
+        public virtual List<string> CollectTextures() { return null; }
 
         public void SetName(string name)
         {

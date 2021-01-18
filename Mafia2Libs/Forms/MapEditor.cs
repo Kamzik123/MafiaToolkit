@@ -209,17 +209,11 @@ namespace Mafia2Tool
 
             FrameObjectBase frame = (node.Tag as FrameObjectBase);
 
-            // We can remove this when we have support. 
-            if(node.Nodes.Count > 0)
-            {
-                MessageBox.Show("Warning: Child Frames are not currently supported!", "Toolkit", MessageBoxButtons.OK);
-            }
-
             if (node != null)
             {
                 if(node.Tag != null)
                 {
-                    SceneData.FrameResource.SaveFramesToFile(frame, "file.frame");
+                    SceneData.FrameResource.SaveFramesToFile(frame);
                 }
             }        
         }
@@ -960,11 +954,6 @@ namespace Mafia2Tool
                     selected.Text = fObject.ToString();
                     dPropertyGrid.UpdateObject();
                     ApplyChangesToRenderable(fObject);
-
-                    // Send an event to update our selected item. (if this is indeed our selected)
-                    UpdateSelectedEventArgs Arguments = new UpdateSelectedEventArgs();
-                    Arguments.RefID = int.Parse(selected.Name);
-                    Graphics.OnSelectedObjectUpdated(this, Arguments);
                 }
                 else if (selected.Tag is FrameHeaderScene)
                 {
@@ -995,6 +984,7 @@ namespace Mafia2Tool
                 FrameObjectArea area = (obj as FrameObjectArea);
                 //area.FillPlanesArray();
                 RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
+                bbox.SetTransform(area.WorldTransform);
                 bbox.Update(area.Bounds);
             }
             else if(obj is FrameObjectDummy)
@@ -1023,6 +1013,11 @@ namespace Mafia2Tool
             {
                 ApplyChangesToRenderable(child);
             }
+
+            // Send an event to update our selected item. (if this is indeed our selected)
+            UpdateSelectedEventArgs Arguments = new UpdateSelectedEventArgs();
+            Arguments.RefID = obj.RefID;
+            Graphics.OnSelectedObjectUpdated(this, Arguments);
         }
 
         private ModelWrapper LoadModelFromFile()
@@ -1489,9 +1484,11 @@ namespace Mafia2Tool
                 if (FrameResource.IsFrameType(node.Nodes[i].Tag))
                 {
                     FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
-                    SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
+                    bool bDidRemove = SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
                     Graphics.Assets.TryRemove(entry.RefID);
                     DeleteFrames(node.Nodes[i]);
+
+                    Debug.Assert(bDidRemove == true, "Failed to remove!");
                 }
             }
         }
@@ -2208,6 +2205,51 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(parent, frameResourceRoot);
                 ConvertNodeToFrame(parent);
             }
+        }
+
+        private void Button_DumpTexture_Click(object sender, EventArgs e)
+        {
+            List<string> AllTextures = new List<string>();
+
+            // Get header scene name
+            string HeaderSceneName = SceneData.FrameResource.Header.SceneName.String;
+            if (!string.IsNullOrEmpty(HeaderSceneName))
+            {
+                if(!AllTextures.Contains(HeaderSceneName))
+                {
+                    AllTextures.Add(HeaderSceneName);
+                }
+            }
+
+            // Iterate through FrameObjects
+            foreach(var Frame in SceneData.FrameResource.FrameObjects)
+            {
+                // We can only take textures from SingleMesh
+                var SingleMesh = (Frame.Value as FrameObjectSingleMesh);
+                if (SingleMesh != null)
+                {
+                    // Store OM texture
+                    if(!AllTextures.Contains(SingleMesh.OMTextureHash.String))
+                    {
+                        AllTextures.Add(SingleMesh.OMTextureHash.String);
+                    }              
+
+                    // Collect textures from FrameMaterial object.
+                    List<string> CollectedTextures = SingleMesh.Material.CollectAllTextureNames();
+                    if (CollectedTextures != null)
+                    {
+                        foreach(var Texture in CollectedTextures)
+                        {
+                            if(!AllTextures.Contains(Texture))
+                            {
+                                AllTextures.Add(Texture);
+                            }
+                        }
+                    }
+                }
+            }
+
+            File.WriteAllLines("AllTextures.txt", AllTextures.ToArray());
         }
     }
 }

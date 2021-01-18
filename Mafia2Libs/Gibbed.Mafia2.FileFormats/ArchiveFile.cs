@@ -56,6 +56,9 @@ namespace Gibbed.Mafia2.FileFormats
         private readonly List<Archive.ResourceEntry> _ResourceEntries;
         private readonly List<string> _ResourceNames;
         private Dictionary<ulong, string> _TextureNames;
+        private Game ChosenGame;
+        private GamesEnumerator ChosenGameType;
+        private bool bHasSetGameType;
         #endregion
         #region Properties
         public Endian Endian {
@@ -111,6 +114,19 @@ namespace Gibbed.Mafia2.FileFormats
             this._ResourceEntries = new List<Archive.ResourceEntry>();
             this._ResourceNames = new List<string>();
             Unknown20 = new byte[16];
+
+            // Get Chosen Game and Type.
+            // Sanity check the GameStorage and
+            // pull from it if possible.
+            if (GameStorage.Instance != null)
+            {
+                ChosenGame = GameStorage.Instance.GetSelectedGame();
+
+                if (ChosenGame != null)
+                {
+                    SetGameType(ChosenGame.GameType);
+                }
+            }
         }
         #endregion
         #region Functions
@@ -146,7 +162,7 @@ namespace Gibbed.Mafia2.FileFormats
             var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != ArchiveSerializeOptions.None ? (uint)this._ResourceEntries.Sum(re => stride + (re.Data == null ? 0 : re.Data.Length)) : alignment;
             fileHeader.BlockTableOffset = (uint)(output.Position - basePosition);
             fileHeader.ResourceCount = 0;
-            var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress);           
+            var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress, ChosenGameType == GamesEnumerator.MafiaI_DE);           
             foreach (var resourceEntry in this._ResourceEntries)
             {
                 Archive.ResourceHeader resourceHeader;
@@ -202,8 +218,7 @@ namespace Gibbed.Mafia2.FileFormats
             // They are from an external file, taken from MTL.
             ReadTextureNames();
 
-            var game = GameStorage.Instance.GetSelectedGame();
-            if (game.GameType == GamesEnumerator.MafiaI_DE)
+            if (IsGameType(GamesEnumerator.MafiaI_DE))
             {
                 if (!File.Exists("libs/oo2core_8_win64.dll"))
                 {
@@ -323,47 +338,72 @@ namespace Gibbed.Mafia2.FileFormats
             this._ResourceEntries.AddRange(resources);
         }
 
-        /// <summary>
-        /// Build resources from given folder.
-        /// </summary>
-        /// <param name="folder"></param>
         public bool BuildResources(string folder)
         {
-            //TODO: MAKE THIS CLEANER
             string sdsFolder = folder;
-            XmlDocument document = new XmlDocument();
-            XmlDocument xmlDoc = new XmlDocument();
-            XmlNode rootNode;
-            if(!File.Exists(sdsFolder + "/SDSContent.xml"))
+            XmlDocument document = null;
+
+            // Open a FileStream which contains the SDSContent data.
+            string SDSContentPath = Path.Combine(sdsFolder, "SDSContent.xml");
+            using (FileStream XMLStream = new FileStream(SDSContentPath, FileMode.Open))
             {
-                MessageBox.Show("Could not find 'SDSContent.xml'. Folder Path: " + sdsFolder + "/SDSContent.xml", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
+                try
+                {
+                    document = new XmlDocument();
+                    document.Load(XMLStream);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("Error while parsing SDSContent.XML. \n{0}", ex.Message));
+                    return false;
+                }
             }
-            try
+
+            // Check if document is valid. If it is, then we know it has been found and loaded without problems.
+            if(document == null)
             {
-                document = new XmlDocument();
-                document.Load(sdsFolder + "/SDSContent.xml");
-                xmlDoc = new XmlDocument();
-                rootNode = xmlDoc.CreateElement("xml");
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(string.Format("Error while parsing SDSContent.XML. \n{0}", ex.Message));
+                MessageBox.Show(string.Format("Failed to open SDSContent.XML. \n{0}", SDSContentPath));
                 return false;
             }
 
+            // GoAhead and begin creating the document to save inside the SDSContent.
+            XmlDocument xmlDoc = new XmlDocument();
+            XmlNode rootNode = xmlDoc.CreateElement("xml");
             xmlDoc.AppendChild(rootNode);
-            bool result = false;
+
+            // Try and pack the resources found in SDSContent.
+            bool bResult = false;
 
             if(_Version == 19)
             {
-                result = BuildResourcesVersion19(document, xmlDoc, rootNode, sdsFolder);
+                bResult = BuildResourcesVersion19(document, xmlDoc, rootNode, sdsFolder);
             }
             else if(_Version == 20)
             {
-                result = BuildResourcesVersion20(document, xmlDoc, rootNode, sdsFolder);
+                bResult = BuildResourcesVersion20(document, xmlDoc, rootNode, sdsFolder);
             }
-            return result;
+
+            document = null;
+            return bResult;
+        }
+
+        // Util function to set game type.
+        // This is used for functionality where a selected game does not exist.
+        public void SetGameType(GamesEnumerator SelectedGameType)
+        {
+            ChosenGameType = SelectedGameType;
+            bHasSetGameType = true;
+        }
+
+        private bool IsGameType(GamesEnumerator TypeToCheck)
+        {
+            if(bHasSetGameType)
+            {
+                return ChosenGameType.Equals(TypeToCheck);
+            }
+
+            // TODO: Throw assert?
+            return false;
         }
 
         public void ExtractPatch(FileInfo file)
@@ -565,7 +605,9 @@ namespace Gibbed.Mafia2.FileFormats
             if (string.IsNullOrEmpty(ResourceInfoXml) == false)
             {
                 using (var reader = new StringReader(ResourceInfoXml))
+                {
                     doc = new XPathDocument(reader);
+                }
             }
             else
             {

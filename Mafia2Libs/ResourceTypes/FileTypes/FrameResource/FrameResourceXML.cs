@@ -176,6 +176,7 @@ namespace ResourceTypes.FrameResource
         private string xmlTag;
         private int unk1;
         private int unk3;
+        private int failedToDecompile;
 
         public string XMLTag {
             get { return xmlTag; }
@@ -188,6 +189,10 @@ namespace ResourceTypes.FrameResource
         public int Unk3 {
             get { return unk3; }
             set { unk3 = value; }
+        }
+        public int FailedToDecompile {
+            get { return failedToDecompile; }
+            set { failedToDecompile = value; }
         }
 
         public XMLResource()
@@ -211,6 +216,8 @@ namespace ResourceTypes.FrameResource
             iterator.Current.MoveToNext();
             Unk3 = iterator.Current.ValueAsInt;
             iterator.Current.MoveToNext();
+            FailedToDecompile = iterator.Current.ValueAsInt;
+            iterator.Current.MoveToNext();
             EntryVersion = iterator.Current.ValueAsInt;
         }
 
@@ -220,9 +227,47 @@ namespace ResourceTypes.FrameResource
             writer.WriteElementString("XMLTag", XMLTag);
             writer.WriteElementString("Unk1", Unk1.ToString());
             writer.WriteElementString("Unk3", Unk3.ToString());
+            writer.WriteElementString("FailedToDecompile", FailedToDecompile.ToString());
             writer.WriteElementString("Version", GetEntryVersionString());
         }
     }
+    public class MemFileResource : BaseResource
+    {
+        public MemFileResource()
+        {
+        }
+
+        public MemFileResource(int version, string name) : base(version, name)
+        {
+        }
+
+        public int Unk2_V4 { get; set; }
+
+        public override void ReadResourceEntry(XPathNodeIterator iterator)
+        {
+            iterator.Current.MoveToNext();
+            FileName = iterator.Current.Value;
+
+            // Sanity check for older SDSContent.XMLs which may not have this.
+            iterator.Current.MoveToNext();
+            if (iterator.Current.Name.Equals("Unk2_V4"))
+            {
+                Unk2_V4 = iterator.Current.ValueAsInt;
+                iterator.Current.MoveToNext();
+            }
+
+            // Whichever outcomes happens, we will be at the version value by now.
+            EntryVersion = iterator.Current.ValueAsInt;
+        }
+
+        public override void WriteResourceEntry(XmlWriter writer)
+        {
+            writer.WriteElementString("File", GetFileName());
+            writer.WriteElementString("Unk2_V4", Unk2_V4.ToString());
+            writer.WriteElementString("Version", GetEntryVersionString());
+        }
+    }
+
     public class TextureResource : BaseResource
     {
         private int hasMIP;

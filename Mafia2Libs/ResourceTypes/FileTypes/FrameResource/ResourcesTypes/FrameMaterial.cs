@@ -69,7 +69,9 @@ namespace ResourceTypes.FrameResource
             numLods = reader.ReadByte8();
             lodMatCount = new int[numLods];
             for (int i = 0; i != numLods; i++)
+            {
                 lodMatCount[i] = reader.ReadInt32(isBigEndian);
+            }
 
             materials = new List<MaterialStruct[]>();
 
@@ -90,7 +92,9 @@ namespace ResourceTypes.FrameResource
         {
             writer.Write((byte)numLods);
             for (int i = 0; i != numLods; i++)
+            {
                 writer.Write(lodMatCount[i]);
+            }
 
             bounds.WriteToFile(writer);
 
@@ -102,6 +106,30 @@ namespace ResourceTypes.FrameResource
                 }
             }
         }
+
+        public List<string> CollectAllTextureNames()
+        {
+            List<string> TextureNames = new List<string>();
+
+            for (int i = 0; i != materials.Count; i++)
+            {
+                for (int d = 0; d != materials[i].Length; d++)
+                {
+                    IMaterial FoundMaterial = MaterialsManager.LookupMaterialByHash(materials[i][d].MaterialHash);
+                    if(FoundMaterial != null)
+                    {
+                        List<string> CollectedFromMaterial = FoundMaterial.CollectTextures();
+                        if (CollectedFromMaterial != null)
+                        {
+                            TextureNames.AddRange(CollectedFromMaterial);
+                        }
+                    }
+                }
+            }
+
+            return TextureNames;
+        }
+
         public override string ToString()
         {
             return $"Material Block";
