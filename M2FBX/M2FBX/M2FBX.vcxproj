@@ -158,9 +158,14 @@
     <ClCompile Include="M2Model.cpp" />
     <ClCompile Include="M2TWrangler.cpp" />
     <ClCompile Include="main.cxx" />
+    <ClCompile Include="Source\Fbx_Wrangler.cpp" />
+    <ClCompile Include="Source\MTObject\MT_FaceGroup.cpp" />
+    <ClCompile Include="Source\MTObject\MT_MaterialInstance.cpp" />
+    <ClCompile Include="Source\MT_Wrangler.cpp" />
     <ClCompile Include="Source\MTObject\MT_Lod.cpp" />
     <ClCompile Include="Source\MTObject\MT_Object.cpp" />
     <ClCompile Include="Source\MTObject\MT_ObjectHandler.cpp" />
+    <ClCompile Include="Source\Utilities\FileUtils.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -170,9 +175,14 @@
     <ClInclude Include="FbxWrangler.h" />
     <ClInclude Include="M2Model.h" />
     <ClInclude Include="M2TWrangler.h" />
+    <ClInclude Include="Source\Fbx_Wrangler.h" />
+    <ClInclude Include="Source\MTObject\MT_FaceGroup.h" />
+    <ClInclude Include="Source\MTObject\MT_MaterialInstance.h" />
+    <ClInclude Include="Source\MT_Wrangler.h" />
     <ClInclude Include="Source\MTObject\MT_Lod.h" />
     <ClInclude Include="Source\MTObject\MT_Object.h" />
     <ClInclude Include="Source\MTObject\MT_ObjectHandler.h" />
+    <ClInclude Include="Source\Utilities\FileUtils.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

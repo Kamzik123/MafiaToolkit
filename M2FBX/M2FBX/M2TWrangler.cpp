@@ -362,7 +362,7 @@ int ConvertFBX(const char* pSource, const char* pDest)
 	FbxScene* lScene = NULL;
 
 	//Prepare SDK..
-	InitializeSdkObjects(lSdkManager);
+	Fbx_Utilities::InitializeSdkObjects(lSdkManager);
 	lImporter = FbxImporter::Create(lSdkManager, "");
 	WriteLine("Loading FBX File..");
 	//Init importer. if it fails, it will print error code.

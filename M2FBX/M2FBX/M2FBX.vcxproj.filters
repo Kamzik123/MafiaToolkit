@@ -9,15 +9,23 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Source Files\MTObject">
       <UniqueIdentifier>{1180ac4f-adaa-4edc-bf82-313284ca2450}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\MTObject">
       <UniqueIdentifier>{5739ac70-19f5-4272-b413-18b17c330fb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Wranglers">
+      <UniqueIdentifier>{7745665f-bb6a-4306-aba6-c3d63a2c0915}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Wranglers">
+      <UniqueIdentifier>{785d9b9d-dd44-4e2f-a9bb-fc1d98e826cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utilities">
+      <UniqueIdentifier>{2733fa1d-baa2-46f0-9806-48e13beae117}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities">
+      <UniqueIdentifier>{0165b5df-4b2d-433e-9f2a-4cbac0dc87e0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -25,9 +33,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cxx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FBXWrangler.cpp">
@@ -48,21 +53,33 @@
     <ClCompile Include="Source\MTObject\MT_ObjectHandler.cpp">
       <Filter>Source Files\MTObject</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Fbx_Wrangler.cpp">
+      <Filter>Source Files\Wranglers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MT_Wrangler.cpp">
+      <Filter>Source Files\Wranglers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MTObject\MT_MaterialInstance.cpp">
+      <Filter>Source Files\MTObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utilities\FileUtils.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MTObject\MT_FaceGroup.cpp">
+      <Filter>Source Files\MTObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="M2Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FbxWrangler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="M2TWrangler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FbxUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common.h">
@@ -79,6 +96,27 @@
     </ClInclude>
     <ClInclude Include="Source\MTObject\MT_ObjectHandler.h">
       <Filter>Header Files\MTObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Fbx_Wrangler.h">
+      <Filter>Header Files\Wranglers</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MT_Wrangler.h">
+      <Filter>Header Files\Wranglers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MTObject\MT_FaceGroup.h">
+      <Filter>Header Files\MTObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MTObject\MT_MaterialInstance.h">
+      <Filter>Header Files\MTObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utilities\FileUtils.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

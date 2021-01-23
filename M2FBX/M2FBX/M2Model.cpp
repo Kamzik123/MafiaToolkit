@@ -1,6 +1,8 @@
 #include "M2Model.h"
-#include "Utilities.h"
+
 #include <algorithm>
+
+#include "Source/Utilities/FileUtils.h"
 
 //===================================================
 //		ModelPart
@@ -113,7 +115,7 @@ void ModelPart::ReadFromStream(FILE * stream) {
 		std::string name = std::string();
 		int startIndex, numFaces;
 
-		name = ReadString(stream, name);
+		FileUtils::ReadString(stream, &name);
 		subMesh.SetMatName(name);
 		fread(&startIndex, sizeof(int), 1, stream);
 		fread(&numFaces, sizeof(int), 1, stream);
@@ -177,10 +179,10 @@ void ModelPart::ReadFromStream2(FILE* stream)
 
 	for (uint i = 0; i < numSubmesh; i++) {
 		SubMesh subMesh = SubMesh();
-		std::string name = std::string();
+		std::string name = {};
 		int startIndex, numFaces;
 
-		name = ReadString(stream, name);
+		FileUtils::ReadString(stream, &name);
 		subMesh.SetMatName(name);
 		fread(&startIndex, sizeof(int), 1, stream);
 		fread(&numFaces, sizeof(int), 1, stream);
@@ -237,7 +239,7 @@ void ModelPart::WriteToStream(FILE * stream) {
 	fwrite(&numSubMeshes, sizeof(int), 1, stream);
 	for (uint i = 0; i < numSubMeshes; i++) {
 		SubMesh submesh = this->submeshes.at(i);
-		WriteString(stream, submesh.GetMatName());
+		FileUtils::WriteString(stream, submesh.GetMatName());
 		int startIndex = submesh.GetStartIndex();
 		int numFaces = submesh.GetNumFaces();
 		fwrite(&startIndex, sizeof(int), 1, stream);
@@ -335,7 +337,7 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 		exit(0);
 	}
 
-	this->name = ReadString(stream, this->name);
+	FileUtils::ReadString(stream, &this->name);
 	if (version == 2)
 	{
 		fread(&this->isSkinned, sizeof(byte), 1, stream);
@@ -353,7 +355,7 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 				byte parent;
 				Matrix transform;
 
-				boneName = ReadString(stream, boneName);
+				FileUtils::ReadString(stream, &boneName);
 				fread(&parent, sizeof(byte), 1, stream);
 				fread(&transform, sizeof(Matrix), 1, stream);
 
@@ -392,7 +394,7 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 
 void ModelStructure::WriteToStream(FILE* stream) {
 	fwrite(&magicVersion2, sizeof(int), 1, stream);
-	WriteString(stream, this->name);
+	FileUtils::WriteString(stream, this->name);
 	fwrite(&this->isSkinned, sizeof(byte), 1, stream);
 
 	if (isSkinned)
@@ -403,7 +405,7 @@ void ModelStructure::WriteToStream(FILE* stream) {
 		std::vector<Joint>& joints = GetJoints();
 		for (int i = 0; i < numBones; i++)
 		{
-			WriteString(stream, names[i]);
+			FileUtils::WriteString(stream, names[i]);
 			fwrite(&joints[i], sizeof(Joint), 1, stream);
 		}
 	}

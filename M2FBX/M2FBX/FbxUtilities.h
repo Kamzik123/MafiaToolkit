@@ -1,15 +1,20 @@
-#ifndef FBX_UTILS_HEADER
-#define FBX_UTILS_HEADER
+#pragma once
+
 #include "Common.h"
 
 #ifdef IOS_REF
 #undef  IOS_REF
-#define IOS_REF (*(pManager->GetIOSettings()))
+#define IOS_REF (*(SdkManager->GetIOSettings()))
 #endif
 
-void InitializeSdkObjects(FbxManager*& pManager);
-void DestroySdkObjects(FbxManager* pManager, bool pExitStatus);
+class Fbx_Utilities
+{
+public:
 
-FbxVector4 ConvertVector3(const Point3& Vector3);
+	static void InitializeSdkObjects(FbxManager*& pManager);
+	static void DestroySdkObjects(FbxManager* pManager, bool pExitStatus);
 
-#endif
+	static bool FindInString(const FbxString& Text, const FbxString& StringToFind);
+	
+
+};

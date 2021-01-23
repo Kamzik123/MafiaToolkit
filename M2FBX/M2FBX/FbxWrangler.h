@@ -15,4 +15,29 @@ FbxTexture*  CreateTexture(FbxManager* pManager, const char* pName);
 FbxGeometryElementVertexColor* CreateVertexColor(FbxMesh* pMesh, const char* pName, ModelPart& pModel);
 FbxGeometryElementUV* CreateUVElement(FbxMesh* pMesh, const char* pName, ModelPart& pModel);
 FbxGeometryElementMaterial* CreateMaterialElement(FbxMesh* pMesh, const char* pName, ModelPart& pModel);
+
+class MT_Object;
+
+class FbxWrangler
+{
+public:
+
+	FbxWrangler() = default;
+	FbxWrangler(const char* InName, const char* InDest);
+
+	bool BeginConversionFromMTO();
+	bool ConstructScene();
+
+private:
+
+	const char* FbxName;
+	const char* MTOName;
+
+	// MTO related
+	MT_Object* LoadedObject = nullptr;
+
+	// Fbx related
+	FbxManager* SdkManager = nullptr;
+	FbxScene* Scene = nullptr;
+};
 #endif

@@ -4,6 +4,8 @@
 #include "M2Model.h"
 #include "Source/MTObject/MT_Object.h"
 #include "Source/MTObject/MT_ObjectHandler.h"
+#include "Source/Fbx_Wrangler.h"
+#include "Source/MT_Wrangler.h"
 #include <conio.h>
 
 extern "C" int  __declspec(dllexport) _stdcall RunConvertFBX(const char* source, const char* dest);
@@ -36,19 +38,33 @@ int main(int argc, char** argv)
 	}
 	else if ((strcmp(argv[1], "-ConvertFBX") == 0) && (argc >= 4))
 	{
-		result = ConvertFBX(argv[2], argv[3]);
+		//result = ConvertFBX(argv[2], argv[3]);
+		MT_Wrangler* Wrangler = new MT_Wrangler(argv[2], argv[3]);
+		Wrangler->ConstructMTBFromFbx();
+		Wrangler->SaveBundleToFile();
 	}
 	else if ((strcmp(argv[1], "-ConvertType") == 0) && (argc >= 4))
 	{
 		result = ConvertType(argv[2], argv[3]);
 	}
+	else if ((strcmp(argv[1], "-ConvertMTB") == 0) && (argc >= 4))
+	{
+		MT_ObjectBundle* ObjectBundle = MT_ObjectHandler::ReadBundleFromFile(argv[2]);
+		if (ObjectBundle)
+		{
+			Fbx_Wrangler* Wrangler = new Fbx_Wrangler(argv[2], argv[3]);
+			Wrangler->ConvertBundleToFbx();
+
+			ObjectBundle->Cleanup();
+			ObjectBundle = nullptr;
+		}
+
+		return 0;
+	}
 	else if ((strcmp(argv[1], "-ConvertMTO") == 0) && (argc >= 4))
 	{
-		MT_Object* ModelObject = MT_ObjectHandler::ReadObjectFromFile(argv[2]);
-		MT_ObjectHandler::WriteObjectToFile(argv[3], *ModelObject);
-		ModelObject->Cleanup();
-		ModelObject = nullptr;
-		result = ConvertType(argv[2], argv[3]);
+		Fbx_Wrangler* Wrangler = new Fbx_Wrangler(argv[2], argv[3]);
+		Wrangler->ConvertObjectToFbx();
 	}
 	else
 	{

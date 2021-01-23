@@ -1,5 +1,7 @@
 #include "FbxWrangler.h"
 #include "FbxUtilities.h"
+#include "Source/MTObject/MT_ObjectHandler.h"
+#include "Source/MTObject/MT_Object.h"
 
 bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFilename, int pFileFormat = 1, bool pEmbedMedia = false)
 {
@@ -12,11 +14,11 @@ bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFil
 	// Set the export states. By default, the export states are always set to 
 	// true except for the option eEXPORT_TEXTURE_AS_EMBEDDED. The code below 
 	// shows how to change these states.
-	IOS_REF.SetBoolProp(EXP_FBX_MATERIAL, true);
+	/*IOS_REF.SetBoolProp(EXP_FBX_MATERIAL, true);
 	IOS_REF.SetBoolProp(EXP_FBX_TEXTURE, true);
 	IOS_REF.SetBoolProp(EXP_FBX_EMBEDDED, pEmbedMedia);
 	IOS_REF.SetBoolProp(EXP_FBX_ANIMATION, true);
-	IOS_REF.SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
+	IOS_REF.SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);*/
 
 	// Initialize the exporter by providing a filename.
 	if (!lExporter->Initialize(pFilename, pFileFormat, pManager->GetIOSettings()))
@@ -43,7 +45,7 @@ int ConvertType(const char* pSource, const char* pDest)
 	FbxScene* lScene = NULL;
 
 	//Prepare SDK..
-	InitializeSdkObjects(lSdkManager);
+	Fbx_Utilities::InitializeSdkObjects(lSdkManager);
 	lImporter = FbxImporter::Create(lSdkManager, "");
 	WriteLine("Loading FBX File..");
 	//Init importer. if it fails, it will print error code.
@@ -63,7 +65,7 @@ int ConvertType(const char* pSource, const char* pDest)
 
 	WriteLine("Format is %i", format);
 	bool lResult = SaveDocument(lSdkManager, lScene, pDest, format == 0 ? 1 : 0);
-	DestroySdkObjects(lSdkManager, lResult);
+	Fbx_Utilities::DestroySdkObjects(lSdkManager, lResult);
 	return 1;
 }
 int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
@@ -87,7 +89,7 @@ int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
 	fclose(stream);
 
 	// Prepare the FBX SDK.
-	InitializeSdkObjects(lSdkManager);
+	Fbx_Utilities::InitializeSdkObjects(lSdkManager);
 
 	// create the main document
 	lScene = FbxScene::Create(lSdkManager, "Scene");
@@ -102,7 +104,7 @@ int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
 	else WriteLine("\n\nAn error occurred while creating the document...");
 
 	// Destroy all objects created by the FBX SDK.
-	DestroySdkObjects(lSdkManager, lResult);
+	Fbx_Utilities::DestroySdkObjects(lSdkManager, lResult);
 	return 0;
 }
 bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model)
@@ -114,7 +116,7 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 	lDocInfo->mTitle = "FBX Model";
 	lDocInfo->mSubject = "FBX Created by M2FBX - Used by MafiaToolkit.";
 	lDocInfo->mAuthor = "Greavesy";
-	lDocInfo->mRevision = "rev. 0.20";
+	lDocInfo->mRevision = "rev. 0.30";
 	lDocInfo->mKeywords = "";
 	lDocInfo->mComment = "";
 
@@ -284,7 +286,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 
 	for (size_t i = 0; i < part.GetVertSize(); i++)
 	{
-		lControlPoints[i] = ConvertVector3(vertices[i].position);
+		//lControlPoints[i] = ConvertVector3(vertices[i].position);
 	}
 
 	// We want to have one normal for each vertex (or control point),
@@ -301,7 +303,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 
 		for (size_t i = 0; i < part.GetVertSize(); i++)
 		{
-			DirectArray.Add(ConvertVector3(vertices[i].normals));
+			//DirectArray.Add(ConvertVector3(vertices[i].normals));
 		}
 
 		// We finish normals off by adding it to the layer.
@@ -319,7 +321,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 
 		for (size_t i = 0; i < part.GetVertSize(); i++)
 		{
-			DirectArray.Add(ConvertVector3(vertices[i].tangent));
+			//DirectArray.Add(ConvertVector3(vertices[i].tangent));
 		}
 
 		// We finish normals off by adding it to the layer.
@@ -553,3 +555,4 @@ FbxGeometryElementMaterial* CreateMaterialElement(FbxMesh* pMesh, const char* pN
 	element->GetIndexArray().SetCount(pMesh->GetPolygonCount());
 	return element;
 }
+

@@ -38,6 +38,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                         NewLODs[i] = NewLOD;
                     }
                 }
+
                 return ModelObject;
             }
         }
@@ -127,9 +128,13 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 MT_MaterialInstance NewMaterial = new MT_MaterialInstance();
                 NewMaterial.MaterialFlags = (MT_MaterialInstanceFlags)reader.ReadInt32();
                 NewMaterial.Name = StringHelpers.ReadString8(reader);
-                NewMaterial.DiffuseTexture = StringHelpers.ReadString8(reader);
-                NewFaceGroup.Material = NewMaterial;
 
+                if (NewMaterial.MaterialFlags.HasFlag(MT_MaterialInstanceFlags.HasDiffuse))
+                {
+                    NewMaterial.DiffuseTexture = StringHelpers.ReadString8(reader);
+                }
+
+                NewFaceGroup.Material = NewMaterial;
                 NewObject.FaceGroups[i] = NewFaceGroup;
             }
 
@@ -240,7 +245,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 MT_MaterialInstance MaterialInstance = FaceGroup.Material;
                 writer.Write((int)MaterialInstance.MaterialFlags);
                 StringHelpers.WriteString8(writer, MaterialInstance.Name);
-                StringHelpers.WriteString8(writer, MaterialInstance.DiffuseTexture);
+
+                if (MaterialInstance.MaterialFlags.HasFlag(MT_MaterialInstanceFlags.HasDiffuse))
+                {
+                    StringHelpers.WriteString8(writer, MaterialInstance.DiffuseTexture);
+                }
             }
 
             writer.Write(LodObject.Indices.Length);

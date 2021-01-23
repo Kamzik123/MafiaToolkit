@@ -1,6 +1,6 @@
 #include "FbxUtilities.h"
 
-void InitializeSdkObjects(FbxManager*& pManager)
+void Fbx_Utilities::InitializeSdkObjects(FbxManager*& pManager)
 {
 	//The first thing to do is to create the FBX Manager which is the object allocator for almost all the classes in the SDK
 	pManager = FbxManager::Create();
@@ -15,7 +15,7 @@ void InitializeSdkObjects(FbxManager*& pManager)
 	FbxIOSettings* ios = FbxIOSettings::Create(pManager, IOSROOT);
 	pManager->SetIOSettings(ios);
 }
-void DestroySdkObjects(FbxManager* pManager, bool pExitStatus)
+void Fbx_Utilities::DestroySdkObjects(FbxManager* pManager, bool pExitStatus)
 {
 #if _DEBUG
 	//Delete the FBX Manager. All the objects that have been allocated using the FBX Manager and that haven't been explicitly destroyed are also automatically destroyed.
@@ -24,7 +24,9 @@ void DestroySdkObjects(FbxManager* pManager, bool pExitStatus)
 #endif _DEBUG
 }
 
-FbxVector4 ConvertVector3(const Point3& Vector3)
+bool Fbx_Utilities::FindInString(const FbxString& Text, const FbxString& StringToFind)
 {
-	return FbxVector4(Vector3.x, Vector3.y, Vector3.z, 1.0f);
+	int Result = Text.Find(StringToFind);
+	bool bIsFound = Result != -1;
+	return bIsFound;
 }
