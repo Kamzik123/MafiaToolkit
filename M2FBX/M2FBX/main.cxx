@@ -38,7 +38,6 @@ int main(int argc, char** argv)
 	}
 	else if ((strcmp(argv[1], "-ConvertFBX") == 0) && (argc >= 4))
 	{
-		//result = ConvertFBX(argv[2], argv[3]);
 		MT_Wrangler* Wrangler = new MT_Wrangler(argv[2], argv[3]);
 		Wrangler->ConstructMTBFromFbx();
 		Wrangler->SaveBundleToFile();

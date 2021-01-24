@@ -130,7 +130,7 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 
 	FbxMesh* Mesh = Lod->GetMesh();
 
-	FbxGeometryElementUV* DiffuseUV = Mesh->GetElementUV();
+	FbxGeometryElementUV* DiffuseUV = Mesh->GetElementUV("DiffuseUV");
 
 	// Construct Vertex Array
 	FbxInt32 NumVertices = Mesh->GetControlPointsCount();
@@ -160,10 +160,11 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 	// Get DiffuseMaterial, we'll need to use it to create Indices & FaceGroup
 	FbxGeometryElementMaterial* DiffuseMaterial = Mesh->GetElementMaterial(0);
 	FBX_ASSERT(DiffuseMaterial);
+	int MaterialCount = DiffuseMaterial ? Lod->GetMaterialCount() : 1;
 
 	// Construct Indices & FaceGroups Array
 	std::vector<std::vector<Int3>> FaceGroupLookup = {};
-	FaceGroupLookup.resize(Lod->GetMaterialCount());
+	FaceGroupLookup.resize(MaterialCount);
 	for (int i = 0; i < Mesh->GetPolygonCount(); i++)
 	{
 		Int3 Triangle = {};
@@ -171,11 +172,8 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 		Triangle.i2 = Mesh->GetPolygonVertex(i, 1);
 		Triangle.i3 = Mesh->GetPolygonVertex(i, 2);
 
-		if (DiffuseMaterial)
-		{
-			int MaterialAssignment = DiffuseMaterial->GetIndexArray().GetAt(i);
-			FaceGroupLookup[MaterialAssignment].push_back(Triangle);
-		}
+		int MaterialAssignment = DiffuseMaterial ? DiffuseMaterial->GetIndexArray().GetAt(i) : 0;
+		FaceGroupLookup[MaterialAssignment].push_back(Triangle);
 	}
 
 	// Reorder Indices by FaceGroups then push into LodObject

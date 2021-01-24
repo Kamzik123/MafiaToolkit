@@ -21,6 +21,7 @@ public:
 
 	Fbx_Wrangler() = default;
 	Fbx_Wrangler(const char* InName, const char* InDest);
+	~Fbx_Wrangler();
 
 	bool SetupFbxManager();
 	bool ConstructScene();

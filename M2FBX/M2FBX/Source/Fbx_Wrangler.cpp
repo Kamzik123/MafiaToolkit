@@ -20,6 +20,14 @@ Fbx_Wrangler::Fbx_Wrangler(const char* InName, const char* InDest)
 	FbxName = InDest;
 }
 
+Fbx_Wrangler::~Fbx_Wrangler()
+{
+	LoadedObject->Cleanup();
+
+	Scene->Destroy(true);
+	Fbx_Utilities::DestroySdkObjects(SdkManager, true);
+}
+
 bool Fbx_Wrangler::SetupFbxManager()
 {
 	Fbx_Utilities::InitializeSdkObjects(SdkManager);
@@ -90,6 +98,7 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object)
 	std::string ObjectName = Object.GetName();
 	ObjectName += " [MESH]";
 	FbxNode* RootNode = FbxNode::Create(SdkManager, ObjectName.data());
+	const FbxDouble3& Scale = RootNode->LclScaling;
 
 	if (Object.HasObjectFlag(HasLODs))
 	{
@@ -394,8 +403,7 @@ bool Fbx_Wrangler::SaveDocument()
 	IOS_REF.SetBoolProp(EXP_FBX_ANIMATION, false);
 	IOS_REF.SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
 
-	// Initialize the exporter by providing a filename.
-	Exporter->Initialize(FbxName, 1, SdkManager->GetIOSettings());
+	Exporter->Initialize(FbxName, 0, SdkManager->GetIOSettings());
 	Exporter->Export(Scene);
 	Exporter->Destroy();
 	return true;

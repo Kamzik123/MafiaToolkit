@@ -212,7 +212,7 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 		for (int i = 0; i < 1; i++)
 		{
 			auto vertices = parts[i].GetVertices();
-			for (int x = 0; x < parts[i].GetVertSize(); x++)
+			for (uint x = 0; x < parts[i].GetVertSize(); x++)
 			{
 				auto vertex = vertices[x];
 				for (int z = 0; z < 4; z++)

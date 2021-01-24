@@ -5,6 +5,12 @@
 #include "Source/Utilities/FileUtils.h"
 
 
+MT_FaceGroup::MT_FaceGroup()
+{
+	MaterialInstance = new MT_MaterialInstance();
+	MaterialInstance->SetName("NewMaterial");
+}
+
 void MT_FaceGroup::ReadFromFile(FILE* InStream)
 {
 	FileUtils::Read(InStream, &StartIndex);

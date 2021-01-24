@@ -273,7 +273,7 @@ namespace Utils.Models
             string SavePath = ToolkitSettings.ExportPath + "\\" + ModelObject.ObjectName;
 
             
-            if (!Directory.Exists(SavePath))
+            if (!Directory.Exists(ToolkitSettings.ExportPath))
             {
                 // Ask if we can create it
                 DialogResult Result = MessageBox.Show("The path does not exist. Do you want to create it?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Information);

@@ -13,6 +13,8 @@ class MT_FaceGroup
 
 public:
 
+	MT_FaceGroup();
+
 	void Cleanup();
 
 	// Accessors
