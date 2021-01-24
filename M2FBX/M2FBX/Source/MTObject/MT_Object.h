@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+class MT_Collision;
 class MT_ObjectHandler;
 
 enum MT_ObjectFlags : uint
@@ -34,6 +35,13 @@ public:
 	void SetName(std::string& InName) { ObjectName = InName; }
 	void SetLods(std::vector<MT_Lod> InLods) { LodObjects = InLods; }
 	void SetObjectFlags(MT_ObjectFlags InFlags) { ObjectFlags = InFlags; }
+	void SetCollisions(MT_Collision* InCollision) 
+	{ 
+		CollisionObject = InCollision; 
+		int Temp = 0;
+		Temp |= (InCollision ? MT_ObjectFlags::HasCollisions : 0);
+		ObjectFlags = (MT_ObjectFlags)Temp;
+	}
 
 	// IO
 	bool ReadFromFile(FILE* InStream);

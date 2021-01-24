@@ -47,8 +47,6 @@ namespace Utils.Models
             this.frameMesh = frameMesh;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
-            frameGeometry = frameMesh.Geometry;
-            frameMaterial = frameMesh.Material;
             modelObject = new MT_Object();
             modelObject.ObjectName = frameMesh.Name.ToString();
             //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
@@ -60,11 +58,6 @@ namespace Utils.Models
             this.frameModel = frameModel;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
-            frameGeometry = frameModel.Geometry;
-            frameMaterial = frameModel.Material;
-            blendInfo = frameModel.BlendInfo;
-            skeleton = frameModel.Skeleton;
-            skeletonHierarchy = frameModel.SkeletonHierarchy;
             modelObject = new MT_Object();
             modelObject.ObjectName = frameMesh.Name.ToString();
             //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
@@ -137,7 +130,7 @@ namespace Utils.Models
         {
             FrameGeometry frameGeometry = frameMesh.Geometry;
 
-            if (model.Lods == null)
+            if (frameGeometry.LOD == null)
             {
                 return;
             }
@@ -244,7 +237,6 @@ namespace Utils.Models
         public void ExportObject()
         {
             string SavePath = ToolkitSettings.ExportPath + "\\" + ModelObject.ObjectName;
-
             
             if (!Directory.Exists(ToolkitSettings.ExportPath))
             {
@@ -296,11 +288,11 @@ namespace Utils.Models
             FrameGeometry frameGeometry = frameMesh.Geometry;
             FrameMaterial frameMaterial = frameMesh.Material;
 
-            frameGeometry.NumLods = (byte)model.Lods.Length;
+            frameGeometry.NumLods = (byte)ModelObject.Lods.Length;
 
             if (frameGeometry.LOD == null)
             {
-                frameGeometry.LOD = new FrameLOD[model.Lods.Length];
+                frameGeometry.LOD = new FrameLOD[ModelObject.Lods.Length];
             }
 
             frameMaterial.NumLods = (byte)ModelObject.Lods.Length;
@@ -418,7 +410,7 @@ namespace Utils.Models
 
         public void CreateSkinnedObjectsFromModel()
         {
-            FrameSkeleton skeleton = (frameMesh as FrameObjectModel).Skeleton;
+            /*FrameSkeleton skeleton = (frameMesh as FrameObjectModel).Skeleton;
             FrameSkeletonHierachy skeletonHierarchy = (frameMesh as FrameObjectModel).SkeletonHierarchy;
 
             int jointCount = model.SkeletonData.Joints.Length;

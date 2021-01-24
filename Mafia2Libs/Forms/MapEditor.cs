@@ -1029,36 +1029,26 @@ namespace Mafia2Tool
                 return null;
             }
 
-            if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
+            string FileNameExtension = Path.GetExtension(MeshBrowser.FileName);
+            FileNameExtension = FileNameExtension.ToLower();
+
+            if (FileNameExtension.Equals(".fbx"))
             {
                 model.ReadObjectFromFbx(MeshBrowser.FileName);
             }
-            else if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+            else if (FileNameExtension.Equals(".mto"))
             {
                 model.ReadObjectFromM2T(MeshBrowser.FileName);
             }
 
-            for (int i = 0; i < model.ModelObject.Lods.Length; i++)
+            // Let users change their import values
+            FrameResourceModelOptions modelForm = new FrameResourceModelOptions(model);
+            if (modelForm.ShowDialog() != DialogResult.OK)
             {
-                var lod = model.ModelObject.Lods[i];
-                var is32bit = model.ModelObject.Lods[i].Over16BitLimit();
-                FrameResourceModelOptions modelForm = new FrameResourceModelOptions(lod.VertexDeclaration, i, is32bit);
-                if (modelForm.ShowDialog() != DialogResult.OK)
-                {
-                    return null;
-                }
-                var options = modelForm.Options;
-                modelForm.Dispose();
-                lod.VertexDeclaration = VertexFlags.Position;
-                lod.VertexDeclaration |= (options["NORMALS"] == true ? VertexFlags.Normals : 0);
-                lod.VertexDeclaration |= (options["TANGENTS"] == true ? VertexFlags.Tangent : 0);
-                lod.VertexDeclaration |= (options["DIFFUSE"] == true ? VertexFlags.TexCoords0 : 0);
-                lod.VertexDeclaration |= (options["UV1"] == true ? VertexFlags.TexCoords1 : 0);
-                lod.VertexDeclaration |= (options["UV2"] == true ? VertexFlags.TexCoords2 : 0);
-                lod.VertexDeclaration |= (options["AO"] == true ? VertexFlags.ShadowTexture : 0);
-                lod.VertexDeclaration |= (options["COLOR0"] == true ? VertexFlags.Color : 0);
-                lod.VertexDeclaration |= (options["COLOR1"] == true ? VertexFlags.Color1 : 0);
+                return null;
             }
+
+            modelForm.Dispose();
 
             return model;
         }
@@ -1097,7 +1087,7 @@ namespace Mafia2Tool
             if (frame is FrameObjectSingleMesh)
             {
                 FrameObjectSingleMesh SingleMesh = (frame as FrameObjectSingleMesh);
-                Model LoadedModel = LoadModelFromFile();
+                ModelWrapper LoadedModel = LoadModelFromFile();
 
                 if (LoadedModel == null)
                 {

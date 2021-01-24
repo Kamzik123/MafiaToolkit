@@ -74,6 +74,9 @@
     <ClCompile Include="Source\Utilities\LogFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MTObject\MT_Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="M2Model.h">
@@ -122,6 +125,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Utilities\LogFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MTObject\MT_Collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

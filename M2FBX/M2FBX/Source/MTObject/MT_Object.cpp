@@ -1,5 +1,6 @@
 #include "MT_Object.h"
 
+#include "Source/MTObject/MT_Collision.h"
 #include "Source/Utilities/FileUtils.h"
 
 bool MT_Object::HasObjectFlag(const MT_ObjectFlags FlagToCheck) const

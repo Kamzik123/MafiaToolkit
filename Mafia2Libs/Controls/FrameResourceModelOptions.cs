@@ -1,31 +1,25 @@
-﻿using System;
-using Utils.Language;
+﻿using Utils.Language;
 using Utils.Models;
 using System.Windows.Forms;
-using System.Collections.Generic;
+using ResourceTypes.ModelHelpers.ModelExporter;
+using System;
 
 namespace Forms.EditorControls
 {
     public partial class FrameResourceModelOptions : Form
     {
-        private Dictionary<string, bool> options;
-        public Dictionary<string, bool> Options {
-            get { return options; }
-            set { options = value; }
-        }
-
-        public FrameResourceModelOptions(VertexFlags flags, int i, bool is32bit)
+        public FrameResourceModelOptions(ModelWrapper Wrapper)
         {
             InitializeComponent();
-            Label_BufferType.Visible = is32bit;
-            Init(flags, i);
             Localise();
+
+            MT_Object Model = Wrapper.ModelObject;
+            TreeView_Objects.Nodes.Add(ConvertObjectToNode(Model));
         }
 
         private void Localise()
         {
-            buttonCancel.Text = Language.GetString("$CANCEL");
-            buttonContinue.Text = Language.GetString("$CONTINUE");
+            Label_MessageText.Text = "";
             Text = Language.GetString("$MODEL_OPTIONS_TITLE");
             ModelOptionsText.Text = Language.GetString("$MODEL_OPTIONS_TEXT");
             ImportNormalBox.Text = Language.GetString("$IMPORT_NORMAL");
@@ -44,48 +38,82 @@ namespace Forms.EditorControls
             string text = string.Format("{0} LOD: {1}", Language.GetString("$MODEL_OPTIONS_TEXT"), i.ToString());
             ModelOptionsText.Text = text;
 
-            options = new Dictionary<string, bool>();
-            options.Add("NORMALS", false);
-            options.Add("TANGENTS", false);
-            options.Add("DIFFUSE", false);
-            options.Add("UV1", false);
-            options.Add("UV2", false);
-            options.Add("AO", false);
-            options.Add("FLIP_UV", false);
-            options.Add("COLOR0", false);
-            options.Add("COLOR1", false);
-
-            ImportNormalBox.Enabled = flags.HasFlag(VertexFlags.Normals);
-            ImportTangentBox.Enabled = flags.HasFlag(VertexFlags.Tangent);
-            ImportDiffuseBox.Enabled = flags.HasFlag(VertexFlags.TexCoords0);
-            ImportUV1Box.Enabled = flags.HasFlag(VertexFlags.TexCoords1);
-            ImportUV2Box.Enabled = flags.HasFlag(VertexFlags.TexCoords2);
-            ImportAOBox.Enabled = flags.HasFlag(VertexFlags.ShadowTexture);
-            ImportColor0Box.Enabled = flags.HasFlag(VertexFlags.Color);
-            ImportColor1Box.Enabled = flags.HasFlag(VertexFlags.Color1);
+            ImportNormalBox.Enabled = ImportNormalBox.Checked = flags.HasFlag(VertexFlags.Normals);
+            ImportTangentBox.Enabled = ImportTangentBox.Checked = flags.HasFlag(VertexFlags.Tangent);
+            ImportDiffuseBox.Enabled = ImportDiffuseBox.Checked = flags.HasFlag(VertexFlags.TexCoords0);
+            ImportUV1Box.Enabled = ImportUV1Box.Checked = flags.HasFlag(VertexFlags.TexCoords1);
+            ImportUV2Box.Enabled = ImportUV2Box.Checked = flags.HasFlag(VertexFlags.TexCoords2);
+            ImportAOBox.Enabled = ImportAOBox.Checked = flags.HasFlag(VertexFlags.ShadowTexture);
+            ImportColor0Box.Enabled = ImportColor0Box.Checked = flags.HasFlag(VertexFlags.Color);
+            ImportColor1Box.Enabled = ImportColor1Box.Checked = flags.HasFlag(VertexFlags.Color1);
             FlipUVBox.Enabled = false;
         }
 
-        public void OnButtonClickContinue(object sender, EventArgs e)
+        private TreeNode ConvertObjectToNode(MT_Object Object)
         {
-            DialogResult = DialogResult.OK;
-            options["NORMALS"] = ImportNormalBox.Checked;
-            options["TANGENTS"] = ImportTangentBox.Checked;
-            options["DIFFUSE"] = ImportDiffuseBox.Checked;
-            options["UV1"] = ImportUV1Box.Checked;
-            options["UV2"] = ImportUV2Box.Checked;
-            options["AO"] = ImportAOBox.Checked;
-            options["FLIP_UV"] = FlipUVBox.Checked;
-            options["COLOR0"] = ImportColor0Box.Checked;
-            options["COLOR1"] = ImportColor1Box.Checked;
-            DialogResult = DialogResult.OK;
-            Close();
+            TreeNode Root = new TreeNode(Object.ObjectName);
+            Root.Tag = Object;
+
+            if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
+            {
+                for (int i = 0; i < Object.Lods.Length; i++)
+                {
+                    TreeNode LodNode = new TreeNode("LOD" + i);
+                    LodNode.Tag = Object.Lods[i];
+                    Root.Nodes.Add(LodNode);
+                }
+            }
+
+            if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
+            {
+                TreeNode SCollisionNode = new TreeNode("Static Collision");
+                SCollisionNode.Tag = SCollisionNode;
+                Root.Nodes.Add(SCollisionNode);
+            }
+
+            return Root;
         }
 
-        public void OnButtonClickCancel(object sender, EventArgs e)
+        private void TreeView_OnAfterSelect(object sender, TreeViewEventArgs e)
         {
-            DialogResult = DialogResult.Cancel;
-            Close();
+            Init(0, 0);
+
+            if (e.Node.Tag is MT_Lod)
+            {
+                MT_Lod LodObject = (e.Node.Tag as MT_Lod);
+                Init(LodObject.VertexDeclaration, 0);
+            }
+        }
+
+        private void TreeView_OnBeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
+            TreeNode Selected = TreeView_Objects.SelectedNode;
+
+            if(Selected == null)
+            {
+                return;
+            }
+
+            if(Selected.Tag is MT_Lod)
+            {
+                MT_Lod LodObject = (Selected.Tag as MT_Lod);
+
+                // Update the declaration
+                VertexFlags NewDeclaration = 0;
+                NewDeclaration = VertexFlags.Position;
+                NewDeclaration |= (ImportNormalBox.Checked ? VertexFlags.Normals : 0);
+                NewDeclaration |= (ImportTangentBox.Checked ? VertexFlags.Tangent : 0);
+                NewDeclaration |= (ImportDiffuseBox.Checked ? VertexFlags.TexCoords0 : 0);
+                NewDeclaration |= (ImportUV1Box.Checked ? VertexFlags.TexCoords1 : 0);
+                NewDeclaration |= (ImportUV2Box.Checked ? VertexFlags.TexCoords2 : 0);
+                NewDeclaration |= (ImportAOBox.Checked ? VertexFlags.ShadowTexture : 0);
+                NewDeclaration |= (ImportColor0Box.Checked ? VertexFlags.Color : 0);
+                NewDeclaration |= (ImportColor1Box.Checked? VertexFlags.Color1 : 0);
+                LodObject.VertexDeclaration = NewDeclaration;
+
+                string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), "Updated Vertex Flags for LOD");
+                Label_MessageText.Text = Message;
+            }
         }
     }
 }

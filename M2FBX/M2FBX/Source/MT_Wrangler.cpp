@@ -1,6 +1,7 @@
 #include "MT_Wrangler.h"
 
 #include "FbxUtilities.h"
+#include "Source/MTObject/MT_Collision.h"
 #include "Source/MTObject/MT_Object.h"
 #include "MTObject/MT_ObjectHandler.h"
 
@@ -119,8 +120,25 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 	}
 
 	ModelObject->SetLods(Lods);
-	
+
+	FbxNode* CollisionNode = Node->FindChild("COL");
+	if (CollisionNode)
+	{
+		// checks are done in SetCollisions, flag is added too.
+		ModelObject->SetCollisions(ConstructCollision(Node));
+	}
+
 	return ModelObject;
+}
+
+MT_Collision* MT_Wrangler::ConstructCollision(FbxNode* Node)
+{
+	MT_Collision* Collision = new MT_Collision();
+
+
+
+
+	return Collision;
 }
 
 MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)

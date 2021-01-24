@@ -2,6 +2,7 @@
 
 #include "Common.h"
 
+class MT_Collision;
 class MT_Object;
 class MT_ObjectBundle;
 class MT_Lod;
@@ -23,6 +24,7 @@ private:
 	const FbxNodeAttribute::EType GetNodeType(FbxNode* Node) const;
 
 	MT_Object* ConstructMesh(FbxNode* Node);
+	MT_Collision* ConstructCollision(FbxNode* Node);
 	MT_Lod* ConstructFromLod(FbxNode* Lod);
 
 	const char* MTOName;

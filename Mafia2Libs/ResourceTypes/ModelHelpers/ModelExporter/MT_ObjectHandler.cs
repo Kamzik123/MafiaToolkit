@@ -31,11 +31,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 if (ModelObject.ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
                 {
                     uint NumLODs = reader.ReadUInt32();
-                    MT_Lod[] NewLODs = new MT_Lod[NumLODs];
+                    ModelObject.Lods = new MT_Lod[NumLODs];
                     for (int i = 0; i < NumLODs; i++)
                     {
                         MT_Lod NewLOD = ReadLODFromFile(reader);
-                        NewLODs[i] = NewLOD;
+                        ModelObject.Lods[i] = NewLOD;
                     }
                 }
 

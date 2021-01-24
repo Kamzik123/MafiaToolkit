@@ -199,11 +199,3 @@ void MT_Lod::WriteToFile(FILE* OutStream) const
 		FileUtils::Write(OutStream, Indices[i]);
 	}
 }
-
-void MT_Collision::Cleanup()
-{
-	// Cleanup other vectors
-	MaterialAssignments.clear();
-	Vertices.clear();
-	Indices.clear();	
-}

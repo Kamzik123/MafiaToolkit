@@ -195,7 +195,7 @@ namespace ResourceTypes.FrameResource
             return geometry;
         }
 
-        public virtual void CreateMeshFromRawModel(Model NewModel)
+        public virtual void CreateMeshFromRawModel(ModelWrapper NewModel)
         {
             ConstructMaterialObject();
             ConstructGeometryObject();

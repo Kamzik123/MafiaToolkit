@@ -28,8 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.buttonContinue = new System.Windows.Forms.Button();
-            this.buttonCancel = new System.Windows.Forms.Button();
             this.ModelOptionsText = new System.Windows.Forms.Label();
             this.ImportNormalBox = new System.Windows.Forms.CheckBox();
             this.ImportUV1Box = new System.Windows.Forms.CheckBox();
@@ -41,32 +39,25 @@
             this.ImportColor1Box = new System.Windows.Forms.CheckBox();
             this.ImportColor0Box = new System.Windows.Forms.CheckBox();
             this.Label_BufferType = new System.Windows.Forms.Label();
+            this.SplitContainer_Root = new System.Windows.Forms.SplitContainer();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.TreeView_Objects = new Utils.Extensions.MTreeView();
+            this.Label_MessageText = new System.Windows.Forms.ToolStripStatusLabel();
+            ((System.ComponentModel.ISupportInitialize)(this.SplitContainer_Root)).BeginInit();
+            this.SplitContainer_Root.Panel1.SuspendLayout();
+            this.SplitContainer_Root.Panel2.SuspendLayout();
+            this.SplitContainer_Root.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // buttonContinue
-            // 
-            this.buttonContinue.Location = new System.Drawing.Point(259, 190);
-            this.buttonContinue.Name = "buttonContinue";
-            this.buttonContinue.Size = new System.Drawing.Size(93, 23);
-            this.buttonContinue.TabIndex = 2;
-            this.buttonContinue.Text = "$CONTINUE";
-            this.buttonContinue.UseVisualStyleBackColor = true;
-            this.buttonContinue.Click += new System.EventHandler(this.OnButtonClickContinue);
-            // 
-            // buttonCancel
-            // 
-            this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(12, 190);
-            this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(93, 23);
-            this.buttonCancel.TabIndex = 3;
-            this.buttonCancel.Text = "$CANCEL";
-            this.buttonCancel.UseVisualStyleBackColor = true;
-            this.buttonCancel.Click += new System.EventHandler(this.OnButtonClickCancel);
             // 
             // ModelOptionsText
             // 
-            this.ModelOptionsText.Location = new System.Drawing.Point(13, 13);
+            this.ModelOptionsText.Location = new System.Drawing.Point(17, 20);
             this.ModelOptionsText.Name = "ModelOptionsText";
             this.ModelOptionsText.Size = new System.Drawing.Size(290, 13);
             this.ModelOptionsText.TabIndex = 4;
@@ -75,7 +66,7 @@
             // ImportNormalBox
             // 
             this.ImportNormalBox.AutoSize = true;
-            this.ImportNormalBox.Location = new System.Drawing.Point(15, 40);
+            this.ImportNormalBox.Location = new System.Drawing.Point(19, 47);
             this.ImportNormalBox.Name = "ImportNormalBox";
             this.ImportNormalBox.Size = new System.Drawing.Size(133, 17);
             this.ImportNormalBox.TabIndex = 6;
@@ -85,7 +76,7 @@
             // ImportUV1Box
             // 
             this.ImportUV1Box.AutoSize = true;
-            this.ImportUV1Box.Location = new System.Drawing.Point(15, 100);
+            this.ImportUV1Box.Location = new System.Drawing.Point(19, 107);
             this.ImportUV1Box.Name = "ImportUV1Box";
             this.ImportUV1Box.Size = new System.Drawing.Size(101, 17);
             this.ImportUV1Box.TabIndex = 7;
@@ -95,7 +86,7 @@
             // ImportUV2Box
             // 
             this.ImportUV2Box.AutoSize = true;
-            this.ImportUV2Box.Location = new System.Drawing.Point(15, 120);
+            this.ImportUV2Box.Location = new System.Drawing.Point(19, 127);
             this.ImportUV2Box.Name = "ImportUV2Box";
             this.ImportUV2Box.Size = new System.Drawing.Size(101, 17);
             this.ImportUV2Box.TabIndex = 8;
@@ -105,7 +96,7 @@
             // ImportAOBox
             // 
             this.ImportAOBox.AutoSize = true;
-            this.ImportAOBox.Location = new System.Drawing.Point(15, 140);
+            this.ImportAOBox.Location = new System.Drawing.Point(19, 147);
             this.ImportAOBox.Name = "ImportAOBox";
             this.ImportAOBox.Size = new System.Drawing.Size(95, 17);
             this.ImportAOBox.TabIndex = 9;
@@ -115,7 +106,7 @@
             // FlipUVBox
             // 
             this.FlipUVBox.AutoSize = true;
-            this.FlipUVBox.Location = new System.Drawing.Point(180, 80);
+            this.FlipUVBox.Location = new System.Drawing.Point(184, 87);
             this.FlipUVBox.Name = "FlipUVBox";
             this.FlipUVBox.Size = new System.Drawing.Size(75, 17);
             this.FlipUVBox.TabIndex = 10;
@@ -125,7 +116,7 @@
             // ImportDiffuseBox
             // 
             this.ImportDiffuseBox.AutoSize = true;
-            this.ImportDiffuseBox.Location = new System.Drawing.Point(15, 80);
+            this.ImportDiffuseBox.Location = new System.Drawing.Point(19, 87);
             this.ImportDiffuseBox.Name = "ImportDiffuseBox";
             this.ImportDiffuseBox.Size = new System.Drawing.Size(125, 17);
             this.ImportDiffuseBox.TabIndex = 11;
@@ -136,7 +127,7 @@
             // 
             this.ImportTangentBox.AutoSize = true;
             this.ImportTangentBox.Enabled = false;
-            this.ImportTangentBox.Location = new System.Drawing.Point(15, 60);
+            this.ImportTangentBox.Location = new System.Drawing.Point(19, 67);
             this.ImportTangentBox.Name = "ImportTangentBox";
             this.ImportTangentBox.Size = new System.Drawing.Size(139, 17);
             this.ImportTangentBox.TabIndex = 12;
@@ -146,7 +137,7 @@
             // ImportColor1Box
             // 
             this.ImportColor1Box.AutoSize = true;
-            this.ImportColor1Box.Location = new System.Drawing.Point(180, 60);
+            this.ImportColor1Box.Location = new System.Drawing.Point(184, 67);
             this.ImportColor1Box.Name = "ImportColor1Box";
             this.ImportColor1Box.Size = new System.Drawing.Size(123, 17);
             this.ImportColor1Box.TabIndex = 14;
@@ -156,7 +147,7 @@
             // ImportColor0Box
             // 
             this.ImportColor0Box.AutoSize = true;
-            this.ImportColor0Box.Location = new System.Drawing.Point(180, 40);
+            this.ImportColor0Box.Location = new System.Drawing.Point(184, 47);
             this.ImportColor0Box.Name = "ImportColor0Box";
             this.ImportColor0Box.Size = new System.Drawing.Size(123, 17);
             this.ImportColor0Box.TabIndex = 13;
@@ -166,46 +157,111 @@
             // Label_BufferType
             // 
             this.Label_BufferType.AutoSize = true;
-            this.Label_BufferType.Location = new System.Drawing.Point(14, 166);
+            this.Label_BufferType.Location = new System.Drawing.Point(18, 173);
             this.Label_BufferType.Name = "Label_BufferType";
             this.Label_BufferType.Size = new System.Drawing.Size(102, 13);
             this.Label_BufferType.TabIndex = 15;
             this.Label_BufferType.Text = "$IS_32BIT_MODEL";
             // 
+            // SplitContainer_Root
+            // 
+            this.SplitContainer_Root.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SplitContainer_Root.Location = new System.Drawing.Point(0, 0);
+            this.SplitContainer_Root.Name = "SplitContainer_Root";
+            // 
+            // SplitContainer_Root.Panel1
+            // 
+            this.SplitContainer_Root.Panel1.Controls.Add(this.TreeView_Objects);
+            // 
+            // SplitContainer_Root.Panel2
+            // 
+            this.SplitContainer_Root.Panel2.Controls.Add(this.ModelOptionsText);
+            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportNormalBox);
+            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportUV1Box);
+            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportUV2Box);
+            this.SplitContainer_Root.Panel2.Controls.Add(this.FlipUVBox);
+            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportDiffuseBox);
+            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportTangentBox);
+            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportColor0Box);
+            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportColor1Box);
+            this.SplitContainer_Root.Panel2.Controls.Add(this.Label_BufferType);
+            this.SplitContainer_Root.Size = new System.Drawing.Size(624, 411);
+            this.SplitContainer_Root.SplitterDistance = 208;
+            this.SplitContainer_Root.TabIndex = 16;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.SplitContainer_Root);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.statusStrip1);
+            this.splitContainer1.Size = new System.Drawing.Size(624, 441);
+            this.splitContainer1.SplitterDistance = 411;
+            this.splitContainer1.TabIndex = 17;
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Label_MessageText});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 4);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(624, 22);
+            this.statusStrip1.TabIndex = 0;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // TreeView_Objects
+            // 
+            this.TreeView_Objects.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TreeView_Objects.Location = new System.Drawing.Point(0, 0);
+            this.TreeView_Objects.Name = "TreeView_Objects";
+            this.TreeView_Objects.Size = new System.Drawing.Size(208, 411);
+            this.TreeView_Objects.TabIndex = 0;
+            this.TreeView_Objects.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeView_OnBeforeSelect);
+            this.TreeView_Objects.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_OnAfterSelect);
+            // 
+            // Label_MessageText
+            // 
+            this.Label_MessageText.Name = "Label_MessageText";
+            this.Label_MessageText.Size = new System.Drawing.Size(88, 17);
+            this.Label_MessageText.Text = "MESSAGE_TEXT";
+            // 
             // FrameResourceModelOptions
             // 
-            this.AcceptButton = this.buttonContinue;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(364, 225);
+            this.ClientSize = new System.Drawing.Size(624, 441);
             this.ControlBox = false;
-            this.Controls.Add(this.Label_BufferType);
-            this.Controls.Add(this.ImportColor1Box);
-            this.Controls.Add(this.ImportColor0Box);
-            this.Controls.Add(this.ImportTangentBox);
-            this.Controls.Add(this.ImportDiffuseBox);
-            this.Controls.Add(this.FlipUVBox);
-            this.Controls.Add(this.ImportAOBox);
-            this.Controls.Add(this.ImportUV2Box);
-            this.Controls.Add(this.ImportUV1Box);
-            this.Controls.Add(this.ImportNormalBox);
-            this.Controls.Add(this.ModelOptionsText);
-            this.Controls.Add(this.buttonCancel);
-            this.Controls.Add(this.buttonContinue);
+            this.Controls.Add(this.splitContainer1);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FrameResourceModelOptions";
             this.Text = "$MODEL_OPTIONS_TITLE";
+            this.SplitContainer_Root.Panel1.ResumeLayout(false);
+            this.SplitContainer_Root.Panel2.ResumeLayout(false);
+            this.SplitContainer_Root.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SplitContainer_Root)).EndInit();
+            this.SplitContainer_Root.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Button buttonContinue;
-        private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Label ModelOptionsText;
         private System.Windows.Forms.CheckBox ImportNormalBox;
         private System.Windows.Forms.CheckBox ImportUV1Box;
@@ -217,5 +273,10 @@
         private System.Windows.Forms.CheckBox ImportColor1Box;
         private System.Windows.Forms.CheckBox ImportColor0Box;
         private System.Windows.Forms.Label Label_BufferType;
+        private System.Windows.Forms.SplitContainer SplitContainer_Root;
+        private Utils.Extensions.MTreeView TreeView_Objects;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel Label_MessageText;
     }
 }

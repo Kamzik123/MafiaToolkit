@@ -45,15 +45,3 @@ private:
 	std::vector<MT_FaceGroup> FaceGroups;
 };
 
-class MT_Collision
-{
-public:
-
-	void Cleanup();
-
-private:
-
-	std::vector<Point3> Vertices;
-	std::vector<uint> Indices;
-	std::vector<ushort> MaterialAssignments;
-};
