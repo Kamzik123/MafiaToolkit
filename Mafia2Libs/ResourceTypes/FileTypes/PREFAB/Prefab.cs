@@ -115,6 +115,11 @@ namespace ResourceTypes.Prefab
 
             byte[] data;
 
+            public PrefabStruct()
+            {
+                AssignedName = "";
+            }
+
             public void ReadFromFile(BinaryReader reader)
             {
                 Hash = reader.ReadUInt64();

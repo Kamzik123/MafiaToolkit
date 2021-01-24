@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using ResourceTypes.BufferPools;
+using Rendering.Graphics.Utils;
 using Utils.Types;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Utils.Models;
@@ -14,6 +15,8 @@ using System.Windows;
 using Color = System.Drawing.Color;
 using Utils.Extensions;
 using static Rendering.Graphics.BaseShader;
+using System.Diagnostics;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Rendering.Graphics
 {
@@ -29,12 +32,15 @@ namespace Rendering.Graphics
         }
 
         private HashName aoHash;
+
         public ShaderResourceView AOTexture { get; set; }
         public Color SelectionColour { get; private set; }
 
         public struct LOD
         {
             public ModelPart[] ModelParts { get; set; }
+            public ulong IndexBufferHash { get; set; }
+            public ulong VertexBufferHash { get; set; }
             public VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; }
             public uint[] Indices { get; set; }
         }
@@ -59,6 +65,9 @@ namespace Rendering.Graphics
                 vertices.Add(lod.Vertices);
                 LOD lod2 = new LOD();
                 lod2.Indices = lod.Indices;
+                lod2.IndexBufferHash = FNV64.Hash(string.Format("IB_{0}.LOD{1}.IB0", structure.Name, i));
+                lod2.VertexBufferHash = FNV64.Hash(string.Format("VB_{0}.LOD{1}.VB0", structure.Name, i));
+
                 lod2.ModelParts = new ModelPart[lod.Parts.Length];
                 for (int y = 0; y != lod.Parts.Length; y++)
                 {
@@ -117,7 +126,10 @@ namespace Rendering.Graphics
             for(int i = 0; i != geom.NumLods; i++)
             {
                 LOD lod = new LOD();
+                lod.IndexBufferHash = geom.LOD[i].IndexBufferRef.Hash;
+                lod.VertexBufferHash = geom.LOD[i].VertexBufferRef.Hash;
                 lod.Indices = indexBuffers[i].GetData();
+
                 lod.ModelParts = new ModelPart[mats.LodMatCount[i]];
 
                 for (int z = 0; z != mats.Materials[i].Length; z++)
@@ -238,8 +250,19 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(Device d3d, DeviceContext d3dContext)
         {
-            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, LODs[0].Vertices);
-            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, LODs[0].Indices);
+            // TODO: Support for more than one LOD 
+            for(int i = 0; i < 1; i++)
+            {
+                LOD LodObject = LODs[i];
+
+                // sanity checks
+                Debug.Assert(LodObject.IndexBufferHash != 0, "IndexBufferHash is zero!");
+                Debug.Assert(LodObject.VertexBufferHash != 0, "VertexBufferHash is zero!");
+
+                // construct buffers
+                indexBuffer = RenderUtils.ConstructIndexBuffer(d3d, LodObject.IndexBufferHash, LodObject.Indices);
+                vertexBuffer = RenderUtils.ConstructVertexBuffer(d3d, LodObject.VertexBufferHash, LodObject.Vertices);
+            }
 
             InitTextures(d3d, d3dContext);
         }

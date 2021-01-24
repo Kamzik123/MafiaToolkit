@@ -361,6 +361,7 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\Version19\ResourceFunctions.cs" />
     <Compile Include="Rendering\Core\RenderableAdapter.cs" />
     <Compile Include="Rendering\Factories\RenderableFactory.cs" />
+    <Compile Include="Rendering\Graphics\Utils\RenderUtils.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorDefinition.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorEntry.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorExtraData.cs" />
@@ -428,6 +429,7 @@
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FramePack.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResourceEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResourceXML.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\OtherTypes\FrameParentInfo.cs" />
     <Compile Include="ResourceTypes\FileTypes\ItemDesc\ItemDescEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\BaseTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarGearBoxesTable.cs" />

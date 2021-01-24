@@ -105,7 +105,7 @@ namespace ResourceTypes.FrameResource
             set { unkVector6 = value; }
         }
 
-        public FrameObjectLight() : base()
+        public FrameObjectLight(FrameResource OwningResource) : base(OwningResource)
         {
             flags = 0;
             unkFloat1 = new float[7];
@@ -157,11 +157,6 @@ namespace ResourceTypes.FrameResource
             unkVector4 = other.unkVector4;
             unkVector5 = other.unkVector5;
             unkVector6 = other.unkVector6;
-        }
-
-        public FrameObjectLight(MemoryStream reader, bool isBigEndian) : base()
-        {
-            ReadFromFile(reader, isBigEndian);
         }
 
         public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
