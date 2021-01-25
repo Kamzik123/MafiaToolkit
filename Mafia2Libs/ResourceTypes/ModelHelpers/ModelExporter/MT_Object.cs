@@ -3,7 +3,9 @@ using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Utils.Models;
+using Utils.StringHelpers;
 using Utils.Types;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
@@ -115,7 +117,86 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
                 Lods[i] = LodObject;
             }
+        }
 
+        /** IO Functions */
+        public bool ReadFromFile(BinaryReader reader)
+        {
+            // Read Header, make sure it is valid before continuing.
+            string FileHeader = StringHelpers.ReadStringBuffer(reader, 3);
+            byte FileVersion = reader.ReadByte();
+            bool bIsHeaderValid = IsHeaderValid(FileHeader, FileVersion);
+            if (!bIsHeaderValid)
+            {
+                // Invalid header
+                return false;
+            }
+
+            // Read Meta-Data
+            ObjectName = StringHelpers.ReadString8(reader);
+            ObjectFlags = (MT_ObjectFlags)reader.ReadInt32();
+
+            if (ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
+            {
+                uint NumLODs = reader.ReadUInt32();
+                Lods = new MT_Lod[NumLODs];
+                for (int i = 0; i < NumLODs; i++)
+                {
+                    MT_Lod NewLOD = new MT_Lod();
+                    bool bIsValid = NewLOD.ReadFromFile(reader);
+                    Lods[i] = NewLOD;
+
+                    // Failed to read LOD, return.
+                    if(!bIsValid)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            if (ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
+            {
+                MT_Collision CollisionObject = new MT_Collision();
+                bool bIsValid = CollisionObject.ReadFromFile(reader);
+
+                // Failed to read Collision, return.
+                if (!bIsValid)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            // Write Generic Header
+            StringHelpers.WriteString(writer, "MTO", false);
+            writer.Write((byte)3);
+
+            // Write Meta-Data
+            StringHelpers.WriteString8(writer, ObjectName);
+            writer.Write((int)ObjectFlags);
+
+            if (ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
+            {
+                // Write LODs
+                writer.Write(Lods.Length);
+
+                for (int i = 0; i < Lods.Length; i++)
+                {
+                    Lods[i].WriteToFile(writer);
+                }
+            }
+
+            if (ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
+            {
+                if (Collision != null)
+                {
+                    Collision.WriteToFile(writer);
+                }
+            }
         }
     }
 }

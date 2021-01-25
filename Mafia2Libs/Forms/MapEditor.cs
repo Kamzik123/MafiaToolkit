@@ -2162,6 +2162,36 @@ namespace Mafia2Tool
 
             File.WriteAllLines("AllTextures.txt", AllTextures.ToArray());
         }
+
+        private void Button_ImportBundle_OnClick(object sender, EventArgs e)
+        {
+            if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            string Extension = Path.GetExtension(MeshBrowser.FileName);
+            if(!Extension.Equals(".mtb"))
+            {
+                return;
+            }
+
+            MT_ObjectBundle BundleObject = new MT_ObjectBundle();
+            BundleObject = MT_ObjectHandler.ReadBundleFromFile(MeshBrowser.FileName);
+            if (BundleObject == null)
+            {
+                return;
+            }
+
+            // Let users change their import values
+            FrameResourceModelOptions modelForm = new FrameResourceModelOptions(BundleObject);
+            if (modelForm.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            modelForm.Dispose();
+        }
     }
 }
 

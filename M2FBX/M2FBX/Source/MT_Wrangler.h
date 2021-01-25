@@ -2,6 +2,8 @@
 
 #include "Common.h"
 
+#include "Source/MTObject/MT_FaceGroup.h"
+
 class MT_Collision;
 class MT_Object;
 class MT_ObjectBundle;
@@ -26,6 +28,8 @@ private:
 	MT_Object* ConstructMesh(FbxNode* Node);
 	MT_Collision* ConstructCollision(FbxNode* Node);
 	MT_Lod* ConstructFromLod(FbxNode* Lod);
+
+	void ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std::vector<Int3>* Indices, std::vector<MT_FaceGroup>* FaceGroups);
 
 	const char* MTOName;
 	const char* FbxName;

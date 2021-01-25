@@ -17,6 +17,14 @@ namespace Forms.EditorControls
             TreeView_Objects.Nodes.Add(ConvertObjectToNode(Model));
         }
 
+        public FrameResourceModelOptions(MT_ObjectBundle ObjectBundle)
+        {
+            InitializeComponent();
+            Localise();
+
+            TreeView_Objects.Nodes.Add(ConvertBundleToNode(ObjectBundle));
+        }
+
         private void Localise()
         {
             Label_MessageText.Text = "";
@@ -69,6 +77,19 @@ namespace Forms.EditorControls
                 TreeNode SCollisionNode = new TreeNode("Static Collision");
                 SCollisionNode.Tag = SCollisionNode;
                 Root.Nodes.Add(SCollisionNode);
+            }
+
+            return Root;
+        }
+
+        private TreeNode ConvertBundleToNode(MT_ObjectBundle Bundle)
+        {
+            TreeNode Root = new TreeNode("Bundle");
+            Root.Tag = Bundle;
+
+            foreach(MT_Object ObjectInfo in Bundle.Objects)
+            {
+                Root.Nodes.Add(ConvertObjectToNode(ObjectInfo));
             }
 
             return Root;

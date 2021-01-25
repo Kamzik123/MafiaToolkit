@@ -59,6 +59,13 @@ bool MT_Object::ReadFromFile(FILE* InStream)
 		}
 	}
 
+	// Read Collision
+	if (HasObjectFlag(MT_ObjectFlags::HasCollisions))
+	{
+		CollisionObject = new MT_Collision();
+		CollisionObject->ReadFromFile(InStream);
+	}
+
 	return true;
 }
 
@@ -81,6 +88,12 @@ void MT_Object::WriteToFile(FILE* OutStream) const
 			const MT_Lod& LodInfo = LodObjects[i];
 			LodInfo.WriteToFile(OutStream);
 		}
+	}
+
+	// Write Collisions
+	if (HasObjectFlag(MT_ObjectFlags::HasCollisions))
+	{
+		CollisionObject->WriteToFile(OutStream);
 	}
 }
 

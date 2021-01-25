@@ -47,8 +47,9 @@ namespace Mafia2Tool
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.Button_ImportFrame = new System.Windows.Forms.ToolStripMenuItem();
             this.AddSceneFolderButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_ImportBundle = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_ImportFrame = new System.Windows.Forms.ToolStripMenuItem();
             this.AddCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.roadDebuggingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AddBackward = new System.Windows.Forms.ToolStripMenuItem();
@@ -136,7 +137,7 @@ namespace Mafia2Tool
             this.PositionXTool.Name = "PositionXTool";
             this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionXTool.Size = new System.Drawing.Size(72, 24);
+            this.PositionXTool.Size = new System.Drawing.Size(64, 24);
             this.PositionXTool.Text = "0.00000";
             this.PositionXTool.Value = new decimal(new int[] {
             0,
@@ -169,7 +170,7 @@ namespace Mafia2Tool
             this.PositionYTool.Name = "PositionYTool";
             this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionYTool.Size = new System.Drawing.Size(72, 24);
+            this.PositionYTool.Size = new System.Drawing.Size(64, 24);
             this.PositionYTool.Text = "0.00000";
             this.PositionYTool.Value = new decimal(new int[] {
             0,
@@ -202,7 +203,7 @@ namespace Mafia2Tool
             this.PositionZTool.Name = "PositionZTool";
             this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionZTool.Size = new System.Drawing.Size(72, 24);
+            this.PositionZTool.Size = new System.Drawing.Size(64, 24);
             this.PositionZTool.Text = "0.00000";
             this.PositionZTool.Value = new decimal(new int[] {
             0,
@@ -235,7 +236,7 @@ namespace Mafia2Tool
             this.CameraSpeedTool.Name = "CameraSpeedTool";
             this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.CameraSpeedTool.Size = new System.Drawing.Size(72, 24);
+            this.CameraSpeedTool.Size = new System.Drawing.Size(64, 24);
             this.CameraSpeedTool.Text = "0.00000";
             this.CameraSpeedTool.Value = new decimal(new int[] {
             0,
@@ -303,8 +304,9 @@ namespace Mafia2Tool
             this.EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddButton,
-            this.Button_ImportFrame,
             this.AddSceneFolderButton,
+            this.Button_ImportBundle,
+            this.Button_ImportFrame,
             this.AddCollisionButton,
             this.roadDebuggingToolStripMenuItem});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
@@ -320,19 +322,26 @@ namespace Mafia2Tool
             this.AddButton.Text = "$ADD";
             this.AddButton.Click += new System.EventHandler(this.AddButtonOnClick);
             // 
-            // Button_ImportFrame
-            // 
-            this.Button_ImportFrame.Name = "Button_ImportFrame";
-            this.Button_ImportFrame.Size = new System.Drawing.Size(191, 22);
-            this.Button_ImportFrame.Text = "$IMPORT_FRAME";
-            this.Button_ImportFrame.Click += new System.EventHandler(this.Button_ImportFrame_OnClicked);
-            // 
             // AddSceneFolderButton
             // 
             this.AddSceneFolderButton.Name = "AddSceneFolderButton";
             this.AddSceneFolderButton.Size = new System.Drawing.Size(191, 22);
             this.AddSceneFolderButton.Text = "$ADD_SCENE_FOLDER";
             this.AddSceneFolderButton.Click += new System.EventHandler(this.AddSceneFolderButton_Click);
+            // 
+            // Button_ImportBundle
+            // 
+            this.Button_ImportBundle.Name = "Button_ImportBundle";
+            this.Button_ImportBundle.Size = new System.Drawing.Size(191, 22);
+            this.Button_ImportBundle.Text = "$IMPORT_BUNDLE";
+            this.Button_ImportBundle.Click += new System.EventHandler(this.Button_ImportBundle_OnClick);
+            // 
+            // Button_ImportFrame
+            // 
+            this.Button_ImportFrame.Name = "Button_ImportFrame";
+            this.Button_ImportFrame.Size = new System.Drawing.Size(191, 22);
+            this.Button_ImportFrame.Text = "$IMPORT_FRAME";
+            this.Button_ImportFrame.Click += new System.EventHandler(this.Button_ImportFrame_OnClicked);
             // 
             // AddCollisionButton
             // 
@@ -561,7 +570,7 @@ namespace Mafia2Tool
             // 
             // MeshBrowser
             // 
-            this.MeshBrowser.Filter = "Meshes|*.m2t|FBX|*.fbx|Meshes|*.mto";
+            this.MeshBrowser.Filter = "Bundle|*.mtb|FBX|*.fbx|Meshes|*.mto";
             // 
             // TxtBrowser
             // 
@@ -649,5 +658,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem Button_ImportFrame;
         private System.Windows.Forms.OpenFileDialog FrameBrowser;
         private System.Windows.Forms.ToolStripMenuItem Button_DumpTexture;
+        private System.Windows.Forms.ToolStripMenuItem Button_ImportBundle;
     }
 }

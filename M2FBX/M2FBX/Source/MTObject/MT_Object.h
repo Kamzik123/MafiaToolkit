@@ -38,7 +38,7 @@ public:
 	void SetCollisions(MT_Collision* InCollision) 
 	{ 
 		CollisionObject = InCollision; 
-		int Temp = 0;
+		int Temp = ObjectFlags;
 		Temp |= (InCollision ? MT_ObjectFlags::HasCollisions : 0);
 		ObjectFlags = (MT_ObjectFlags)Temp;
 	}
