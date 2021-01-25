@@ -75,7 +75,7 @@ namespace Forms.EditorControls
             if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
             {
                 TreeNode SCollisionNode = new TreeNode("Static Collision");
-                SCollisionNode.Tag = SCollisionNode;
+                SCollisionNode.Tag = Object.Collision;
                 Root.Nodes.Add(SCollisionNode);
             }
 
@@ -104,6 +104,8 @@ namespace Forms.EditorControls
                 MT_Lod LodObject = (e.Node.Tag as MT_Lod);
                 Init(LodObject.VertexDeclaration, 0);
             }
+
+            PropertyGrid_Test.SelectedObject = e.Node.Tag;
         }
 
         private void TreeView_OnBeforeSelect(object sender, TreeViewCancelEventArgs e)

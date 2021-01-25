@@ -41,6 +41,7 @@ bool MT_Object::ReadFromFile(FILE* InStream)
 	// Read Name and Flags
 	FileUtils::ReadString(InStream, &ObjectName);
 	FileUtils::Read(InStream, &ObjectFlags);
+	FileUtils::Read(InStream, &Transform);
 
 	// Read LODs
 	if (HasObjectFlag(MT_ObjectFlags::HasLODs))
@@ -77,6 +78,7 @@ void MT_Object::WriteToFile(FILE* OutStream) const
 	// Begin to Write
 	FileUtils::WriteString(OutStream, ObjectName);
 	FileUtils::Write(OutStream, ObjectFlags);
+	FileUtils::Write(OutStream, Transform);
 
 	// Write LODs
 	if (HasObjectFlag(MT_ObjectFlags::HasLODs))

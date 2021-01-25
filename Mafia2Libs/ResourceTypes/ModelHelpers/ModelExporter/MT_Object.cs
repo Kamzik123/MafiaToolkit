@@ -1,10 +1,12 @@
 ﻿using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using Utils.Models;
+using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 using Utils.Types;
 
@@ -25,6 +27,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public string ObjectName { get; set; }
         public MT_ObjectFlags ObjectFlags { get; set; }
+        public Vector3 Position { get; set; }
+        public Vector3 Rotation { get; set; }
+        public Vector3 Scale { get; set; }
         public MT_Lod[] Lods { get; set; }
         public MT_Collision Collision { get; set; }
 
@@ -136,6 +141,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             ObjectName = StringHelpers.ReadString8(reader);
             ObjectFlags = (MT_ObjectFlags)reader.ReadInt32();
 
+            // Read Object Transform
+            Position = Vector3Extenders.ReadFromFile(reader);
+            Rotation = Vector3Extenders.ReadFromFile(reader);
+            Scale = Vector3Extenders.ReadFromFile(reader);
+
             if (ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
             {
                 uint NumLODs = reader.ReadUInt32();
@@ -156,8 +166,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             if (ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
             {
-                MT_Collision CollisionObject = new MT_Collision();
-                bool bIsValid = CollisionObject.ReadFromFile(reader);
+                Collision = new MT_Collision();
+                bool bIsValid = Collision.ReadFromFile(reader);
 
                 // Failed to read Collision, return.
                 if (!bIsValid)
@@ -178,6 +188,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             // Write Meta-Data
             StringHelpers.WriteString8(writer, ObjectName);
             writer.Write((int)ObjectFlags);
+
+            // Write Transform
+            Position.WriteToFile(writer);
+            Rotation.WriteToFile(writer);
+            Scale.WriteToFile(writer);
 
             if (ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
             {

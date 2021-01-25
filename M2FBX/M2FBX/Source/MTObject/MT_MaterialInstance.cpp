@@ -6,12 +6,20 @@ void MT_MaterialInstance::ReadFromFile(FILE* InStream)
 {
 	FileUtils::Read(InStream, &MaterialFlags);
 	FileUtils::ReadString(InStream, &Name);
-	FileUtils::ReadString(InStream, &DiffuseTexture);
+
+	if (HasMaterialFlag(HasDiffuse))
+	{
+		FileUtils::ReadString(InStream, &DiffuseTexture);
+	}
 }
 
 void MT_MaterialInstance::WriteToFile(FILE* OutStream) const
 {
 	FileUtils::Write(OutStream, MaterialFlags);
 	FileUtils::WriteString(OutStream, Name);
-	FileUtils::WriteString(OutStream, DiffuseTexture);
+
+	if (HasMaterialFlag(HasDiffuse))
+	{
+		FileUtils::WriteString(OutStream, DiffuseTexture);
+	}
 }

@@ -30,6 +30,7 @@ private:
 	MT_Lod* ConstructFromLod(FbxNode* Lod);
 
 	void ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std::vector<Int3>* Indices, std::vector<MT_FaceGroup>* FaceGroups);
+	FbxGeometryElementUV* GetUVElementByIndex(FbxMesh* Mesh, uint ElementType) const;
 
 	const char* MTOName;
 	const char* FbxName;

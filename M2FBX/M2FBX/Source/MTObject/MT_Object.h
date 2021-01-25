@@ -7,12 +7,20 @@
 
 class MT_Collision;
 class MT_ObjectHandler;
+struct TransformStruct;
 
 enum MT_ObjectFlags : uint
 {
 	HasLODs = 1,
 	HasSkinning = 2,
-	HasCollisions = 4
+	HasCollisions = 4,
+};
+
+struct TransformStruct
+{
+	Point3 Position;
+	Point3 Rotation;
+	Point3 Scale;
 };
 
 class MT_Object
@@ -29,12 +37,14 @@ public:
 	const std::string& GetName() const { return ObjectName; }
 	const MT_ObjectFlags& GetFlags() const { return ObjectFlags; }
 	const std::vector<MT_Lod> GetLods() const { return LodObjects; }
+	const TransformStruct& GetTransform() const { return Transform; }
 	const MT_Collision* GetCollision() const { return CollisionObject; }
 
 	// Setters
 	void SetName(std::string& InName) { ObjectName = InName; }
 	void SetLods(std::vector<MT_Lod> InLods) { LodObjects = InLods; }
 	void SetObjectFlags(MT_ObjectFlags InFlags) { ObjectFlags = InFlags; }
+	void SetTransform(TransformStruct& InTransform) { Transform = InTransform; }
 	void SetCollisions(MT_Collision* InCollision) 
 	{ 
 		CollisionObject = InCollision; 
@@ -53,6 +63,7 @@ private:
 
 	std::string ObjectName = "";
 	MT_ObjectFlags ObjectFlags;
+	TransformStruct Transform;
 
 	std::vector<MT_Lod> LodObjects;
 	MT_Collision* CollisionObject = nullptr;

@@ -6,6 +6,19 @@
 #include "Source/MTObject/MT_Object.h"
 #include "MTObject/MT_ObjectHandler.h"
 
+#include <map>
+
+namespace WranglerUtils
+{
+	std::map<uint, std::string> UVLookupMap
+	{
+		{0, "DiffuseUV"},
+		{1, "UV0"},
+		{2, "UV1"},
+		{3, "OMUV"},
+	};
+}
+
 MT_Wrangler::MT_Wrangler(const char* InName, const char* InDest)
 {
 	FbxName = InName;
@@ -103,6 +116,7 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 	// Format name to respectfully
 	FbxString NodeName = Node->GetName();
 	NodeName.FindAndReplace("[MESH]", "");
+	NodeName.FindAndReplace(" ", "");
 	std::string RawName = NodeName.Buffer();
 
 	// Construct object and set name
@@ -110,14 +124,27 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 	ModelObject->SetName(RawName);
 	ModelObject->SetObjectFlags(MT_ObjectFlags::HasLODs);
 
+	// Get Objects transform
+	TransformStruct TransformObject = {};
+	const FbxVector4& Position = Node->GetGeometricTranslation(FbxNode::eSourcePivot);
+	const FbxVector4& Rotation = Node->GetGeometricRotation(FbxNode::eSourcePivot);
+	const FbxVector4& Scale = Node->GetGeometricScaling(FbxNode::eSourcePivot);
+	TransformObject.Position = { (float)Position[0], (float)Position[1], (float)Position[2] };
+	TransformObject.Rotation = { (float)Rotation[0], (float)Rotation[1], (float)Rotation[2] };
+	TransformObject.Scale = { (float)Scale[0], (float)Scale[1], (float)Scale[2] };
+	ModelObject->SetTransform(TransformObject);
+
 	std::vector<MT_Lod> Lods = {};
 
 	FbxInt32 NumLods = Node->GetChildCount();
-	Lods.resize(NumLods);
 	for (int i = 0; i < NumLods; i++)
 	{
 		FbxNode* LodNode = Node->GetChild(i);
-		Lods[i] = *ConstructFromLod(LodNode);
+		FbxString NodeName = LodNode->GetName();
+		if (NodeName.Find("LOD") != -1)
+		{
+			Lods.push_back(*ConstructFromLod(LodNode));
+		}
 	}
 
 	ModelObject->SetLods(Lods);
@@ -181,7 +208,12 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 
 	FbxMesh* Mesh = Lod->GetMesh();
 
-	FbxGeometryElementUV* DiffuseUV = Mesh->GetElementUV("DiffuseUV");
+	FbxGeometryElementUV* DiffuseUVElement = GetUVElementByIndex(Mesh, 0);
+	FbxGeometryElementUV* UV0Element = GetUVElementByIndex(Mesh, 1);
+	FbxGeometryElementUV* UV1Element = GetUVElementByIndex(Mesh, 2);
+	FbxGeometryElementUV* OMUVElement = GetUVElementByIndex(Mesh, 3);
+	FbxGeometryElementNormal* NormalElement = Mesh->GetElementNormal(0);
+	FbxGeometryElementTangent* TangentElement = Mesh->GetElementTangent(0);
 
 	// Construct Vertex Array
 	FbxInt32 NumVertices = Mesh->GetControlPointsCount();
@@ -195,11 +227,52 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 
 		NewVertex.position = { (float)ControlPoint[0], (float)ControlPoint[1], (float)ControlPoint[2] };
 
-		if (DiffuseUV)
+		// Add Normal element to Vertex
+		if (NormalElement)
 		{
-			const FbxVector2& Value = DiffuseUV->GetDirectArray().GetAt(i);
+			const FbxVector4& Value = NormalElement->GetDirectArray().GetAt(i);
+			NewVertex.normals = { (float)Value[0], (float)Value[1], (float)Value[2] };
+			LodObject->AddVertexFlag(Normals);
+		}
+
+		// Add Tangent element to Vertex
+		if (TangentElement)
+		{
+			const FbxVector4& Value = TangentElement->GetDirectArray().GetAt(i);
+			NewVertex.tangent = { (float)Value[0], (float)Value[1], (float)Value[2] };
+			LodObject->AddVertexFlag(Tangent);
+		}
+
+		// Add Diffuse element to Vertex
+		if (DiffuseUVElement)
+		{
+			const FbxVector2& Value = DiffuseUVElement->GetDirectArray().GetAt(i);
 			NewVertex.uv0 = { (float)Value[0], (float)Value[1] };
 			LodObject->AddVertexFlag(TexCoords0);
+		}
+
+		// Add UV0 element to Vertex
+		if (UV0Element)
+		{
+			const FbxVector2& Value = UV0Element->GetDirectArray().GetAt(i);
+			NewVertex.uv1 = { (float)Value[0], (float)Value[1] };
+			LodObject->AddVertexFlag(TexCoords1);
+		}
+
+		// Add UV1 element to Vertex
+		if (UV1Element)
+		{
+			const FbxVector2& Value = UV1Element->GetDirectArray().GetAt(i);
+			NewVertex.uv2 = { (float)Value[0], (float)Value[1] };
+			LodObject->AddVertexFlag(TexCoords2);
+		}
+
+		// Add OMUV element to Vertex
+		if (OMUVElement)
+		{
+			const FbxVector2& Value = OMUVElement->GetDirectArray().GetAt(i);
+			NewVertex.uv3 = { (float)Value[0], (float)Value[1] };
+			LodObject->AddVertexFlag(ShadowTexture);
 		}
 
 		Vertices[i] = NewVertex;
@@ -275,4 +348,22 @@ void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std
 		CurrentTotal += NumFaces * 3;
 		FaceGroups->push_back(NewFaceGroup);
 	}
+}
+
+FbxGeometryElementUV* MT_Wrangler::GetUVElementByIndex(FbxMesh* Mesh, uint ElementType) const
+{
+	std::map<uint, std::string>& LookupMap = WranglerUtils::UVLookupMap;
+	std::string& ElementName = LookupMap[ElementType];
+	FbxGeometryElementUV* Element = nullptr;
+
+	if (!ElementName.empty())
+	{
+		Element = Mesh->GetElementUV(ElementName.data());
+		if (Element)
+		{
+			return Element;
+		}
+	}
+
+	return Mesh->GetElementUV(ElementType);
 }

@@ -98,7 +98,12 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object)
 	std::string ObjectName = Object.GetName();
 	ObjectName += " [MESH]";
 	FbxNode* RootNode = FbxNode::Create(SdkManager, ObjectName.data());
-	const FbxDouble3& Scale = RootNode->LclScaling;
+	
+	// Setup transform of object
+	const TransformStruct& Transform = Object.GetTransform();
+	RootNode->LclTranslation = { Transform.Position.x, Transform.Position.y , Transform.Position.z };
+	RootNode->LclRotation = { Transform.Rotation.x, Transform.Rotation.y , Transform.Rotation.z };
+	RootNode->LclScaling = { Transform.Scale.x, Transform.Scale.y , Transform.Scale.z };
 
 	if (Object.HasObjectFlag(HasLODs))
 	{

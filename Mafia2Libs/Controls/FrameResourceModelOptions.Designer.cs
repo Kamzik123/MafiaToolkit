@@ -40,10 +40,11 @@
             this.ImportColor0Box = new System.Windows.Forms.CheckBox();
             this.Label_BufferType = new System.Windows.Forms.Label();
             this.SplitContainer_Root = new System.Windows.Forms.SplitContainer();
+            this.TreeView_Objects = new Utils.Extensions.MTreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.TreeView_Objects = new Utils.Extensions.MTreeView();
             this.Label_MessageText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.PropertyGrid_Test = new System.Windows.Forms.PropertyGrid();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer_Root)).BeginInit();
             this.SplitContainer_Root.Panel1.SuspendLayout();
             this.SplitContainer_Root.Panel2.SuspendLayout();
@@ -157,7 +158,7 @@
             // Label_BufferType
             // 
             this.Label_BufferType.AutoSize = true;
-            this.Label_BufferType.Location = new System.Drawing.Point(18, 173);
+            this.Label_BufferType.Location = new System.Drawing.Point(190, 111);
             this.Label_BufferType.Name = "Label_BufferType";
             this.Label_BufferType.Size = new System.Drawing.Size(102, 13);
             this.Label_BufferType.TabIndex = 15;
@@ -175,6 +176,7 @@
             // 
             // SplitContainer_Root.Panel2
             // 
+            this.SplitContainer_Root.Panel2.Controls.Add(this.PropertyGrid_Test);
             this.SplitContainer_Root.Panel2.Controls.Add(this.ModelOptionsText);
             this.SplitContainer_Root.Panel2.Controls.Add(this.ImportNormalBox);
             this.SplitContainer_Root.Panel2.Controls.Add(this.ImportUV1Box);
@@ -188,6 +190,16 @@
             this.SplitContainer_Root.Size = new System.Drawing.Size(624, 411);
             this.SplitContainer_Root.SplitterDistance = 208;
             this.SplitContainer_Root.TabIndex = 16;
+            // 
+            // TreeView_Objects
+            // 
+            this.TreeView_Objects.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TreeView_Objects.Location = new System.Drawing.Point(0, 0);
+            this.TreeView_Objects.Name = "TreeView_Objects";
+            this.TreeView_Objects.Size = new System.Drawing.Size(208, 411);
+            this.TreeView_Objects.TabIndex = 0;
+            this.TreeView_Objects.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeView_OnBeforeSelect);
+            this.TreeView_Objects.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_OnAfterSelect);
             // 
             // splitContainer1
             // 
@@ -217,21 +229,18 @@
             this.statusStrip1.TabIndex = 0;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // TreeView_Objects
-            // 
-            this.TreeView_Objects.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TreeView_Objects.Location = new System.Drawing.Point(0, 0);
-            this.TreeView_Objects.Name = "TreeView_Objects";
-            this.TreeView_Objects.Size = new System.Drawing.Size(208, 411);
-            this.TreeView_Objects.TabIndex = 0;
-            this.TreeView_Objects.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeView_OnBeforeSelect);
-            this.TreeView_Objects.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_OnAfterSelect);
-            // 
             // Label_MessageText
             // 
             this.Label_MessageText.Name = "Label_MessageText";
             this.Label_MessageText.Size = new System.Drawing.Size(88, 17);
             this.Label_MessageText.Text = "MESSAGE_TEXT";
+            // 
+            // PropertyGrid_Test
+            // 
+            this.PropertyGrid_Test.Location = new System.Drawing.Point(3, 150);
+            this.PropertyGrid_Test.Name = "PropertyGrid_Test";
+            this.PropertyGrid_Test.Size = new System.Drawing.Size(406, 258);
+            this.PropertyGrid_Test.TabIndex = 16;
             // 
             // FrameResourceModelOptions
             // 
@@ -278,5 +287,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel Label_MessageText;
+        private System.Windows.Forms.PropertyGrid PropertyGrid_Test;
     }
 }

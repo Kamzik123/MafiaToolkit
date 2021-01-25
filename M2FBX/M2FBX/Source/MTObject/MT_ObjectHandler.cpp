@@ -67,6 +67,8 @@ void MT_ObjectHandler::WriteBundleToFile(const std::string& FileName, const MT_O
 	{
 		WriteObjectToFile(OutStream, Object);
 	}
+
+	fclose(OutStream);
 }
 
 MT_Object* MT_ObjectHandler::ReadObjectFromFile(const std::string& FileName)
@@ -106,6 +108,7 @@ void MT_ObjectHandler::WriteObjectToFile(const std::string& FileName, const MT_O
 	}
 
 	WriteObjectToFile(OutStream, Object);
+	fclose(OutStream);
 }
 
 bool MT_ObjectHandler::ReadObjectFromFile(FILE* InStream, MT_Object* NewObject)
@@ -119,5 +122,4 @@ bool MT_ObjectHandler::ReadObjectFromFile(FILE* InStream, MT_Object* NewObject)
 void MT_ObjectHandler::WriteObjectToFile(FILE* OutStream, const MT_Object& Object)
 {
 	Object.WriteToFile(OutStream);
-	fclose(OutStream);
 }
