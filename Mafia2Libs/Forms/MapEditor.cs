@@ -2185,13 +2185,42 @@ namespace Mafia2Tool
 
             // Let users change their import values
             FrameResourceModelOptions modelForm = new FrameResourceModelOptions(BundleObject);
-            if (modelForm.ShowDialog() != DialogResult.OK)
+            modelForm.ShowDialog();
+            /*if (modelForm.ShowDialog() != DialogResult.OK)
             {
                 return;
             }
 
-            modelForm.Dispose();
+            modelForm.Dispose();*/
+
+            foreach(MT_Object ModelObject in BundleObject.Objects)
+            {
+                ModelWrapper Wrapper = new ModelWrapper();
+                Wrapper.ModelObject = ModelObject;
+
+                // Convert object into SingleMesh
+                FrameObjectSingleMesh NewMesh = SceneData.FrameResource.ConstructFrameAssetOfType<FrameObjectSingleMesh>();
+                NewMesh.CreateMeshFromRawModel(Wrapper);
+                CreateMeshBuffers(Wrapper);
+
+                // Set other MetaInfo
+                MatrixExtensions.SetMatrix(ModelObject.Rotation, ModelObject.Scale, ModelObject.Position);
+                NewMesh.Name.Set(ModelObject.ObjectName);
+
+                // Construct TreeNode
+                TreeNode node = new TreeNode(NewMesh.Name.ToString());
+                node.Tag = NewMesh;
+                node.Name = NewMesh.RefID.ToString();
+
+                dSceneTree.AddToTree(node, frameResourceRoot);
+
+                // Construct renderer and add to stack
+                IRenderer Renderer = BuildRenderObjectFromFrame(NewMesh);
+                if(Renderer != null)
+                {
+                    Graphics.InitObjectStack.Add(NewMesh.RefID, Renderer);
+                }
+            }
         }
     }
 }
-

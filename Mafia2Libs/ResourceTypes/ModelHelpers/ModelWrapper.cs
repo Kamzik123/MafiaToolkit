@@ -10,6 +10,7 @@ using ResourceTypes.ModelHelpers.ModelExporter;
 using System.IO;
 using Utils.Settings;
 using System.Windows.Forms;
+using ResourceTypes.Materials;
 
 namespace Utils.Models
 {
@@ -330,21 +331,27 @@ namespace Utils.Models
                 for (int i = 0; i < LodObject.FaceGroups.Length; i++)
                 {
                     frameMaterial.Materials[x][i] = new MaterialStruct();
-                    frameMaterial.Materials[x][i].StartIndex = (int)LodObject.FaceGroups[x].StartIndex;
-                    frameMaterial.Materials[x][i].NumFaces = (int)LodObject.FaceGroups[x].NumFaces;
+                    frameMaterial.Materials[x][i].StartIndex = (int)LodObject.FaceGroups[i].StartIndex;
+                    frameMaterial.Materials[x][i].NumFaces = (int)LodObject.FaceGroups[i].NumFaces;
                     frameMaterial.Materials[x][i].Unk3 = 0;
-                    frameMaterial.Materials[x][i].MaterialHash = FNV64.Hash(LodObject.FaceGroups[x].Material.Name);
-                    //frameMaterial.Materials[0][i].MaterialName = model.Lods[0].Parts[i].Material;
-                    faceIndex += (int)LodObject.FaceGroups[x].NumFaces;
+
+                    IMaterial FoundMaterial = MaterialsManager.LookupMaterialByName(frameMaterial.Materials[x][i].MaterialName);
+                    if (FoundMaterial != null)
+                    {
+                        frameMaterial.Materials[x][i].MaterialName = FoundMaterial.GetMaterialName();
+                        frameMaterial.Materials[x][i].MaterialHash = FoundMaterial.GetMaterialHash();
+                    }
+
+                    faceIndex += (int)LodObject.FaceGroups[i].NumFaces;
 
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].Bounds = new short[6]
                     {
-                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Minimum.X),
-                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Minimum.Y),
-                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Minimum.Z),
-                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Maximum.X),
-                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Maximum.Y),
-                        Convert.ToInt16(LodObject.FaceGroups[x].Bounds.Maximum.Z)
+                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Minimum.X),
+                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Minimum.Y),
+                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Minimum.Z),
+                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Maximum.X),
+                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Maximum.Y),
+                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Maximum.Z)
                     };
 
                     if (ModelObject.Lods[x].FaceGroups.Length == 1)
@@ -357,17 +364,14 @@ namespace Utils.Models
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].LeftIndex = -1;
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].RightIndex = -1;
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].SecondIndex =
-                        Convert.ToUInt16(LodObject.FaceGroups[x].NumFaces - 1);
-                    frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].BaseIndex = (int)LodObject.FaceGroups[x].StartIndex;
+                        Convert.ToUInt16(LodObject.FaceGroups[i].NumFaces - 1);
+                    frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].BaseIndex = (int)LodObject.FaceGroups[i].StartIndex;
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].FirstBurst = i;
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].NumBurst = 1;
                 }
             }
         }
 
-        /// <summary>
-        /// Create objects from model. Requires FrameMesh/FrameModel to be already set and a model already read into the data.
-        /// </summary>
         public void CreateObjectsFromModel()
         {
             FrameGeometry frameGeometry = frameMesh.Geometry;

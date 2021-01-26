@@ -28,23 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.ModelOptionsText = new System.Windows.Forms.Label();
-            this.ImportNormalBox = new System.Windows.Forms.CheckBox();
-            this.ImportUV1Box = new System.Windows.Forms.CheckBox();
-            this.ImportUV2Box = new System.Windows.Forms.CheckBox();
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrameResourceModelOptions));
             this.ImportAOBox = new System.Windows.Forms.CheckBox();
-            this.FlipUVBox = new System.Windows.Forms.CheckBox();
-            this.ImportDiffuseBox = new System.Windows.Forms.CheckBox();
-            this.ImportTangentBox = new System.Windows.Forms.CheckBox();
-            this.ImportColor1Box = new System.Windows.Forms.CheckBox();
-            this.ImportColor0Box = new System.Windows.Forms.CheckBox();
-            this.Label_BufferType = new System.Windows.Forms.Label();
             this.SplitContainer_Root = new System.Windows.Forms.SplitContainer();
             this.TreeView_Objects = new Utils.Extensions.MTreeView();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.PropertyGrid_Test = new System.Windows.Forms.PropertyGrid();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.Label_MessageText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.PropertyGrid_Test = new System.Windows.Forms.PropertyGrid();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer_Root)).BeginInit();
             this.SplitContainer_Root.Panel1.SuspendLayout();
             this.SplitContainer_Root.Panel2.SuspendLayout();
@@ -56,44 +49,6 @@
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // ModelOptionsText
-            // 
-            this.ModelOptionsText.Location = new System.Drawing.Point(17, 20);
-            this.ModelOptionsText.Name = "ModelOptionsText";
-            this.ModelOptionsText.Size = new System.Drawing.Size(290, 13);
-            this.ModelOptionsText.TabIndex = 4;
-            this.ModelOptionsText.Text = "$MODEL_OPTIONS_TEXT";
-            // 
-            // ImportNormalBox
-            // 
-            this.ImportNormalBox.AutoSize = true;
-            this.ImportNormalBox.Location = new System.Drawing.Point(19, 47);
-            this.ImportNormalBox.Name = "ImportNormalBox";
-            this.ImportNormalBox.Size = new System.Drawing.Size(133, 17);
-            this.ImportNormalBox.TabIndex = 6;
-            this.ImportNormalBox.Text = "$IMPORT_NORMALS";
-            this.ImportNormalBox.UseVisualStyleBackColor = true;
-            // 
-            // ImportUV1Box
-            // 
-            this.ImportUV1Box.AutoSize = true;
-            this.ImportUV1Box.Location = new System.Drawing.Point(19, 107);
-            this.ImportUV1Box.Name = "ImportUV1Box";
-            this.ImportUV1Box.Size = new System.Drawing.Size(101, 17);
-            this.ImportUV1Box.TabIndex = 7;
-            this.ImportUV1Box.Text = "$IMPORT_UV1";
-            this.ImportUV1Box.UseVisualStyleBackColor = true;
-            // 
-            // ImportUV2Box
-            // 
-            this.ImportUV2Box.AutoSize = true;
-            this.ImportUV2Box.Location = new System.Drawing.Point(19, 127);
-            this.ImportUV2Box.Name = "ImportUV2Box";
-            this.ImportUV2Box.Size = new System.Drawing.Size(101, 17);
-            this.ImportUV2Box.TabIndex = 8;
-            this.ImportUV2Box.Text = "$IMPORT_UV2";
-            this.ImportUV2Box.UseVisualStyleBackColor = true;
-            // 
             // ImportAOBox
             // 
             this.ImportAOBox.AutoSize = true;
@@ -103,66 +58,6 @@
             this.ImportAOBox.TabIndex = 9;
             this.ImportAOBox.Text = "$IMPORT_AO";
             this.ImportAOBox.UseVisualStyleBackColor = true;
-            // 
-            // FlipUVBox
-            // 
-            this.FlipUVBox.AutoSize = true;
-            this.FlipUVBox.Location = new System.Drawing.Point(184, 87);
-            this.FlipUVBox.Name = "FlipUVBox";
-            this.FlipUVBox.Size = new System.Drawing.Size(75, 17);
-            this.FlipUVBox.TabIndex = 10;
-            this.FlipUVBox.Text = "$FLIP_UV";
-            this.FlipUVBox.UseVisualStyleBackColor = true;
-            // 
-            // ImportDiffuseBox
-            // 
-            this.ImportDiffuseBox.AutoSize = true;
-            this.ImportDiffuseBox.Location = new System.Drawing.Point(19, 87);
-            this.ImportDiffuseBox.Name = "ImportDiffuseBox";
-            this.ImportDiffuseBox.Size = new System.Drawing.Size(125, 17);
-            this.ImportDiffuseBox.TabIndex = 11;
-            this.ImportDiffuseBox.Text = "$IMPORT_DIFFUSE";
-            this.ImportDiffuseBox.UseVisualStyleBackColor = true;
-            // 
-            // ImportTangentBox
-            // 
-            this.ImportTangentBox.AutoSize = true;
-            this.ImportTangentBox.Enabled = false;
-            this.ImportTangentBox.Location = new System.Drawing.Point(19, 67);
-            this.ImportTangentBox.Name = "ImportTangentBox";
-            this.ImportTangentBox.Size = new System.Drawing.Size(139, 17);
-            this.ImportTangentBox.TabIndex = 12;
-            this.ImportTangentBox.Text = "$IMPORT_TANGENTS";
-            this.ImportTangentBox.UseVisualStyleBackColor = true;
-            // 
-            // ImportColor1Box
-            // 
-            this.ImportColor1Box.AutoSize = true;
-            this.ImportColor1Box.Location = new System.Drawing.Point(184, 67);
-            this.ImportColor1Box.Name = "ImportColor1Box";
-            this.ImportColor1Box.Size = new System.Drawing.Size(123, 17);
-            this.ImportColor1Box.TabIndex = 14;
-            this.ImportColor1Box.Text = "$IMPORT_COLOR1";
-            this.ImportColor1Box.UseVisualStyleBackColor = true;
-            // 
-            // ImportColor0Box
-            // 
-            this.ImportColor0Box.AutoSize = true;
-            this.ImportColor0Box.Location = new System.Drawing.Point(184, 47);
-            this.ImportColor0Box.Name = "ImportColor0Box";
-            this.ImportColor0Box.Size = new System.Drawing.Size(123, 17);
-            this.ImportColor0Box.TabIndex = 13;
-            this.ImportColor0Box.Text = "$IMPORT_COLOR0";
-            this.ImportColor0Box.UseVisualStyleBackColor = true;
-            // 
-            // Label_BufferType
-            // 
-            this.Label_BufferType.AutoSize = true;
-            this.Label_BufferType.Location = new System.Drawing.Point(190, 111);
-            this.Label_BufferType.Name = "Label_BufferType";
-            this.Label_BufferType.Size = new System.Drawing.Size(102, 13);
-            this.Label_BufferType.TabIndex = 15;
-            this.Label_BufferType.Text = "$IS_32BIT_MODEL";
             // 
             // SplitContainer_Root
             // 
@@ -177,16 +72,6 @@
             // SplitContainer_Root.Panel2
             // 
             this.SplitContainer_Root.Panel2.Controls.Add(this.PropertyGrid_Test);
-            this.SplitContainer_Root.Panel2.Controls.Add(this.ModelOptionsText);
-            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportNormalBox);
-            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportUV1Box);
-            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportUV2Box);
-            this.SplitContainer_Root.Panel2.Controls.Add(this.FlipUVBox);
-            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportDiffuseBox);
-            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportTangentBox);
-            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportColor0Box);
-            this.SplitContainer_Root.Panel2.Controls.Add(this.ImportColor1Box);
-            this.SplitContainer_Root.Panel2.Controls.Add(this.Label_BufferType);
             this.SplitContainer_Root.Size = new System.Drawing.Size(624, 411);
             this.SplitContainer_Root.SplitterDistance = 208;
             this.SplitContainer_Root.TabIndex = 16;
@@ -194,12 +79,30 @@
             // TreeView_Objects
             // 
             this.TreeView_Objects.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TreeView_Objects.ImageIndex = 0;
+            this.TreeView_Objects.ImageList = this.imageList1;
             this.TreeView_Objects.Location = new System.Drawing.Point(0, 0);
             this.TreeView_Objects.Name = "TreeView_Objects";
+            this.TreeView_Objects.SelectedImageIndex = 0;
             this.TreeView_Objects.Size = new System.Drawing.Size(208, 411);
             this.TreeView_Objects.TabIndex = 0;
             this.TreeView_Objects.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeView_OnBeforeSelect);
             this.TreeView_Objects.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_OnAfterSelect);
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "Cross.png");
+            this.imageList1.Images.SetKeyName(1, "Tick.png");
+            // 
+            // PropertyGrid_Test
+            // 
+            this.PropertyGrid_Test.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PropertyGrid_Test.Location = new System.Drawing.Point(0, 0);
+            this.PropertyGrid_Test.Name = "PropertyGrid_Test";
+            this.PropertyGrid_Test.Size = new System.Drawing.Size(412, 411);
+            this.PropertyGrid_Test.TabIndex = 16;
             // 
             // splitContainer1
             // 
@@ -235,20 +138,12 @@
             this.Label_MessageText.Size = new System.Drawing.Size(88, 17);
             this.Label_MessageText.Text = "MESSAGE_TEXT";
             // 
-            // PropertyGrid_Test
-            // 
-            this.PropertyGrid_Test.Location = new System.Drawing.Point(3, 150);
-            this.PropertyGrid_Test.Name = "PropertyGrid_Test";
-            this.PropertyGrid_Test.Size = new System.Drawing.Size(406, 258);
-            this.PropertyGrid_Test.TabIndex = 16;
-            // 
             // FrameResourceModelOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(624, 441);
-            this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -256,7 +151,6 @@
             this.Text = "$MODEL_OPTIONS_TITLE";
             this.SplitContainer_Root.Panel1.ResumeLayout(false);
             this.SplitContainer_Root.Panel2.ResumeLayout(false);
-            this.SplitContainer_Root.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer_Root)).EndInit();
             this.SplitContainer_Root.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -271,22 +165,13 @@
         }
 
         #endregion
-        private System.Windows.Forms.Label ModelOptionsText;
-        private System.Windows.Forms.CheckBox ImportNormalBox;
-        private System.Windows.Forms.CheckBox ImportUV1Box;
-        private System.Windows.Forms.CheckBox ImportUV2Box;
         private System.Windows.Forms.CheckBox ImportAOBox;
-        private System.Windows.Forms.CheckBox FlipUVBox;
-        private System.Windows.Forms.CheckBox ImportDiffuseBox;
-        private System.Windows.Forms.CheckBox ImportTangentBox;
-        private System.Windows.Forms.CheckBox ImportColor1Box;
-        private System.Windows.Forms.CheckBox ImportColor0Box;
-        private System.Windows.Forms.Label Label_BufferType;
         private System.Windows.Forms.SplitContainer SplitContainer_Root;
         private Utils.Extensions.MTreeView TreeView_Objects;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel Label_MessageText;
         private System.Windows.Forms.PropertyGrid PropertyGrid_Test;
+        private System.Windows.Forms.ImageList imageList1;
     }
 }

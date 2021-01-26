@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SharpDX;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using Utils.Models;
 using Utils.SharpDXExtensions;
@@ -6,7 +8,7 @@ using Utils.StringHelpers;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
-    public class MT_Lod
+    public class MT_Lod : IValidator
     {
         public VertexFlags VertexDeclaration { get; set; }
         public Vertex[] Vertices { get; set; }
@@ -116,6 +118,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 Indices[i] = reader.ReadUInt32();
             }
 
+            CalculatePartBounds();
+
             return true;
         }
 
@@ -208,6 +212,36 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public bool Over16BitLimit()
         {
             return (Vertices.Length > ushort.MaxValue);
+        }
+
+        public void CalculatePartBounds()
+        {
+            for (int i = 0; i < FaceGroups.Length; i++)
+            {
+                List<Vector3> partVerts = new List<Vector3>();
+                for (int x = 0; x < Indices.Length; x++)
+                {
+                    partVerts.Add(Vertices[Indices[i]].Position);
+                }
+                BoundingBox bounds;
+                BoundingBox.FromPoints(partVerts.ToArray(), out bounds);
+                FaceGroups[i].Bounds = bounds;
+            }
+        }
+
+        public bool Validate()
+        {
+            bool bValidity = true;
+            bValidity = Vertices.Length > 0;
+            bValidity = Indices.Length > 0;
+            bValidity = VertexDeclaration != 0;
+
+            foreach(var FaceGroup in FaceGroups)
+            {
+                bValidity = FaceGroup.Validate();
+            }
+
+            return bValidity;
         }
     }
 }

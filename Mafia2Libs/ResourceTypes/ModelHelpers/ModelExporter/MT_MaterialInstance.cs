@@ -9,7 +9,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         HasDiffuse = 2
     }
 
-    public class MT_MaterialInstance
+    public class MT_MaterialInstance : IValidator
     {
         public MT_MaterialInstanceFlags MaterialFlags { get; set; }
         public string Name { get; set; }
@@ -19,6 +19,21 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         {
             Name = "";
             DiffuseTexture = "";
+        }
+
+        public bool Validate()
+        {
+            bool bValidity = true;
+
+            bValidity = !string.IsNullOrEmpty(Name);
+
+            if(MaterialFlags.HasFlag(MT_MaterialInstanceFlags.IsCollision))
+            {
+                Collisions.CollisionMaterials MaterialChoice = Collisions.CollisionMaterials.Undefined;
+                bValidity = Enum.TryParse(Name, out MaterialChoice);
+            }
+
+            return bValidity;
         }
     }
 }

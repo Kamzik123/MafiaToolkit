@@ -5,7 +5,7 @@ using Utils.StringHelpers;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
-    public class MT_Collision
+    public class MT_Collision : IValidator
     {
         public Vector3[] Vertices { get; set; }
         public uint[] Indices { get; set; }
@@ -87,6 +87,23 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 writer.Write(Indices[i]);
             }
+        }
+
+        //~ IValidator Interface
+        public bool Validate()
+        {
+            bool bValidity = true;
+
+            bValidity = Vertices.Length > 0;
+            bValidity = Indices.Length > 0;
+            bValidity = FaceGroups.Length > 0;
+
+            foreach(var FaceGroup in FaceGroups)
+            {
+                bValidity = FaceGroup.Validate();
+            }
+
+            return bValidity;
         }
     }
 }

@@ -101,6 +101,7 @@ namespace ResourceTypes.Collisions
     //water = gravel track
     public enum CollisionMaterials
     {
+        Undefined = -1,
         OBSOLETE_Road,
         OBSOLETE_Road_Dusty,
         OBSOLETE_Pedestrian_Crossing,

@@ -20,7 +20,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         HasCollisions = 4,
     }
 
-    public class MT_Object
+    public class MT_Object : IValidator
     {
         private const string FileHeader = "MTO";
         private const byte FileVersion = 3;
@@ -212,6 +212,21 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     Collision.WriteToFile(writer);
                 }
             }
+        }
+
+        public bool Validate()
+        {
+            bool bValidity = false;
+            bValidity = !string.IsNullOrEmpty(ObjectName);
+            bValidity = ObjectFlags != 0;
+            
+            foreach(var LodObject in Lods)
+            {
+                bValidity = LodObject.Validate();
+            }
+
+            bValidity = Collision.Validate();
+            return bValidity;
         }
     }
 }
