@@ -600,6 +600,7 @@
     <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_FaceGroup.cs" />
     <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_ImportHelpers.cs" />
     <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_MaterialInstance.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_Skeleton.cs" />
     <Compile Include="ResourceTypes\ModelHelpers\ModelWrapper.cs" />
     <Compile Include="Rendering\Core\GizmoTool.cs" />
     <Compile Include="Rendering\Core\Profiler.cs" />

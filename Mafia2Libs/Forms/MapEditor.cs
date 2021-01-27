@@ -2186,12 +2186,7 @@ namespace Mafia2Tool
             // Let users change their import values
             FrameResourceModelOptions modelForm = new FrameResourceModelOptions(BundleObject);
             modelForm.ShowDialog();
-            /*if (modelForm.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-
-            modelForm.Dispose();*/
+            modelForm.Dispose();
 
             foreach(MT_Object ModelObject in BundleObject.Objects)
             {

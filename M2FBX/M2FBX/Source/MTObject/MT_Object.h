@@ -7,6 +7,7 @@
 
 class MT_Collision;
 class MT_ObjectHandler;
+class MT_Skeleton;
 struct TransformStruct;
 
 enum MT_ObjectFlags : uint
@@ -67,6 +68,7 @@ private:
 
 	std::vector<MT_Lod> LodObjects;
 	MT_Collision* CollisionObject = nullptr;
+	MT_Skeleton* SkeletonObject = nullptr;
 };
 
 class MT_ObjectBundle

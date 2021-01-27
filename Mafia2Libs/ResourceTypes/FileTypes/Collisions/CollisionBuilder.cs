@@ -9,11 +9,13 @@ using Utils.SharpDXExtensions;
 using Utils.Models;
 using static Utils.Models.M2TStructure;
 using Utils.Helpers;
+using ResourceTypes.ModelHelpers.ModelExporter;
 
 namespace ResourceTypes.Collisions
 {
     public class CollisionModelBuilder
     {
+        // TODO: Remove with M2T becomes obsolete.
         public Collision.CollisionModel BuildFromM2TStructure(M2TStructure sourceModel)
         {
             Collision.CollisionModel collisionModel = new Collision.CollisionModel();
@@ -55,6 +57,55 @@ namespace ResourceTypes.Collisions
                             modelLod.Indices[ci],
                             modelLod.Indices[ci + 1],
                             modelLod.Indices[ci + 2]
+                        ));
+                        materials.Add(part.Key);
+                    }
+                }
+            }
+
+            collisionModel.Mesh = new TriangleMeshBuilder().Build(vertexList, orderedTriangles, materials);
+            return collisionModel;
+        }
+
+        public Collision.CollisionModel BuildFromMTCollision(string Name, MT_Collision CollisionObject)
+        {
+            Collision.CollisionModel collisionModel = new Collision.CollisionModel();
+            collisionModel.Hash = FNV64.Hash(Name);
+
+            IList<Vector3> vertexList = CollisionObject.Vertices.ToList();
+
+            // Material sections should be unique and sorted by material
+
+            var sortedParts = new SortedDictionary<ushort, List<MT_FaceGroup>>(
+                CollisionObject.FaceGroups
+                    .GroupBy(p => MaterialToIndex(p.Material.Name))
+                    .ToDictionary(p => p.Key, p => p.ToList())
+            );
+            collisionModel.Sections = new List<Collision.Section>(sortedParts.Count);
+
+            IList<TriangleMesh.Triangle> orderedTriangles = new List<TriangleMesh.Triangle>(CollisionObject.Indices.Length / 3);
+            IList<ushort> materials = new List<ushort>();
+
+            foreach (var part in sortedParts)
+            {
+                var sameMaterialParts = part.Value;
+                collisionModel.Sections.Add(new Collision.Section
+                {
+                    Material = part.Key - 2,
+                    Start = orderedTriangles.Count * 3,
+                    NumEdges = (int)sameMaterialParts.Sum(p => p.NumFaces) * 3
+                });
+
+                foreach (var sameMaterialPart in sameMaterialParts)
+                {
+                    var start = (int)sameMaterialPart.StartIndex;
+                    var end = start + sameMaterialPart.NumFaces * 3;
+                    for (int ci = start; ci < end; ci += 3)
+                    {
+                        orderedTriangles.Add(new TriangleMesh.Triangle(
+                            CollisionObject.Indices[ci],
+                            CollisionObject.Indices[ci + 1],
+                            CollisionObject.Indices[ci + 2]
                         ));
                         materials.Add(part.Key);
                     }

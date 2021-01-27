@@ -71,11 +71,14 @@
     <ClCompile Include="Source\MTObject\MT_FaceGroup.cpp">
       <Filter>Source Files\MTObject</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Utilities\LogFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\MTObject\MT_Collision.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\MTObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utilities\LogFile.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MTObject\MT_Skeleton.cpp">
+      <Filter>Source Files\MTObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -124,11 +127,14 @@
     <ClInclude Include="Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Utilities\LogFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\MTObject\MT_Collision.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\MTObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utilities\LogFile.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MTObject\MT_Skeleton.h">
+      <Filter>Header Files\MTObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

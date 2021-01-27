@@ -1,6 +1,7 @@
 #include "MT_Object.h"
 
 #include "Source/MTObject/MT_Collision.h"
+#include "Source/MTObject/MT_Skeleton.h"
 #include "Source/Utilities/FileUtils.h"
 
 bool MT_Object::HasObjectFlag(const MT_ObjectFlags FlagToCheck) const
@@ -25,6 +26,13 @@ void MT_Object::Cleanup()
 	{
 		CollisionObject->Cleanup();
 		CollisionObject = nullptr;
+	}
+
+	// Cleanup Skeleton
+	if (SkeletonObject)
+	{
+		// TODO: Maybe do cleanup?
+		SkeletonObject = nullptr;
 	}
 }
 
@@ -67,6 +75,13 @@ bool MT_Object::ReadFromFile(FILE* InStream)
 		CollisionObject->ReadFromFile(InStream);
 	}
 
+	// Read Skeleton
+	if (HasObjectFlag(MT_ObjectFlags::HasSkinning))
+	{
+		SkeletonObject = new MT_Skeleton();
+		SkeletonObject->ReadFromFile(InStream);
+	}
+
 	return true;
 }
 
@@ -96,6 +111,12 @@ void MT_Object::WriteToFile(FILE* OutStream) const
 	if (HasObjectFlag(MT_ObjectFlags::HasCollisions))
 	{
 		CollisionObject->WriteToFile(OutStream);
+	}
+
+	// Write Skeleton
+	if (HasObjectFlag(MT_ObjectFlags::HasSkinning))
+	{
+		SkeletonObject->WriteToFile(OutStream);
 	}
 }
 
