@@ -32,6 +32,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public Vector3 Scale { get; set; }
         public MT_Lod[] Lods { get; set; }
         public MT_Collision Collision { get; set; }
+        public MT_Skeleton Skeleton { get; set; }
+
 
         /** Validation Functions */
         public bool IsHeaderValid(string InHeader, byte InVersion)
@@ -176,6 +178,18 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
+            if(ObjectFlags.HasFlag(MT_ObjectFlags.HasSkinning))
+            {
+                Skeleton = new MT_Skeleton();
+                bool bIsValid = Skeleton.ReadFromFile(reader);
+
+                // Failed to read Skeleton, return.
+                if (!bIsValid)
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -210,6 +224,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 if (Collision != null)
                 {
                     Collision.WriteToFile(writer);
+                }
+            }
+
+            if(ObjectFlags.HasFlag(MT_ObjectFlags.HasSkinning))
+            {
+                if(Skeleton != null)
+                {
+                    Skeleton.WriteToFile(writer);
                 }
             }
         }

@@ -12,9 +12,15 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
     public class MT_CollisionHelper : IImportHelper
     {
+        public struct CollisionGroup
+        {
+            public string FaceGroupName { get; set; }
+            public CollisionMaterials CollisionMaterial { get; set; }
+        }
+
         private MT_Collision OwningObject; 
 
-        public CollisionMaterials[] FaceGroupMaterials { get; set; }
+        public CollisionGroup[] Materials { get; set; }
 
         public MT_CollisionHelper(MT_Collision CollisionObject)
         {
@@ -25,10 +31,12 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         {
             if(OwningObject != null)
             {
-                FaceGroupMaterials = new CollisionMaterials[OwningObject.FaceGroups.Length];
+                Materials = new CollisionGroup[OwningObject.FaceGroups.Length];
                 for(int i = 0; i < OwningObject.FaceGroups.Length; i++)
                 {
-                    FaceGroupMaterials[i] = CollisionMaterials.Undefined;
+                    string MaterialName = OwningObject.FaceGroups[i].Material.Name;
+                    Materials[i].FaceGroupName = MaterialName;
+                    Materials[i].CollisionMaterial = CollisionEnumUtils.MaterialNameToEnumValue(MaterialName);
                 }
             }
         }
@@ -39,7 +47,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 for(int i = 0; i < OwningObject.FaceGroups.Length; i++)
                 {
-                    OwningObject.FaceGroups[i].Material.Name = FaceGroupMaterials[i].ToString();
+                    OwningObject.FaceGroups[i].Material.Name = Materials[i].ToString();
                 }
             }
         }

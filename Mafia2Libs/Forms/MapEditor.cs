@@ -27,11 +27,14 @@ using ResourceTypes.Actors;
 using Utils.Extensions;
 using Rendering.Core;
 using Rendering.Factories;
-using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.ModelHelpers.ModelExporter;
 
 namespace Mafia2Tool
 {
+    // TODO: Remove/Refactor Collision construction/import code from MapEditor
+    // TODO: Move all Render construction for Collisions out of the MapEditor, and possible into RenderAdaptors.
+    // TODO: Remove all RoadMap related construction functionality
+
     public partial class MapEditor : Form
     {
         private InputClass Input { get; set; }
@@ -1874,6 +1877,7 @@ namespace Mafia2Tool
             }
         }
 
+        // TODO: Need to cleanup this function, it's atrocious.
         private void AddCollisionButton_Click(object sender, EventArgs e)
         {
             // Check if we need to create a collisions folder
@@ -1925,12 +1929,18 @@ namespace Mafia2Tool
                 return;
             }
 
-            ulong CollisionHash = FNV64.Hash(m2tColModel.Name);
+            Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromM2TStructure(m2tColModel);
+            AddCollision(collisionModel);
+        }
+
+        // TODO: Cleanup this function, it's atrocious.
+        private Collision.Placement AddCollision(Collision.CollisionModel collisionModel)
+        {
+            ulong CollisionHash = collisionModel.Hash;
             Collision.CollisionModel CollisionModel = null;
-            if(!SceneData.Collisions.Models.ContainsKey(CollisionHash))
+            if (!SceneData.Collisions.Models.ContainsKey(CollisionHash))
             {
                 // Create a new renderable for collision object
-                Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromM2TStructure(m2tColModel);
                 RenderStaticCollision collision = new RenderStaticCollision();
                 collision.ConvertCollisionToRender(collisionModel.Hash, collisionModel.Mesh);
                 RenderStorageSingleton.Instance.StaticCollisions.TryAdd(collisionModel.Hash, collision);
@@ -1983,6 +1993,8 @@ namespace Mafia2Tool
             instance.SetTransform(placement.Transform);
             Graphics.InitObjectStack.Add(refID, instance);
             SceneData.Collisions.Placements.Add(placement);
+
+            return placement;
         }
 
         private void CameraToolsOnValueChanged(object sender, EventArgs e)
@@ -2199,7 +2211,8 @@ namespace Mafia2Tool
                 CreateMeshBuffers(Wrapper);
 
                 // Set other MetaInfo
-                MatrixExtensions.SetMatrix(ModelObject.Rotation, ModelObject.Scale, ModelObject.Position);
+                Matrix LocalTransform = MatrixExtensions.SetMatrix(ModelObject.Rotation, ModelObject.Scale, ModelObject.Position);
+                NewMesh.LocalTransform = LocalTransform;
                 NewMesh.Name.Set(ModelObject.ObjectName);
 
                 // Construct TreeNode
@@ -2214,6 +2227,14 @@ namespace Mafia2Tool
                 if(Renderer != null)
                 {
                     Graphics.InitObjectStack.Add(NewMesh.RefID, Renderer);
+                }
+
+                if(ModelObject.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
+                {
+                    Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromMTCollision(ModelObject.ObjectName, ModelObject.Collision);
+                    Collision.Placement Placement = AddCollision(collisionModel);
+                    Placement.Position = ModelObject.Position;
+                    Placement.RotationDegrees = ModelObject.Rotation;
                 }
             }
         }

@@ -126,9 +126,9 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 
 	// Get Objects transform
 	TransformStruct TransformObject = {};
-	const FbxVector4& Position = Node->GetGeometricTranslation(FbxNode::eSourcePivot);
-	const FbxVector4& Rotation = Node->GetGeometricRotation(FbxNode::eSourcePivot);
-	const FbxVector4& Scale = Node->GetGeometricScaling(FbxNode::eSourcePivot);
+	const FbxDouble3& Position = Node->LclTranslation;
+	const FbxDouble3& Rotation = Node->LclRotation;
+	const FbxDouble3& Scale = Node->LclScaling;
 	TransformObject.Position = { (float)Position[0], (float)Position[1], (float)Position[2] };
 	TransformObject.Rotation = { (float)Rotation[0], (float)Rotation[1], (float)Rotation[2] };
 	TransformObject.Scale = { (float)Scale[0], (float)Scale[1], (float)Scale[2] };

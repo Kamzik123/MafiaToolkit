@@ -29,7 +29,7 @@ namespace ResourceTypes.Collisions
 
             var sortedParts = new SortedDictionary<ushort, List<ModelPart>>(
                 modelLod.Parts
-                    .GroupBy(p => MaterialToIndex(p.Material))
+                    .GroupBy(p => CollisionEnumUtils.MaterialNameToIndex(p.Material))
                     .ToDictionary(p => p.Key, p => p.ToList())
             );
             collisionModel.Sections = new List<Collision.Section>(sortedParts.Count);
@@ -78,7 +78,7 @@ namespace ResourceTypes.Collisions
 
             var sortedParts = new SortedDictionary<ushort, List<MT_FaceGroup>>(
                 CollisionObject.FaceGroups
-                    .GroupBy(p => MaterialToIndex(p.Material.Name))
+                    .GroupBy(p => CollisionEnumUtils.MaterialNameToIndex(p.Material.Name))
                     .ToDictionary(p => p.Key, p => p.ToList())
             );
             collisionModel.Sections = new List<Collision.Section>(sortedParts.Count);
@@ -114,14 +114,6 @@ namespace ResourceTypes.Collisions
 
             collisionModel.Mesh = new TriangleMeshBuilder().Build(vertexList, orderedTriangles, materials);
             return collisionModel;
-        }
-
-        private ushort MaterialToIndex(string material)
-        {
-            CollisionMaterials parsedMaterial;
-            if (!Enum.TryParse(material, true, out parsedMaterial))
-                parsedMaterial = CollisionMaterials.Concrete; // fallback material
-            return (ushort) parsedMaterial;
         }
     }
 

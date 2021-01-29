@@ -39,7 +39,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     {
         public MT_Joint[] Joints { get; set; }
 
-        public void ReadFromFile(BinaryReader reader)
+        public bool ReadFromFile(BinaryReader reader)
         {
             uint NumJoints = reader.ReadUInt32();
             Joints = new MT_Joint[NumJoints];
@@ -49,6 +49,8 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 MT_Joint JointObject = new MT_Joint();
                 JointObject.ReadFromFile(reader);
             }
+
+            return true;
         }
 
         public void WriteToFile(BinaryWriter writer)
