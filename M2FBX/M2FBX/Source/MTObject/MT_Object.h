@@ -40,6 +40,7 @@ public:
 	const std::vector<MT_Lod> GetLods() const { return LodObjects; }
 	const TransformStruct& GetTransform() const { return Transform; }
 	const MT_Collision* GetCollision() const { return CollisionObject; }
+	const MT_Skeleton* GetSkeleton() const { return SkeletonObject; }
 
 	// Setters
 	void SetName(std::string& InName) { ObjectName = InName; }
@@ -53,6 +54,7 @@ public:
 		Temp |= (InCollision ? MT_ObjectFlags::HasCollisions : 0);
 		ObjectFlags = (MT_ObjectFlags)Temp;
 	}
+	void SetSkeleton(MT_Skeleton* InSkeleton) { SkeletonObject = InSkeleton; }
 
 	// IO
 	bool ReadFromFile(FILE* InStream);

@@ -2,10 +2,12 @@
 
 #include "Common.h"
 
+class MT_Collision;
 class MT_FaceGroup;
 class MT_MaterialInstance;
 class MT_Object;
 class MT_Lod;
+class MT_Skeleton;
 
 enum class UVElementType
 {
@@ -29,11 +31,18 @@ public:
 	bool ConvertBundleToFbx();
 	bool ConvertObjectToNode(const MT_Object& Object);
 
+	// TODO: Refactor these, lots of overlapping code.
 	bool ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode);
+	bool ConvertCollisionToNode(const MT_Collision& Collision, FbxNode* CollisionNode);
+
+	bool ConvertSkeletonToNode(const MT_Skeleton& Skeleton, FbxSkin* Skin, FbxNode* BoneRoot, const int LODIndex);
+
+	bool ApplySkinToMesh(const MT_Lod& LodObject, FbxSkin* Skin, FbxNode* MeshNode);
 
 private:
 
 	FbxGeometryElementUV* CreateUVElement(FbxMesh* Mesh, const UVElementType Type);
+	FbxGeometryElementUV* CreateUVElement(FbxMesh* Mesh, const char* Name);
 
 	FbxGeometryElementMaterial* CreateMaterialElement(FbxMesh* pMesh, const char* pName);
 

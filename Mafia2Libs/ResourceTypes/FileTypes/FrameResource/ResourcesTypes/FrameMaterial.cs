@@ -220,8 +220,6 @@ namespace ResourceTypes.FrameResource
         {
             materialName = name;
             materialHash = FNV64.Hash(name);
-            Console.WriteLine(FNV64.Hash(name));
-            Console.WriteLine(FNV32.Hash(name));
         }
 
         public override string ToString()

@@ -330,30 +330,33 @@ namespace Utils.Models
                 frameMaterial.Materials[x] = new MaterialStruct[LodObject.FaceGroups.Length];
                 for (int i = 0; i < LodObject.FaceGroups.Length; i++)
                 {
+                    MT_FaceGroup CurrentFaceGroup = LodObject.FaceGroups[i];
+
                     frameMaterial.Materials[x][i] = new MaterialStruct();
-                    frameMaterial.Materials[x][i].StartIndex = (int)LodObject.FaceGroups[i].StartIndex;
-                    frameMaterial.Materials[x][i].NumFaces = (int)LodObject.FaceGroups[i].NumFaces;
+                    frameMaterial.Materials[x][i].StartIndex = (int)CurrentFaceGroup.StartIndex;
+                    frameMaterial.Materials[x][i].NumFaces = (int)CurrentFaceGroup.NumFaces;
                     frameMaterial.Materials[x][i].Unk3 = 0;
 
-                    IMaterial FoundMaterial = MaterialsManager.LookupMaterialByName(frameMaterial.Materials[x][i].MaterialName);
+                    IMaterial FoundMaterial = MaterialsManager.LookupMaterialByName(CurrentFaceGroup.Material.Name);
                     if (FoundMaterial != null)
                     {
                         frameMaterial.Materials[x][i].MaterialName = FoundMaterial.GetMaterialName();
                         frameMaterial.Materials[x][i].MaterialHash = FoundMaterial.GetMaterialHash();
                     }
 
-                    faceIndex += (int)LodObject.FaceGroups[i].NumFaces;
+                    faceIndex += (int)CurrentFaceGroup.NumFaces;
 
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].Bounds = new short[6]
                     {
-                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Minimum.X),
-                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Minimum.Y),
-                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Minimum.Z),
-                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Maximum.X),
-                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Maximum.Y),
-                        Convert.ToInt16(LodObject.FaceGroups[i].Bounds.Maximum.Z)
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Minimum.X),
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Minimum.Y),
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Minimum.Z),
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Maximum.X),
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Maximum.Y),
+                        Convert.ToInt16(CurrentFaceGroup.Bounds.Maximum.Z)
                     };
 
+                    // TODO: Figure out what this actually means.
                     if (ModelObject.Lods[x].FaceGroups.Length == 1)
                     {
                         string MaterialName = ModelObject.Lods[0].FaceGroups[0].Material.Name;
@@ -364,8 +367,8 @@ namespace Utils.Models
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].LeftIndex = -1;
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].RightIndex = -1;
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].SecondIndex =
-                        Convert.ToUInt16(LodObject.FaceGroups[i].NumFaces - 1);
-                    frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].BaseIndex = (int)LodObject.FaceGroups[i].StartIndex;
+                        Convert.ToUInt16(CurrentFaceGroup.NumFaces - 1);
+                    frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].BaseIndex = (int)CurrentFaceGroup.StartIndex;
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].FirstBurst = i;
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].NumBurst = 1;
                 }

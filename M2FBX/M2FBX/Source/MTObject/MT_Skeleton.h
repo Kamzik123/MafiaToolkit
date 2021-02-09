@@ -51,7 +51,7 @@ class MT_Skeleton
 public:
 
 	// Getters
-	std::vector<MT_Joint>& GetJoints() { return Joints; }
+	std::vector<MT_Joint> GetJoints() const { return Joints; }
 
 	// Setters
 	void SetJoints(std::vector<MT_Joint>& InJoints) { Joints = InJoints; }

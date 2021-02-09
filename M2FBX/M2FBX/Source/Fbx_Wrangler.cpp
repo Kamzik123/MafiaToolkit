@@ -1,9 +1,11 @@
 #include "Fbx_Wrangler.h"
 
 #include "FbxUtilities.h"
+#include "Source/MTObject/MT_Collision.h"
 #include "Source/MTObject/MT_Object.h"
 #include "Source/MTObject/MT_ObjectHandler.h"
 #include "Source/MTObject/MT_Lod.h"
+#include "Source/MTObject/MT_Skeleton.h"
 
 namespace WranglerUtils
 {
@@ -52,6 +54,7 @@ bool Fbx_Wrangler::ConstructScene()
 
 	Scene = FbxScene::Create(SdkManager, "ToolkitScene");
 	Scene->SetDocumentInfo(DocInfo);
+	
 	return true;
 }
 
@@ -105,6 +108,16 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object)
 	RootNode->LclRotation = { Transform.Rotation.x, Transform.Rotation.y , Transform.Rotation.z };
 	RootNode->LclScaling = { Transform.Scale.x, Transform.Scale.y , Transform.Scale.z };
 
+	FbxSkin* Skin = nullptr;
+	if (Object.HasObjectFlag(HasSkinning))
+	{
+		const MT_Skeleton* Skeleton = Object.GetSkeleton();
+		Skin = FbxSkin::Create(SdkManager, "Skin");
+		FbxNode* Joint = nullptr;
+		ConvertSkeletonToNode(*Skeleton, Skin, Joint, 0);
+		RootNode->AddChild(Joint);
+	}
+
 	if (Object.HasObjectFlag(HasLODs))
 	{
 		const std::vector<MT_Lod>& ModelLods = Object.GetLods();
@@ -119,12 +132,48 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object)
 			FbxNode* NewLodNode = FbxNode::Create(SdkManager, NodeName.data());
 			bool bResult = ConvertLodToNode(Lod, NewLodNode);
 			RootNode->AddChild(NewLodNode);
+
+			if (Object.HasObjectFlag(HasSkinning))
+			{
+				bResult = ApplySkinToMesh(Lod, Skin, NewLodNode);
+			}
 		}
+	}
+
+	if (Object.HasObjectFlag(HasCollisions))
+	{
+		const MT_Collision* Collision = Object.GetCollision();
+
+		FbxNode* CollisionNode = FbxNode::Create(SdkManager, "COL");
+		bool bResult = ConvertCollisionToNode(*Collision, CollisionNode);
+		RootNode->AddChild(CollisionNode);
 	}
 
 	FbxNode* SceneRootNode = Scene->GetRootNode();
 	SceneRootNode->AddChild(RootNode);
 	SaveDocument();
+	return true;
+}
+
+bool Fbx_Wrangler::ApplySkinToMesh(const MT_Lod& LodObject, FbxSkin* Skin, FbxNode* MeshNode)
+{
+	if (LodObject.HasVertexFlag(VertexFlags::Skin))
+	{
+		const std::vector<Vertex>& Vertices = LodObject.GetVertices();
+		for (size_t x = 0; x < Vertices.size(); x++)
+		{
+			Vertex Vert = Vertices[x];
+			for (int z = 0; z < 4; z++)
+			{
+				if (Vert.boneWeights[z] != 0.0f)
+				{
+					FbxCluster* Cluster = Skin->GetCluster(Vert.boneIDs[z]);
+					Cluster->AddControlPointIndex(x, Vert.boneWeights[z]);
+				}
+			}
+		}
+	}
+
 	return true;
 }
 
@@ -260,8 +309,8 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 		FbxSurfacePhong* FaceGroupMaterial = CreateMaterial(FaceGroup.GetMaterialInstance());
 		LodNode->AddMaterial(FaceGroupMaterial);
 
-		size_t StartIndex = FaceGroup.GetStartIndex() / 3;
-		size_t NumFaces = FaceGroup.GetNumFaces();
+		const size_t StartIndex = FaceGroup.GetStartIndex() / 3;
+		const size_t NumFaces = FaceGroup.GetNumFaces();
 
 		for (size_t x = StartIndex; x < StartIndex + NumFaces; x++)
 		{
@@ -305,10 +354,144 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 	return true;
 }
 
+bool Fbx_Wrangler::ConvertCollisionToNode(const MT_Collision& Collision, FbxNode* CollisionNode)
+{
+	// Create new FbxNodes then set attributes
+	FbxMesh* Mesh = FbxMesh::Create(SdkManager, "CollisionMesh");
+	CollisionNode->SetNodeAttribute(Mesh);
+	CollisionNode->SetShadingMode(FbxNode::eHardShading);
+
+	// Create MainLayer
+	FbxLayer* Layer0 = Mesh->GetLayer(0);
+	if (!Layer0)
+	{
+		Mesh->CreateLayer();
+		Layer0 = Mesh->GetLayer(0);
+	}
+
+	// Setup Initial Control Point Array
+	const std::vector<Point3>& Vertices = Collision.GetVertices();
+	Mesh->InitControlPoints(Vertices.size());
+	if (FbxVector4* ControlPoints = Mesh->GetControlPoints())
+	{
+		for (size_t i = 0; i < Vertices.size(); i++)
+		{
+			const Point3& VertexEntry = Vertices[i];
+			ControlPoints[i] = FbxVector4{ VertexEntry.x, VertexEntry.y, VertexEntry.z };
+		}
+	}
+
+	// Construct Main UV (although empty)
+	FbxGeometryElementUV* CollisionUV = CreateUVElement(Mesh, "CollisionUV");
+	CollisionUV->GetDirectArray().Resize(Vertices.size());
+
+	// Setup Triangle data
+	const std::vector<MT_FaceGroup>& FaceGroups = Collision.GetFaceGroups();
+	const std::vector<Int3>& Indices = Collision.GetIndices();
+
+	for (size_t i = 0; i < FaceGroups.size(); i++)
+	{
+		const MT_FaceGroup& FaceGroup = FaceGroups[i];
+		FbxSurfacePhong* FaceGroupMaterial = CreateMaterial(FaceGroup.GetMaterialInstance());
+		CollisionNode->AddMaterial(FaceGroupMaterial);
+
+		const size_t StartIndex = FaceGroup.GetStartIndex() / 3;
+		const size_t NumFaces = FaceGroup.GetNumFaces();
+
+		for (size_t x = StartIndex; x < StartIndex + NumFaces; x++)
+		{
+			const Int3& Tri = Indices[x];
+			Mesh->BeginPolygon(i);
+			Mesh->AddPolygon(Tri.i1);
+			Mesh->AddPolygon(Tri.i2);
+			Mesh->AddPolygon(Tri.i3);
+			Mesh->EndPolygon();
+
+			// Set CollisionUV Mapping
+			FBX_ASSERT(CollisionUV);//
+			CollisionUV->GetIndexArray().Add(i);
+		}
+	}
+
+	return true;
+}
+
+bool Fbx_Wrangler::ConvertSkeletonToNode(const MT_Skeleton& Skeleton, FbxSkin* Skin, FbxNode* BoneRoot, const int LODIndex)
+{
+	std::vector<FbxNode*> BoneNodes = {};
+	std::vector<FbxCluster*> ClusterNodes = {};
+
+	const std::vector<MT_Joint>& Joints = Skeleton.GetJoints();
+	for (size_t i = 0; i < Joints.size(); i++)
+	{
+		const MT_Joint& JointObject = Joints[i];
+		const std::string& Name = JointObject.GetName();
+		FbxString SkeletonName = Name.data();
+		FbxString ClusterName = Name.data();
+
+		// Append names
+		SkeletonName.Append("_Skeleton", 10);
+		ClusterName.Append("_Cluster", 8);
+
+		// Construct Transform 
+		const JointMatrix& Transform = JointObject.GetTransform();
+
+		FbxQuaternion quaterion = FbxQuaternion(Transform.Rotation.x, Transform.Rotation.y, Transform.Rotation.z, Transform.Rotation.w);
+		FbxVector4 euler;
+		euler.SetXYZ(quaterion);
+
+		FbxAMatrix lTransformMatrix;
+		lTransformMatrix.SetIdentity();
+
+		lTransformMatrix.SetT(FbxVector4(Transform.Position.x, Transform.Position.y, Transform.Position.z));
+		lTransformMatrix.SetQ(quaterion);
+		lTransformMatrix.SetS(FbxVector4(Transform.Scale.x, Transform.Scale.y, Transform.Scale.z));
+
+		// Construct Node to contain Skeleton and Link for Cluster
+		// (Then Construct transform)
+		FbxNode* JointNode = FbxNode::Create(SdkManager, Name.data());
+		JointNode->LclTranslation.Set(lTransformMatrix.GetT());
+		JointNode->LclRotation.Set(lTransformMatrix.GetR());
+		JointNode->LclScaling.Set(lTransformMatrix.GetS());
+
+		// Setup Parenting
+		const int ParentIndex = JointObject.GetParentJointIndex();
+		if (ParentIndex != 0xFF)
+		{
+			BoneNodes[ParentIndex]->AddChild(JointNode);
+		}
+		else
+		{
+			BoneRoot = JointNode;
+		}
+
+		// Create FbxSkeleton Joint
+		FbxSkeleton* JointFbx = FbxSkeleton::Create(SdkManager, SkeletonName);
+		JointFbx->SetSkeletonType(FbxSkeleton::EType::eLimbNode);
+		JointNode->SetNodeAttribute(JointFbx);
+
+		// Create FbxCluster
+		FbxCluster* ClusterFbx = FbxCluster::Create(SdkManager, ClusterName);
+		ClusterFbx->SetLinkMode(FbxCluster::eTotalOne);
+		ClusterFbx->SetLink(JointNode);
+		ClusterFbx->SetTransformLinkMatrix(JointNode->EvaluateGlobalTransform());
+		Skin->AddCluster(ClusterFbx);
+
+		BoneNodes.push_back(JointNode);
+	}
+
+	return true;
+}
+
 FbxGeometryElementUV* Fbx_Wrangler::CreateUVElement(FbxMesh* Mesh, const UVElementType Type)
 {
 	const std::string& UVName = GetNameByUVType(Type);
-	FbxGeometryElementUV* UVElement = Mesh->CreateElementUV(UVName.data());
+	return CreateUVElement(Mesh, UVName.data());
+}
+
+FbxGeometryElementUV* Fbx_Wrangler::CreateUVElement(FbxMesh* Mesh, const char* Name)
+{
+	FbxGeometryElementUV* UVElement = Mesh->CreateElementUV(Name);
 	FBX_ASSERT(UVElement);
 
 	UVElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
@@ -407,6 +590,9 @@ bool Fbx_Wrangler::SaveDocument()
 	IOS_REF.SetBoolProp(EXP_FBX_EMBEDDED, false);
 	IOS_REF.SetBoolProp(EXP_FBX_ANIMATION, false);
 	IOS_REF.SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
+
+	// Convert scene to CM
+	FbxSystemUnit::cm.ConvertScene(Scene, Scene->GetRootNode());
 
 	Exporter->Initialize(FbxName, 0, SdkManager->GetIOSettings());
 	Exporter->Export(Scene);

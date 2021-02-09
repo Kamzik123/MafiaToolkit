@@ -60,6 +60,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             FrameMaterial MaterialInfo = SingleMesh.Material;
             ObjectFlags |= MT_ObjectFlags.HasLODs;
 
+            // TODO - Possibly add an option where we can ask to export with local transform?
+            Position = Vector3.Zero;
+            Rotation = Vector3.Zero;
+            Scale = Vector3.One;
+
             Lods = new MT_Lod[GeometryInfo.LOD.Length];
             for(int i = 0; i < Lods.Length; i++)
             {
@@ -241,13 +246,20 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             bool bValidity = false;
             bValidity = !string.IsNullOrEmpty(ObjectName);
             bValidity = ObjectFlags != 0;
-            
-            foreach(var LodObject in Lods)
+
+            if (ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
             {
-                bValidity = LodObject.Validate();
+                foreach (var LodObject in Lods)
+                {
+                    bValidity = LodObject.Validate();
+                }
             }
 
-            bValidity = Collision.Validate();
+            if (ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
+            {
+                bValidity = Collision.Validate();
+            }
+
             return bValidity;
         }
     }
