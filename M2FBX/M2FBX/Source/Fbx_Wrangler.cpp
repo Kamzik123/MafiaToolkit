@@ -121,7 +121,7 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object)
 	if (Object.HasObjectFlag(HasLODs))
 	{
 		const std::vector<MT_Lod>& ModelLods = Object.GetLods();
-		for (size_t i = 0; i < ModelLods.size(); i++)
+		for (size_t i = 0; i < 1; i++)
 		{
 			// Setup name and get lod
 			std::string NodeName = "LOD";
@@ -155,7 +155,7 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object)
 	return true;
 }
 
-bool Fbx_Wrangler::ApplySkinToMesh(const MT_Lod& LodObject, FbxSkin* Skin, FbxNode* MeshNode)
+bool Fbx_Wrangler::ApplySkinToMesh(const MT_Lod& LodObject, FbxSkin*& Skin, FbxNode* MeshNode)
 {
 	if (LodObject.HasVertexFlag(VertexFlags::Skin))
 	{
@@ -172,6 +172,10 @@ bool Fbx_Wrangler::ApplySkinToMesh(const MT_Lod& LodObject, FbxSkin* Skin, FbxNo
 				}
 			}
 		}
+
+		auto attribute = MeshNode->GetNodeAttribute();
+		FbxGeometry* geometry = (FbxGeometry*)attribute;
+		geometry->AddDeformer(Skin);
 	}
 
 	return true;
@@ -416,7 +420,7 @@ bool Fbx_Wrangler::ConvertCollisionToNode(const MT_Collision& Collision, FbxNode
 	return true;
 }
 
-bool Fbx_Wrangler::ConvertSkeletonToNode(const MT_Skeleton& Skeleton, FbxSkin* Skin, FbxNode* BoneRoot, const int LODIndex)
+bool Fbx_Wrangler::ConvertSkeletonToNode(const MT_Skeleton& Skeleton, FbxSkin*& Skin, FbxNode*& BoneRoot, const int LODIndex)
 {
 	std::vector<FbxNode*> BoneNodes = {};
 	std::vector<FbxCluster*> ClusterNodes = {};
@@ -594,7 +598,7 @@ bool Fbx_Wrangler::SaveDocument()
 	// Convert scene to CM
 	FbxSystemUnit::cm.ConvertScene(Scene, Scene->GetRootNode());
 
-	Exporter->Initialize(FbxName, 0, SdkManager->GetIOSettings());
+	Exporter->Initialize(FbxName, 1, SdkManager->GetIOSettings());
 	Exporter->Export(Scene);
 	Exporter->Destroy();
 	return true;

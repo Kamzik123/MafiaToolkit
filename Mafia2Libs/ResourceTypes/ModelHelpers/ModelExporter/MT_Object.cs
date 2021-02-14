@@ -131,6 +131,69 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
+        public void BuildFromCooked(FrameObjectModel RiggedModel, VertexBuffer[] VBuffer, IndexBuffer[] IBuffer)
+        {
+            BuildFromCooked((FrameObjectSingleMesh)RiggedModel, VBuffer, IBuffer);
+
+            MT_Skeleton ModelSkeleton = new MT_Skeleton();
+
+            FrameBlendInfo BlendInfo = RiggedModel.GetBlendInfoObject();
+            FrameSkeleton Skeleton = RiggedModel.GetSkeletonObject();
+            FrameSkeletonHierachy SkeletonHierarchy = RiggedModel.GetSkeletonHierarchyObject();
+
+            ModelSkeleton.Joints = new MT_Joint[Skeleton.BoneNames.Length];
+            for(int i = 0; i < ModelSkeleton.Joints.Length; i++)
+            {
+                MT_Joint JointObject = new MT_Joint();
+                JointObject.Name = Skeleton.BoneNames[i].ToString();
+                JointObject.ParentJointIndex = SkeletonHierarchy.ParentIndices[i];
+                JointObject.UsageFlags = Skeleton.BoneLODUsage[i];
+
+                Vector3 Scale, Position;
+                Quaternion Rotation;
+
+                Matrix JointTransform = Skeleton.JointTransforms[i];
+                JointTransform.Decompose(out Scale, out Rotation, out Position);
+                JointObject.Position = Position;
+                JointObject.Scale = Scale;
+                JointObject.Rotation = Rotation;
+                ModelSkeleton.Joints[i] = JointObject;
+            }
+
+            for (int i = 0; i < BlendInfo.BoneIndexInfos.Length; i++)
+            {
+                var indexInfos = BlendInfo.BoneIndexInfos[i];
+                var lod = Lods[i];
+                bool[] remapped = new bool[lod.Vertices.Length];
+                for (int x = 0; x < indexInfos.NumMaterials; x++)
+                {
+                    var part = lod.FaceGroups[x];
+                    byte offset = 0;
+                    for (int s = 0; s < indexInfos.BonesSlot[x]; s++)
+                    {
+                        offset += indexInfos.BonesPerPool[s];
+                    }
+
+                    for (uint z = part.StartIndex; z < part.StartIndex + (part.NumFaces * 3); z++)
+                    {
+                        uint index = lod.Indices[z];
+                        if (!remapped[index])
+                        {
+                            for (uint f = 0; f < indexInfos.NumWeightsPerVertex[x]; f++)
+                            {
+                                var previousBoneID = lod.Vertices[index].BoneIDs[f];
+                                lod.Vertices[index].BoneIDs[f] = indexInfos.IDs[offset + previousBoneID];
+                            }
+                            remapped[index] = true;
+                        }
+                    }
+                }
+            }
+
+            ObjectFlags |= MT_ObjectFlags.HasSkinning;
+            this.Skeleton = ModelSkeleton;
+        }
+
         /** IO Functions */
         public bool ReadFromFile(BinaryReader reader)
         {
@@ -213,9 +276,10 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Rotation.WriteToFile(writer);
             Scale.WriteToFile(writer);
 
+            // Write LODs
             if (ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
             {
-                // Write LODs
+                
                 writer.Write(Lods.Length);
 
                 for (int i = 0; i < Lods.Length; i++)
@@ -224,6 +288,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
+            // Write collisions (if applicable)
             if (ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
             {
                 if (Collision != null)
@@ -232,6 +297,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
+            // Write Skeleton (if applicable)
             if(ObjectFlags.HasFlag(MT_ObjectFlags.HasSkinning))
             {
                 if(Skeleton != null)

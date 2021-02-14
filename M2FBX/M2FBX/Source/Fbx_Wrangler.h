@@ -35,9 +35,9 @@ public:
 	bool ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode);
 	bool ConvertCollisionToNode(const MT_Collision& Collision, FbxNode* CollisionNode);
 
-	bool ConvertSkeletonToNode(const MT_Skeleton& Skeleton, FbxSkin* Skin, FbxNode* BoneRoot, const int LODIndex);
+	bool ConvertSkeletonToNode(const MT_Skeleton& Skeleton, FbxSkin*& Skin, FbxNode*& BoneRoot, const int LODIndex);
 
-	bool ApplySkinToMesh(const MT_Lod& LodObject, FbxSkin* Skin, FbxNode* MeshNode);
+	bool ApplySkinToMesh(const MT_Lod& LodObject, FbxSkin*& Skin, FbxNode* MeshNode);
 
 private:
 

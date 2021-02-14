@@ -60,9 +60,9 @@ namespace Utils.Models
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
             modelObject = new MT_Object();
-            modelObject.ObjectName = frameMesh.Name.ToString();
+            modelObject.ObjectName = frameModel.Name.ToString();
             //model.AOTexture = frameMesh.OMTextureHash.String; // missing support
-            modelObject.BuildFromCooked(frameMesh, vertexBuffers, indexBuffers);
+            modelObject.BuildFromCooked(frameModel, vertexBuffers, indexBuffers);
         }
 
         /// <summary>
@@ -408,58 +408,110 @@ namespace Utils.Models
                 lod.VertexBufferRef = new HashName("M2TK." + ModelObject.ObjectName + ".VB" + i);
             }
 
-            /*
-            if(model.IsSkinned)
+            // TODO: Remove this code from this function and insert into CreateSkinnedObjectsFromModel.
+            // Then get FrameObjectModel to direct call the aforementioned function.
+            // This function should then get called by that function, and leave this for static assets.
+            if (ModelObject.ObjectFlags.HasFlag(MT_ObjectFlags.HasSkinning))
             {
                 CreateSkinnedObjectsFromModel();
-            }*/
+            }
         }
 
         public void CreateSkinnedObjectsFromModel()
         {
-            /*FrameSkeleton skeleton = (frameMesh as FrameObjectModel).Skeleton;
-            FrameSkeletonHierachy skeletonHierarchy = (frameMesh as FrameObjectModel).SkeletonHierarchy;
+            // MT_Object data
+            MT_Skeleton SkeletonObject = ModelObject.Skeleton;
 
-            int jointCount = model.SkeletonData.Joints.Length;
-            skeleton.BoneNames = new HashName[jointCount];
-            skeleton.NumBones = new int[4];
-            skeleton.UnkLodData = new int[1];
-            skeleton.BoneLODUsage = new byte[jointCount];
+            // Get game-asset data
+            FrameObjectModel ModelFrame = (frameMesh as FrameObjectModel);
+            FrameSkeleton SkeletonBlock = ModelFrame.GetSkeletonObject();
+            FrameSkeletonHierachy HierarchyBlock = ModelFrame.GetSkeletonHierarchyObject();
+            FrameBlendInfo BlendInfoBlock = ModelFrame.GetBlendInfoObject();
 
-            skeleton.NumBlendIDs = jointCount;
-            skeleton.NumUnkCount2 = jointCount;
-            skeleton.UnkLodData[0] = jointCount;
+            HierarchyBlock.LastChildIndices = new byte[255];
+            HierarchyBlock.ParentIndices = new byte[255];
+            HierarchyBlock.UnkData = new byte[255];
+
+            List<int> SkeletonSequence = new List<int>();
+            SkeletonSequence.Add(0);
+
+            int[] JointBoneIDs = new int[SkeletonObject.Joints.Length];
+            int[] IDRemapTable = new int[1024];
+
+            for (int i = 0; i < SkeletonSequence.Count; i++)
+            {
+                MT_Joint JointObject = SkeletonObject.Joints[i];
+
+                // handle last child indices array
+                HierarchyBlock.LastChildIndices[i] = (byte)(i > 0 ? HierarchyBlock.LastChildIndices[i - 1] : 0);
+
+                for (int z = 0; z < SkeletonObject.Joints.Length; z++)
+                {
+                    bool bCheckOne = SkeletonObject.Joints[z].ParentJointIndex == JointBoneIDs[i];
+                    if (bCheckOne)
+                    {
+                        int NewSlot = SkeletonSequence.Count;
+                        HierarchyBlock.ParentIndices[NewSlot] = (byte)i;
+                        HierarchyBlock.LastChildIndices[i] = (byte)NewSlot;
+                        JointBoneIDs[z] = NewSlot;
+
+                        if(JointBoneIDs[z] >= 0)
+                        {
+                            IDRemapTable[JointBoneIDs[z]] = NewSlot;
+                        }
+
+                        SkeletonSequence.Add(z);
+                    }
+                }
+
+                HierarchyBlock.UnkData[i] = (byte)i;
+            }
+
+            Console.WriteLine("st");
+
+            /*
+            int NumJoints = SkeletonObject.Joints.Length;
+            SkeletonBlock.BoneNames = new HashName[NumJoints];
+            SkeletonBlock.NumBones = new int[4];
+            SkeletonBlock.UnkLodData = new int[1];
+            SkeletonBlock.BoneLODUsage = new byte[NumJoints];
+
+            SkeletonBlock.NumBlendIDs = NumJoints;
+            SkeletonBlock.NumUnkCount2 = NumJoints;
+            SkeletonBlock.UnkLodData[0] = NumJoints;
 
 
             for (int i = 0; i < 4; i++)
             {
-                skeleton.NumBones[i] = jointCount;
+                SkeletonBlock.NumBones[i] = NumJoints;
             }
 
-            for (int i = 0; i < jointCount; i++)
+            for (int i = 0; i < NumJoints; i++)
             {
                 HashName bone = new HashName();
-                bone.Set(model.SkeletonData.Joints[i].Name);
-                skeleton.BoneNames[i] = bone;
+                bone.Set(SkeletonObject.Joints[i].Name);
+                SkeletonBlock.BoneNames[i] = bone;
 
-                if (model.Lods.Length == 1)
+                if (ModelObject.Lods.Length == 1)
                 {
-                    skeleton.BoneLODUsage[i] = 1;
+                    SkeletonBlock.BoneLODUsage[i] = 1;
                 }
             }
 
-            skeletonHierarchy.ParentIndices = new byte[jointCount];
-            skeletonHierarchy.LastChildIndices = new byte[jointCount];
-            skeletonHierarchy.UnkData = new byte[jointCount];
-            skeleton.JointTransforms = new Matrix[jointCount];
+            HierarchyBlock.ParentIndices = new byte[NumJoints];
+            HierarchyBlock.LastChildIndices = new byte[NumJoints];
+            HierarchyBlock.UnkData = new byte[NumJoints];
+            SkeletonBlock.JointTransforms = new Matrix[NumJoints];
 
-            skeletonHierarchy.UnkData[0] = (byte)(jointCount + 1);
+            HierarchyBlock.UnkData[0] = (byte)(NumJoints + 1);
 
-            for (int i = 0; i < jointCount; i++)
+            for (int i = 0; i < NumJoints; i++)
             {
-                skeletonHierarchy.ParentIndices[i] = model.SkeletonData.Joints[i].ParentIndex;
-                skeletonHierarchy.UnkData[i] = (byte)(i != jointCount ? i : 0);
-                skeleton.JointTransforms[i] = model.SkeletonData.Joints[i].LocalTransform;
+                MT_Joint JointObject = SkeletonObject.Joints[i];
+
+                HierarchyBlock.ParentIndices[i] = (byte)JointObject.ParentJointIndex;
+                HierarchyBlock.UnkData[i] = (byte)(i != NumJoints ? i : 0);
+                SkeletonBlock.JointTransforms[i] = MatrixExtensions.SetMatrix(JointObject.Rotation, JointObject.Scale, JointObject.Position);
             }*/
         }
     }

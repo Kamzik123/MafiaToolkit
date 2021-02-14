@@ -30,6 +30,7 @@ bool MT_Skeleton::ReadFromFile(FILE* InStream)
 		// TODO: Do validity
 		MT_Joint NewJoint = {};
 		NewJoint.ReadFromFile(InStream);
+		Joints[i] = NewJoint;
 	}
 
 	return true;

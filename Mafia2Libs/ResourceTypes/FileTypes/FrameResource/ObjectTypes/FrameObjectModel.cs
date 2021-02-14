@@ -295,9 +295,9 @@ namespace ResourceTypes.FrameResource
         {
             base.CreateMeshFromRawModel(NewModel);
 
-            ConstructBlendInfoObject();
-            ConstructGeometryObject();
-            ConstructMaterialObject();
+            //ConstructBlendInfoObject();
+            //ConstructGeometryObject();
+            //ConstructMaterialObject();
 
             NewModel.CreateObjectsFromModel();
         }

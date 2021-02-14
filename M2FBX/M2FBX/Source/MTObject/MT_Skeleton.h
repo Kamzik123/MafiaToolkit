@@ -23,12 +23,14 @@ public:
 
 	// Getters
 	const std::string& GetName() const { return Name; }
+	const std::string& GetParentName() const { return ParentName; }
 	MT_JointUsage GetUsage() const { return UsageFlags; }
 	const JointMatrix& GetTransform() const { return Transform; }
 	int GetParentJointIndex() const { return ParentJointIndex; }
 
 	// Setters
 	void SetName(const std::string& InName) { Name = InName; }
+	void SetParentName(const std::string& InParentName) { ParentName = InParentName; }
 	void SetUsage(const MT_JointUsage InUsageFlags) { UsageFlags = InUsageFlags; }
 	void SetTransform(const JointMatrix& InTransform) { Transform = InTransform; }
 	void SetParentJointIndex(const int InParentIndex) { ParentJointIndex = InParentIndex; }
@@ -43,6 +45,9 @@ private:
 	MT_JointUsage UsageFlags;
 	JointMatrix Transform;
 	int ParentJointIndex;
+
+	// NOT SERIALIZED
+	std::string ParentName;
 
 };
 

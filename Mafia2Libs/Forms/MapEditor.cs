@@ -2206,7 +2206,7 @@ namespace Mafia2Tool
                 Wrapper.ModelObject = ModelObject;
 
                 // Convert object into SingleMesh
-                FrameObjectSingleMesh NewMesh = SceneData.FrameResource.ConstructFrameAssetOfType<FrameObjectSingleMesh>();
+                FrameObjectModel NewMesh = SceneData.FrameResource.ConstructFrameAssetOfType<FrameObjectModel>();
                 NewMesh.CreateMeshFromRawModel(Wrapper);
                 CreateMeshBuffers(Wrapper);
 

@@ -48,6 +48,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 MT_Joint JointObject = new MT_Joint();
                 JointObject.ReadFromFile(reader);
+                Joints[i] = JointObject;
             }
 
             return true;

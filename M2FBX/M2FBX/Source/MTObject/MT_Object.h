@@ -54,7 +54,13 @@ public:
 		Temp |= (InCollision ? MT_ObjectFlags::HasCollisions : 0);
 		ObjectFlags = (MT_ObjectFlags)Temp;
 	}
-	void SetSkeleton(MT_Skeleton* InSkeleton) { SkeletonObject = InSkeleton; }
+	void SetSkeleton(MT_Skeleton* InSkeleton)
+	{
+		SkeletonObject = InSkeleton;
+		int Temp = ObjectFlags;
+		Temp |= (InSkeleton ? MT_ObjectFlags::HasSkinning : 0);
+		ObjectFlags = (MT_ObjectFlags)Temp;
+	}
 
 	// IO
 	bool ReadFromFile(FILE* InStream);

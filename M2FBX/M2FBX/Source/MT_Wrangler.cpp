@@ -4,6 +4,7 @@
 #include "Source/MTObject/MT_Collision.h"
 #include "Source/MTObject/MT_FaceGroup.h"
 #include "Source/MTObject/MT_Object.h"
+#include "Source/MTObject/MT_Skeleton.h"
 #include "MTObject/MT_ObjectHandler.h"
 
 #include <map>
@@ -154,6 +155,13 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 	{
 		// checks are done in SetCollisions, flag is added too.
 		ModelObject->SetCollisions(ConstructCollision(CollisionNode));
+	}
+
+	FbxNode* SkeletonNode = Node->FindChild("Root");
+	if (SkeletonNode)
+	{
+		MT_Skeleton* SkeletonObject = ConstructSkeleton(SkeletonNode);
+		ModelObject->SetSkeleton(SkeletonObject);
 	}
 
 	return ModelObject;
@@ -308,6 +316,80 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 	LodObject->SetFaceGroups(FaceGroups);
 
 	return LodObject;
+}
+
+MT_Skeleton* MT_Wrangler::ConstructSkeleton(FbxNode* Node)
+{
+	MT_Skeleton* SkeletonObject = new MT_Skeleton();
+
+	SkeletonState.JointLookupTable = {};
+	SkeletonState.Joints = {};
+
+	ConstructJoint(Node);
+
+	for (size_t i = 0; i < SkeletonState.Joints.size(); i++)
+	{
+		MT_Joint& JointObject = SkeletonState.Joints[i];
+
+		// Sort out Parent Index
+		const std::string& Name = JointObject.GetParentName();
+		const bool bExists = SkeletonState.JointLookupTable.find(Name) != SkeletonState.JointLookupTable.end();
+		if (bExists)
+		{
+			int NodeIdx = SkeletonState.JointLookupTable[Name];
+			JointObject.SetParentJointIndex(NodeIdx);
+		}
+		else
+		{
+			JointObject.SetParentJointIndex(0xFF);
+		}
+	}
+
+	SkeletonObject->SetJoints(SkeletonState.Joints);
+
+	return SkeletonObject;
+}
+
+MT_Joint* MT_Wrangler::ConstructJoint(FbxNode* Node)
+{
+	// Check FbxNodeAttribute
+	if (FbxNodeAttribute* const NodeAttribute = Node->GetNodeAttribute())
+	{
+		if (NodeAttribute->GetAttributeType() != FbxNodeAttribute::eSkeleton)
+		{
+			return nullptr;
+		}
+	}
+
+	// Set Name and Usage.
+	MT_Joint* JointObject = new MT_Joint();
+	JointObject->SetName(Node->GetName());
+	JointObject->SetParentName(Node->GetParent()->GetName());
+	JointObject->SetUsage(MT_JointUsage::LOD0);
+
+	// Get Node Matrix -> Set Joint Transform
+	JointMatrix Matrix = {};
+	FbxAMatrix& lLocalTransform = Node->EvaluateLocalTransform();
+	const FbxDouble3 Position = Node->LclTranslation.Get();
+	Matrix.Position = { (float)Position[0], (float)Position[1], (float)Position[2] };
+	const FbxDouble3 Scale = Node->LclScaling.Get();
+	Matrix.Scale = { (float)Scale[0], (float)Scale[1], (float)Scale[2] };
+	const FbxDouble4 Rotation = lLocalTransform.GetR();
+	Matrix.Rotation = { (float)Rotation[0], (float)Rotation[1], (float)Rotation[2], (float)Rotation[3] };
+	JointObject->SetTransform(Matrix);
+
+	// Add to the state
+	SkeletonState.JointLookupTable.insert(std::pair<std::string, int>(Node->GetName(), (int)SkeletonState.JointLookupTable.size()));
+	SkeletonState.Joints.push_back(*JointObject);
+
+	for (int i = 0; i < Node->GetChildCount(); i++)
+	{
+		FbxNode* const ChildNode = Node->GetChild(i);
+		MT_Joint* const ChildJoint = ConstructJoint(ChildNode);
+	}
+
+	// return
+	return JointObject;
 }
 
 void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std::vector<Int3>* Indices, std::vector<MT_FaceGroup>* FaceGroups)
