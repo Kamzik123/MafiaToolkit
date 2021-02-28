@@ -1636,39 +1636,42 @@ namespace Mafia2Tool
         }
         private void Export3DFrame()
         {
-            var tag = dSceneTree.SelectedNode.Tag;
-            FrameObjectSingleMesh model;
-            if(tag is FrameObjectSingleMesh)
+            FrameObjectBase FrameObject = (dSceneTree.SelectedNode.Tag as FrameObjectBase);
+            ModelWrapper ModelWrapperObject = null;
+
+            if (FrameObject is FrameObjectSingleMesh)
             {
-                model = (tag as FrameObjectSingleMesh);
+                FrameObjectSingleMesh SingleMesh = (FrameObject as FrameObjectSingleMesh);
+                IndexBuffer[] indexBuffers = new IndexBuffer[SingleMesh.Geometry.LOD.Length];
+                VertexBuffer[] vertexBuffers = new VertexBuffer[SingleMesh.Geometry.LOD.Length];
+
+                //we need to retrieve buffers first.
+                for (int c = 0; c != SingleMesh.Geometry.LOD.Length; c++)
+                {
+                    indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(SingleMesh.Geometry.LOD[c].IndexBufferRef.Hash);
+                    vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(SingleMesh.Geometry.LOD[c].VertexBufferRef.Hash);
+                }
+
+                // Construct wrapper (based on model)
+                if (FrameObject is FrameObjectModel)
+                {
+                    ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectModel, indexBuffers, vertexBuffers);
+                }
+                else
+                {
+                    ModelWrapperObject = new ModelWrapper(FrameObject as FrameObjectSingleMesh, indexBuffers, vertexBuffers);
+                }
             }
             else
             {
-                //enter message here
-                return;
+                ModelWrapperObject = new ModelWrapper(FrameObject);
             }
 
-            IndexBuffer[] indexBuffers = new IndexBuffer[model.Geometry.LOD.Length];
-            VertexBuffer[] vertexBuffers = new VertexBuffer[model.Geometry.LOD.Length];
-
-            //we need to retrieve buffers first.
-            for (int c = 0; c != model.Geometry.LOD.Length; c++)
+            // Make sure it's actually valid
+            if (ModelWrapperObject != null)
             {
-                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(model.Geometry.LOD[c].IndexBufferRef.Hash);
-                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(model.Geometry.LOD[c].VertexBufferRef.Hash);
+                ModelWrapperObject.ExportObject();
             }
-
-            ModelWrapper newModel = null;
-            if (tag is FrameObjectModel)
-            {
-                newModel = new ModelWrapper(tag as FrameObjectModel, indexBuffers, vertexBuffers);
-            }
-            else
-            {
-                newModel = new ModelWrapper(tag as FrameObjectSingleMesh, indexBuffers, vertexBuffers);
-            }
-
-            newModel.ExportObject();
         }
 
         private void AddButtonOnClick(object sender, EventArgs e)

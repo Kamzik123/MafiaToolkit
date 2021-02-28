@@ -21,6 +21,14 @@ void MT_Object::Cleanup()
 
 	LodObjects.clear();
 
+	// Empty Children
+	for (auto& ChildObject : Children)
+	{
+		ChildObject.Cleanup();
+	}
+
+	Children.clear();
+
 	// Cleanup Collision
 	if (CollisionObject)
 	{
@@ -67,6 +75,22 @@ bool MT_Object::ReadFromFile(FILE* InStream)
 			LodObjects[i] = LodObject;
 		}
 	}
+	
+	// Read Children
+	if (HasObjectFlag(MT_ObjectFlags::HasChildren))
+	{
+		// Read Children Count
+		uint NumChildren = 0;
+		FileUtils::Read(InStream, &NumChildren);
+		Children.resize(NumChildren);
+
+		for (uint i = 0; i < NumChildren; i++)
+		{
+			MT_Object ChildObject = {};
+			ChildObject.ReadFromFile(InStream);
+			Children[i] = ChildObject;
+		}
+	}
 
 	// Read Collision
 	if (HasObjectFlag(MT_ObjectFlags::HasCollisions))
@@ -104,6 +128,16 @@ void MT_Object::WriteToFile(FILE* OutStream) const
 		{
 			const MT_Lod& LodInfo = LodObjects[i];
 			LodInfo.WriteToFile(OutStream);
+		}
+	}
+
+	if (HasObjectFlag(MT_ObjectFlags::HasChildren))
+	{
+		FileUtils::Write(OutStream, (uint)Children.size());
+		for (size_t i = 0; i < Children.size(); i++)
+		{
+			const MT_Object& ChildObject = Children[i];
+			ChildObject.WriteToFile(OutStream);
 		}
 	}
 

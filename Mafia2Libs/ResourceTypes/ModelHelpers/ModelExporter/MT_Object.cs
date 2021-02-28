@@ -1,4 +1,5 @@
-﻿using ResourceTypes.BufferPools;
+﻿using Mafia2Tool;
+using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using SharpDX;
@@ -18,6 +19,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         HasLODs = 1,
         HasSkinning = 2,
         HasCollisions = 4,
+        HasChildren = 8
     }
 
     public class MT_Object : IValidator
@@ -31,6 +33,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public Vector3 Rotation { get; set; }
         public Vector3 Scale { get; set; }
         public MT_Lod[] Lods { get; set; }
+        public MT_Object[] Children { get; set; }
         public MT_Collision Collision { get; set; }
         public MT_Skeleton Skeleton { get; set; }
 
@@ -56,14 +59,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         /** Construction Functions */
         public void BuildFromCooked(FrameObjectSingleMesh SingleMesh, VertexBuffer[] VBuffer, IndexBuffer[] IBuffer)
         {
+            BuildStandardObject(SingleMesh);
+
             FrameGeometry GeometryInfo = SingleMesh.Geometry;
             FrameMaterial MaterialInfo = SingleMesh.Material;
             ObjectFlags |= MT_ObjectFlags.HasLODs;
-
-            // TODO - Possibly add an option where we can ask to export with local transform?
-            Position = Vector3.Zero;
-            Rotation = Vector3.Zero;
-            Scale = Vector3.One;
 
             Lods = new MT_Lod[GeometryInfo.LOD.Length];
             for(int i = 0; i < Lods.Length; i++)
@@ -194,6 +194,60 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             this.Skeleton = ModelSkeleton;
         }
 
+        public void BuildStandardObject(FrameObjectBase FrameObject)
+        {
+            // TODO - Possibly add an option where we can ask to export with local transform?
+            Position = Vector3.Zero;
+            Rotation = Vector3.Zero;
+            Scale = Vector3.One;
+
+            // Export Children
+            ObjectFlags |= MT_ObjectFlags.HasChildren;
+            Children = new MT_Object[FrameObject.Children.Count];
+            for (int i = 0; i < Children.Length; i++)
+            {
+                // Cache child object
+                FrameObjectBase ChildFrameObject = FrameObject.Children[i];
+
+                // Construct new MT_Object
+                MT_Object ChildObject = new MT_Object();
+                ChildObject.ObjectName = ChildFrameObject.Name.ToString();
+
+                // Check if this is a single mesh. If not, build as standard.
+                FrameObjectSingleMesh CastedMesh = (FrameObject.Children[i] as FrameObjectSingleMesh);
+                if (CastedMesh != null)
+                {
+                    // TODO: Remove access of SceneData, Accessing buffer pools will end up becoming deprecated.
+                    IndexBuffer[] ChildIBuffers = new IndexBuffer[CastedMesh.Geometry.LOD.Length];
+                    VertexBuffer[] ChildVBuffers = new VertexBuffer[CastedMesh.Geometry.LOD.Length];
+
+                    //we need to retrieve buffers first.
+                    for (int c = 0; c < CastedMesh.Geometry.LOD.Length; c++)
+                    {
+                        ChildIBuffers[c] = SceneData.IndexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].IndexBufferRef.Hash);
+                        ChildVBuffers[c] = SceneData.VertexBufferPool.GetBuffer(CastedMesh.Geometry.LOD[c].VertexBufferRef.Hash);
+                    }
+
+                    ChildObject.BuildFromCooked(CastedMesh, ChildVBuffers, ChildIBuffers);
+                }
+                else
+                {
+                    ChildObject.BuildStandardObject(FrameObject.Children[i]);
+                }
+
+                Vector3 Position;
+                Vector3 Scale;
+                Quaternion Rotation;
+                ChildFrameObject.LocalTransform.Decompose(out Scale, out Rotation, out Position);
+                ChildObject.Position = Position;
+                ChildObject.Scale = Vector3.One;
+                ChildObject.Rotation = Rotation.ToEuler();
+
+                // Slot into array
+                Children[i] = ChildObject;
+            }
+        }
+
         /** IO Functions */
         public bool ReadFromFile(BinaryReader reader)
         {
@@ -216,6 +270,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Rotation = Vector3Extenders.ReadFromFile(reader);
             Scale = Vector3Extenders.ReadFromFile(reader);
 
+            // Read LODs
             if (ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
             {
                 uint NumLODs = reader.ReadUInt32();
@@ -234,6 +289,19 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
+            // Read Children
+            if(ObjectFlags.HasFlag(MT_ObjectFlags.HasChildren))
+            {
+                uint NumChildren = reader.ReadUInt32();
+                Children = new MT_Object[NumChildren];
+                for(int i = 0; i < NumChildren; i++)
+                {
+                    Children[i] = new MT_Object();
+                    Children[i].ReadFromFile(reader);
+                }
+            }
+
+            // Read Collisions
             if (ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
             {
                 Collision = new MT_Collision();
@@ -246,6 +314,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 }
             }
 
+            // Read Skeleton
             if(ObjectFlags.HasFlag(MT_ObjectFlags.HasSkinning))
             {
                 Skeleton = new MT_Skeleton();
@@ -285,6 +354,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 for (int i = 0; i < Lods.Length; i++)
                 {
                     Lods[i].WriteToFile(writer);
+                }
+            }
+
+            // Write Children
+            if(ObjectFlags.HasFlag(MT_ObjectFlags.HasChildren))
+            {
+                writer.Write(Children.Length);
+                foreach(var Child in Children)
+                {
+                    Child.WriteToFile(writer);
                 }
             }
 

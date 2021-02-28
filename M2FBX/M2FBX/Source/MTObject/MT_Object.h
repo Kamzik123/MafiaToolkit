@@ -15,6 +15,7 @@ enum MT_ObjectFlags : uint
 	HasLODs = 1,
 	HasSkinning = 2,
 	HasCollisions = 4,
+	HasChildren = 8,
 };
 
 struct TransformStruct
@@ -37,6 +38,7 @@ public:
 	// Accessors
 	const std::string& GetName() const { return ObjectName; }
 	const MT_ObjectFlags& GetFlags() const { return ObjectFlags; }
+	const std::vector<MT_Object> GetChildren() const { return Children; }
 	const std::vector<MT_Lod> GetLods() const { return LodObjects; }
 	const TransformStruct& GetTransform() const { return Transform; }
 	const MT_Collision* GetCollision() const { return CollisionObject; }
@@ -61,6 +63,13 @@ public:
 		Temp |= (InSkeleton ? MT_ObjectFlags::HasSkinning : 0);
 		ObjectFlags = (MT_ObjectFlags)Temp;
 	}
+	void SetCollisions(std::vector<MT_Object> InChildren)
+	{
+		Children = InChildren;
+		int Temp = ObjectFlags;
+		Temp |= (InChildren.size() > 0 ? MT_ObjectFlags::HasChildren : 0);
+		ObjectFlags = (MT_ObjectFlags)Temp;
+	}
 
 	// IO
 	bool ReadFromFile(FILE* InStream);
@@ -75,6 +84,7 @@ private:
 	TransformStruct Transform;
 
 	std::vector<MT_Lod> LodObjects;
+	std::vector<MT_Object> Children;
 	MT_Collision* CollisionObject = nullptr;
 	MT_Skeleton* SkeletonObject = nullptr;
 };

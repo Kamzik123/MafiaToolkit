@@ -188,15 +188,14 @@ namespace Forms.Docking
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
-                if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || 
-                    treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) ||                   
-                    treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)))
+                if ((treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)))
                 {
                     EntryMenuStrip.Items[3].Visible = true;
                 }
 
                 if (FrameResource.IsFrameType(treeView1.SelectedNode.Tag))
                 {
+                    EntryMenuStrip.Items[3].Visible = true;
                     EntryMenuStrip.Items[4].Visible = true;
 
                     if(treeView1.SelectedNode.Tag is FrameObjectFrame)

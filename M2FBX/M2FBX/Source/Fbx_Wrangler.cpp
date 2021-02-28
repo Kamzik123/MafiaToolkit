@@ -70,7 +70,8 @@ bool Fbx_Wrangler::ConvertObjectToFbx()
 		return false;
 	}
 
-	bool bResult = ConvertObjectToNode(*Object);
+	FbxNode* RootNode = nullptr;
+	bool bResult = ConvertObjectToNode(*Object, RootNode);
 	SaveDocument();
 	return bResult;
 }
@@ -90,17 +91,18 @@ bool Fbx_Wrangler::ConvertBundleToFbx()
 	const std::vector<MT_Object>& Objects = Bundle->GetObjects();
 	for (auto& Object : Objects)
 	{
-		ConvertObjectToNode(Object);
+		FbxNode* ObjectNode = nullptr;
+		ConvertObjectToNode(Object, ObjectNode);
 	}
 
 	return true;
 }
 
-bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object)
+bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object, FbxNode*& RootNode)
 {
 	std::string ObjectName = Object.GetName();
 	ObjectName += " [MESH]";
-	FbxNode* RootNode = FbxNode::Create(SdkManager, ObjectName.data());
+	RootNode = FbxNode::Create(SdkManager, ObjectName.data());
 	
 	// Setup transform of object
 	const TransformStruct& Transform = Object.GetTransform();
@@ -136,6 +138,23 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object)
 			if (Object.HasObjectFlag(HasSkinning))
 			{
 				bResult = ApplySkinToMesh(Lod, Skin, NewLodNode);
+			}
+		}
+	}
+
+	if (Object.HasObjectFlag(HasChildren))
+	{
+		const std::vector<MT_Object>& Children = Object.GetChildren();
+		for (size_t i = 0; i < Children.size(); i++)
+		{
+			// Convert Node
+			FbxNode* ChildNode = nullptr;
+			ConvertObjectToNode(Children[i], ChildNode);
+
+			// Add Child to the RootNode
+			if (ChildNode)
+			{
+				RootNode->AddChild(ChildNode);
 			}
 		}
 	}

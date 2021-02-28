@@ -29,10 +29,10 @@ public:
 	bool ConstructScene();
 	bool ConvertObjectToFbx();
 	bool ConvertBundleToFbx();
-	bool ConvertObjectToNode(const MT_Object& Object);
+	bool ConvertObjectToNode(const MT_Object& Object, FbxNode*& ObjectNode);
 
 	// TODO: Refactor these, lots of overlapping code.
-	bool ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode);
+	bool ConvertLodToNode(const MT_Lod& Lod, FbxNode* RootNode);
 	bool ConvertCollisionToNode(const MT_Collision& Collision, FbxNode* CollisionNode);
 
 	bool ConvertSkeletonToNode(const MT_Skeleton& Skeleton, FbxSkin*& Skin, FbxNode*& BoneRoot, const int LODIndex);

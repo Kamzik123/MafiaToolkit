@@ -65,6 +65,13 @@ namespace Utils.Models
             modelObject.BuildFromCooked(frameModel, vertexBuffers, indexBuffers);
         }
 
+        public ModelWrapper(FrameObjectBase FrameObject)
+        {
+            modelObject = new MT_Object();
+            modelObject.ObjectName = FrameObject.Name.ToString();
+            modelObject.BuildStandardObject(FrameObject);
+        }
+
         /// <summary>
         /// Construct an empty model.
         /// </summary>
