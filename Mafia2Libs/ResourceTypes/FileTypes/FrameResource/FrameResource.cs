@@ -8,6 +8,7 @@ using Utils.Extensions;
 using Utils.Settings;
 using Mafia2Tool;
 using ResourceTypes.BufferPools;
+using ResourceTypes.ModelHelpers.ModelExporter;
 
 namespace ResourceTypes.FrameResource
 {
@@ -720,6 +721,29 @@ namespace ResourceTypes.FrameResource
             header.NumSkelHierachies = frameSkeletonHierachies.Count;
             header.NumObjects = frameObjects.Count;
             header.NumFolderNames = frameScenes.Count;
+        }
+
+        public FrameObjectBase ConstructFrameByObjectType(MT_ObjectType ObjectType)
+        {
+            switch(ObjectType)
+            {
+                case MT_ObjectType.Actor:
+                    return ConstructFrameAssetOfType<FrameObjectFrame>();
+                case MT_ObjectType.Joint:
+                    return ConstructFrameAssetOfType<FrameObjectJoint>();
+                case MT_ObjectType.Dummy:
+                    return ConstructFrameAssetOfType<FrameObjectDummy>();
+                case MT_ObjectType.ItemDesc:
+                    return ConstructFrameAssetOfType<FrameObjectCollision>();
+                case MT_ObjectType.RiggedMesh:
+                    return ConstructFrameAssetOfType<FrameObjectModel>();
+                case MT_ObjectType.StaticMesh:
+                    return ConstructFrameAssetOfType<FrameObjectSingleMesh>();
+                default:
+                    return null;
+            }
+
+            // TODO: Log when failed
         }
 
         public static bool IsFrameType(object entry)

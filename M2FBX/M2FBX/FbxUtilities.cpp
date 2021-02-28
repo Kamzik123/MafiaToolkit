@@ -27,6 +27,6 @@ void Fbx_Utilities::DestroySdkObjects(FbxManager* pManager, bool pExitStatus)
 bool Fbx_Utilities::FindInString(const FbxString& Text, const FbxString& StringToFind)
 {
 	int Result = Text.Find(StringToFind);
-	bool bIsFound = Result != -1;
+	bool bIsFound = Result != std::string::npos;
 	return bIsFound;
 }

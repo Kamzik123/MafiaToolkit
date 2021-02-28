@@ -2205,40 +2205,72 @@ namespace Mafia2Tool
 
             foreach(MT_Object ModelObject in BundleObject.Objects)
             {
-                ModelWrapper Wrapper = new ModelWrapper();
-                Wrapper.ModelObject = ModelObject;
+                ConstructFrameFromImportedObject(ModelObject, frameResourceRoot);
+            }
+        }
 
-                // Convert object into SingleMesh
-                FrameObjectModel NewMesh = SceneData.FrameResource.ConstructFrameAssetOfType<FrameObjectModel>();
+        private void ConstructFrameFromImportedObject(MT_Object ObjectInfo, TreeNode Parent)
+        {
+            ModelWrapper Wrapper = new ModelWrapper();
+            Wrapper.ModelObject = ObjectInfo;
+
+            // Convert object into SingleMesh
+            FrameObjectBase NewFrame = SceneData.FrameResource.ConstructFrameByObjectType(ObjectInfo.ObjectType);
+            if(NewFrame == null)
+            {
+                // TODO: Error - failed
+                return;
+            }
+
+            // Set other MetaInfo
+            Matrix LocalTransform = MatrixExtensions.SetMatrix(ObjectInfo.Rotation, ObjectInfo.Scale, ObjectInfo.Position);
+            NewFrame.LocalTransform = LocalTransform;
+            NewFrame.Name.Set(ObjectInfo.ObjectName);
+
+            // Construct mesh (if applicable)
+            if (ObjectInfo.ObjectType == MT_ObjectType.StaticMesh)
+            {
+                FrameObjectSingleMesh NewMesh = (NewFrame as FrameObjectSingleMesh);
                 NewMesh.CreateMeshFromRawModel(Wrapper);
                 CreateMeshBuffers(Wrapper);
+            }
+            else if(ObjectInfo.ObjectType == MT_ObjectType.RiggedMesh)
+            {
+                FrameObjectModel NewMesh = (NewFrame as FrameObjectModel);
+                NewMesh.CreateMeshFromRawModel(Wrapper);
+                CreateMeshBuffers(Wrapper);
+            }
 
-                // Set other MetaInfo
-                Matrix LocalTransform = MatrixExtensions.SetMatrix(ModelObject.Rotation, ModelObject.Scale, ModelObject.Position);
-                NewMesh.LocalTransform = LocalTransform;
-                NewMesh.Name.Set(ModelObject.ObjectName);
+            // Construct TreeNode
+            TreeNode node = new TreeNode(NewFrame.Name.ToString());
+            node.Tag = NewFrame;
+            node.Name = NewFrame.RefID.ToString();
+            dSceneTree.AddToTree(node, Parent);
 
-                // Construct TreeNode
-                TreeNode node = new TreeNode(NewMesh.Name.ToString());
-                node.Tag = NewMesh;
-                node.Name = NewMesh.RefID.ToString();
+            FrameEntry ParentEntry = (Parent.Tag as FrameEntry);
+            if (ParentEntry != null)
+            {
+                SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, NewFrame, ParentEntry);
+            }
 
-                dSceneTree.AddToTree(node, frameResourceRoot);
+            // Construct renderer and add to stack
+            IRenderer Renderer = BuildRenderObjectFromFrame(NewFrame);
+            if (Renderer != null)
+            {
+                Graphics.InitObjectStack.Add(NewFrame.RefID, Renderer);
+            }
 
-                // Construct renderer and add to stack
-                IRenderer Renderer = BuildRenderObjectFromFrame(NewMesh);
-                if(Renderer != null)
-                {
-                    Graphics.InitObjectStack.Add(NewMesh.RefID, Renderer);
-                }
+            if (ObjectInfo.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
+            {
+                Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromMTCollision(ObjectInfo.ObjectName, ObjectInfo.Collision);
+                Collision.Placement Placement = AddCollision(collisionModel);
+                Placement.Position = ObjectInfo.Position;
+                Placement.RotationDegrees = ObjectInfo.Rotation;
+            }
 
-                if(ModelObject.ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
-                {
-                    Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromMTCollision(ModelObject.ObjectName, ModelObject.Collision);
-                    Collision.Placement Placement = AddCollision(collisionModel);
-                    Placement.Position = ModelObject.Position;
-                    Placement.RotationDegrees = ModelObject.Rotation;
-                }
+            foreach(MT_Object Child in ObjectInfo.Children)
+            {
+                ConstructFrameFromImportedObject(Child, node);
             }
         }
     }

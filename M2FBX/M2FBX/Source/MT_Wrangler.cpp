@@ -148,23 +148,22 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 	// Setup Children
 	std::vector<MT_Object> Children = {};
 	FbxInt32 NumChildren = Node->GetChildCount();
-	Children.resize(NumChildren);
 	for (int i = 0; i < NumChildren; i++)
 	{
 		MT_Object* NewChildObject;
 
 		FbxNode* ChildNode = Node->GetChild(i);
 		const FbxString& ChildName = ChildNode->GetName();
-		if (ChildName.Find("MESH"))
+		if (Fbx_Utilities::FindInString(ChildName, "MESH"))
 		{
 			NewChildObject = ConstructMesh(ChildNode);
+			Children.push_back(*NewChildObject);
 		}
-		else
+		else if(ChildName.Find('[') != std::string::npos && ChildName.Find(']') != std::string::npos)
 		{
 			NewChildObject = ConstructBaseObject(ChildNode);
-		}
-
-		Children[i] = *NewChildObject;
+			Children.push_back(*NewChildObject);
+		}		
 	}
 
 	// Update ModelObject's array

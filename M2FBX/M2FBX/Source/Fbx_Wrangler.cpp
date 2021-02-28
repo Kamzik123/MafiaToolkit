@@ -177,7 +177,7 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object, FbxNode*& RootNo
 
 	FbxNode* SceneRootNode = Scene->GetRootNode();
 	SceneRootNode->AddChild(RootNode);
-	SaveDocument();
+
 	return true;
 }
 

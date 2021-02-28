@@ -48,6 +48,14 @@ namespace Forms.EditorControls
                 Root.Nodes.Add(SCollisionNode);
             }
 
+            if(Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasChildren))
+            {
+                foreach(MT_Object Child in Object.Children)
+                {
+                    Root.Nodes.Add(ConvertObjectToNode(Child));
+                }
+            }
+
             return Root;
         }
 

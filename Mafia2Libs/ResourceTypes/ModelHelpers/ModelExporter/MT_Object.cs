@@ -98,10 +98,6 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     Console.WriteLine("BIG ERROR");
                 }
 
-                // TODO: Vertex buffers can contain vertices for more than one asset
-                // This means objects such as glass may need to traverse through their index buffer,
-                // then build the vertex array from said index buffer - rather than building straight from the vertex buffer.
-                // Build Vertex Array
                 for (int v = 0; v < LodObject.Vertices.Length; v++)
                 {
                     //declare data required and send to decompresser
@@ -113,9 +109,16 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 // Build Indices and FaceGroups Array
                 LodObject.Indices = CurrentIBuffer.GetData();
                 MaterialStruct[] FaceGroups = MaterialInfo.Materials[i];
-                LodObject.FaceGroups = new MT_FaceGroup[FaceGroups.Length];
-                for(int v = 0; v < LodObject.FaceGroups.Length; v++)
+
+                // NB: We will skip the FaceGroups which don't have faces
+                List<MT_FaceGroup> Groups = new List<MT_FaceGroup>();
+                for(int v = 0; v < FaceGroups.Length; v++)
                 {
+                    if(FaceGroups[v].NumFaces == 0)
+                    {
+                        continue;
+                    }
+
                     MT_FaceGroup FaceGroupObject = new MT_FaceGroup();
                     MT_MaterialInstance MaterialInstanceObject = new MT_MaterialInstance();
 
@@ -139,9 +142,10 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     FaceGroupObject.StartIndex = (uint)FaceGroups[v].StartIndex;
                     FaceGroupObject.NumFaces = (uint)FaceGroups[v].NumFaces;
                     FaceGroupObject.Material = MaterialInstanceObject;
-                    LodObject.FaceGroups[v] = FaceGroupObject;
+                    Groups.Add(FaceGroupObject);
                 }
 
+                LodObject.FaceGroups = Groups.ToArray();
                 Lods[i] = LodObject;
             }
         }

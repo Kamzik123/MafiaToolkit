@@ -9,7 +9,7 @@ namespace MT_ObjectUtils_Consts
 	const char* ConstItemDesc = "ITEM";
 	const char* ConstActor = "ACTR";
 	const char* ConstDummy = "DUMY";
-	const char* ConstJoint = "JNT";
+	const char* ConstJoint = "JOIT";
 	const char* ConstNull = "NULL";
 }
 
@@ -18,10 +18,10 @@ void MT_ObjectUtils::RemoveMetaTagFromName(std::string& ObjectName)
 	size_t Offset = ObjectName.find('[');
 	if (Offset != std::string::npos)
 	{
-		size_t EndOffset = Offset + 4;
+		size_t EndOffset = Offset + 5;
 		if (ObjectName[EndOffset] == ']')
 		{
-			ObjectName.erase(ObjectName.begin() + Offset);
+			ObjectName.erase(ObjectName.begin() + Offset, ObjectName.end());
 		}
 	}
 
@@ -30,31 +30,31 @@ void MT_ObjectUtils::RemoveMetaTagFromName(std::string& ObjectName)
 
 MT_ObjectType MT_ObjectUtils::GetTypeFromString(const FbxString ObjectName)
 {
-	if (ObjectName.Find(MT_ObjectUtils_Consts::ConstMesh))
+	if (ObjectName.Find(MT_ObjectUtils_Consts::ConstMesh) != std::string::npos)
 	{
 		return MT_ObjectType::StaticMesh;
 	}
-	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstRigged))
+	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstRigged) != std::string::npos)
 	{
 		return MT_ObjectType::RiggedMesh;
 	}
-	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstItemDesc))
+	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstItemDesc) != std::string::npos)
 	{
 		return MT_ObjectType::ItemDesc;
 	}
-	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstDummy))
+	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstDummy) != std::string::npos)
 	{
 		return MT_ObjectType::Dummy;
 	}
-	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstActor))
+	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstActor) != std::string::npos)
 	{
 		return MT_ObjectType::Actor;
 	}
-	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstJoint))
+	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstJoint) != std::string::npos)
 	{
 		return MT_ObjectType::Joint;
 	}
-	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstNull))
+	else if (ObjectName.Find(MT_ObjectUtils_Consts::ConstNull) != std::string::npos)
 	{
 		return MT_ObjectType::Null;
 	}
