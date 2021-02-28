@@ -162,6 +162,7 @@
     <ClCompile Include="Source\MTObject\MT_Collision.cpp" />
     <ClCompile Include="Source\MTObject\MT_FaceGroup.cpp" />
     <ClCompile Include="Source\MTObject\MT_MaterialInstance.cpp" />
+    <ClCompile Include="Source\MTObject\MT_ObjectUtils.cpp" />
     <ClCompile Include="Source\MTObject\MT_Skeleton.cpp" />
     <ClCompile Include="Source\MT_Wrangler.cpp" />
     <ClCompile Include="Source\MTObject\MT_Lod.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="Source\MTObject\MT_Collision.h" />
     <ClInclude Include="Source\MTObject\MT_FaceGroup.h" />
     <ClInclude Include="Source\MTObject\MT_MaterialInstance.h" />
+    <ClInclude Include="Source\MTObject\MT_ObjectUtils.h" />
     <ClInclude Include="Source\MTObject\MT_Skeleton.h" />
     <ClInclude Include="Source\MT_Wrangler.h" />
     <ClInclude Include="Source\MTObject\MT_Lod.h" />

@@ -61,6 +61,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
         public Vector3 Scale { get; set; }
+        public MT_Object[] Children { get; set; }
 
         public MT_ObjectHelper(MT_Object ModelObject)
         {
@@ -75,6 +76,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 Position = OwningObject.Position;
                 Rotation = OwningObject.Rotation;
                 Scale = OwningObject.Scale;
+                Children = OwningObject.Children;
             }
         }
 
@@ -86,6 +88,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                 OwningObject.Position = Position;
                 OwningObject.Rotation = Rotation;
                 OwningObject.Scale = Scale;
+                OwningObject.Children = Children;
             }
         }
     }

@@ -4,6 +4,7 @@
 #include "Source/MTObject/MT_Collision.h"
 #include "Source/MTObject/MT_FaceGroup.h"
 #include "Source/MTObject/MT_Object.h"
+#include "Source/MTObject/MT_ObjectUtils.h"
 #include "Source/MTObject/MT_Skeleton.h"
 #include "MTObject/MT_ObjectHandler.h"
 
@@ -83,6 +84,15 @@ bool MT_Wrangler::ConstructMTBFromFbx()
 		{
 			// Convert to RIGGED Model.
 		}	
+		else 
+		{
+			// Attempt conversion to other Frame Type
+			MT_Object* NewObject = ConstructBaseObject(ChildNode);
+			if (NewObject)
+			{
+				ObjectsForBundle.push_back(*NewObject);
+			}
+		}
 	}
 
 	LoadedBundle->SetObjects(ObjectsForBundle);
@@ -112,18 +122,18 @@ const FbxNodeAttribute::EType MT_Wrangler::GetNodeType(FbxNode* Node) const
 	return FbxNodeAttribute::EType::eUnknown;
 }
 
-MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
+MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 {
-	// Format name to respectfully
+	// Format name to respectful name
 	FbxString NodeName = Node->GetName();
-	NodeName.FindAndReplace("[MESH]", "");
-	NodeName.FindAndReplace(" ", "");
 	std::string RawName = NodeName.Buffer();
+	MT_ObjectUtils::RemoveMetaTagFromName(RawName);
 
 	// Construct object and set name
 	MT_Object* ModelObject = new MT_Object();
 	ModelObject->SetName(RawName);
-	ModelObject->SetObjectFlags(MT_ObjectFlags::HasLODs);
+	ModelObject->SetObjectFlags(MT_ObjectFlags::HasChildren);
+	ModelObject->SetType(MT_ObjectUtils::GetTypeFromString(Node->GetName()));
 
 	// Get Objects transform
 	TransformStruct TransformObject = {};
@@ -135,8 +145,40 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 	TransformObject.Scale = { (float)Scale[0], (float)Scale[1], (float)Scale[2] };
 	ModelObject->SetTransform(TransformObject);
 
-	std::vector<MT_Lod> Lods = {};
+	// Setup Children
+	std::vector<MT_Object> Children = {};
+	FbxInt32 NumChildren = Node->GetChildCount();
+	Children.resize(NumChildren);
+	for (int i = 0; i < NumChildren; i++)
+	{
+		MT_Object* NewChildObject;
 
+		FbxNode* ChildNode = Node->GetChild(i);
+		const FbxString& ChildName = ChildNode->GetName();
+		if (ChildName.Find("MESH"))
+		{
+			NewChildObject = ConstructMesh(ChildNode);
+		}
+		else
+		{
+			NewChildObject = ConstructBaseObject(ChildNode);
+		}
+
+		Children[i] = *NewChildObject;
+	}
+
+	// Update ModelObject's array
+	ModelObject->SetChildren(Children);
+
+	return ModelObject;
+}
+
+MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
+{
+	MT_Object* ModelObject = ConstructBaseObject(Node);
+
+	// Model Conversion
+	std::vector<MT_Lod> Lods = {};
 	FbxInt32 NumLods = Node->GetChildCount();
 	for (int i = 0; i < NumLods; i++)
 	{
@@ -150,6 +192,8 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 
 	ModelObject->SetLods(Lods);
 
+
+	// Collision Conversion
 	FbxNode* CollisionNode = Node->FindChild("COL");
 	if (CollisionNode)
 	{
@@ -157,6 +201,7 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 		ModelObject->SetCollisions(ConstructCollision(CollisionNode));
 	}
 
+	// Skeleton Conversion
 	FbxNode* SkeletonNode = Node->FindChild("Root");
 	if (SkeletonNode)
 	{

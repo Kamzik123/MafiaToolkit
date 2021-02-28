@@ -30,6 +30,7 @@ private:
 
 	const FbxNodeAttribute::EType GetNodeType(FbxNode* Node) const;
 
+	MT_Object* ConstructBaseObject(FbxNode* Node);
 	MT_Object* ConstructMesh(FbxNode* Node);
 	MT_Collision* ConstructCollision(FbxNode* Node);
 	MT_Lod* ConstructFromLod(FbxNode* Lod);

@@ -41,9 +41,6 @@
     <ClCompile Include="M2TWrangler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FbxUtilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\MTObject\MT_Object.cpp">
       <Filter>Source Files\MTObject</Filter>
     </ClCompile>
@@ -79,6 +76,12 @@
     </ClCompile>
     <ClCompile Include="Source\MTObject\MT_Skeleton.cpp">
       <Filter>Source Files\MTObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MTObject\MT_ObjectUtils.cpp">
+      <Filter>Source Files\MTObject</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxUtilities.cpp">
+      <Filter>Source Files\Wranglers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +137,9 @@
       <Filter>Header Files\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="Source\MTObject\MT_Skeleton.h">
+      <Filter>Header Files\MTObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MTObject\MT_ObjectUtils.h">
       <Filter>Header Files\MTObject</Filter>
     </ClInclude>
   </ItemGroup>

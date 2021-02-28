@@ -3,6 +3,7 @@
 #include "FbxUtilities.h"
 #include "Source/MTObject/MT_Collision.h"
 #include "Source/MTObject/MT_Object.h"
+#include "Source/MTObject/MT_ObjectUtils.h"
 #include "Source/MTObject/MT_ObjectHandler.h"
 #include "Source/MTObject/MT_Lod.h"
 #include "Source/MTObject/MT_Skeleton.h"
@@ -101,7 +102,13 @@ bool Fbx_Wrangler::ConvertBundleToFbx()
 bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object, FbxNode*& RootNode)
 {
 	std::string ObjectName = Object.GetName();
-	ObjectName += " [MESH]";
+	printf("%s\n", ObjectName.data());
+
+	// Construct name
+	std::string TypeEnclosed = {};
+	MT_ObjectUtils::GetTypeAsStringClosed(Object.GetType(), TypeEnclosed);
+	ObjectName += TypeEnclosed;
+
 	RootNode = FbxNode::Create(SdkManager, ObjectName.data());
 	
 	// Setup transform of object

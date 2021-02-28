@@ -9,6 +9,13 @@ bool MT_Object::HasObjectFlag(const MT_ObjectFlags FlagToCheck) const
 	return (ObjectFlags & FlagToCheck);
 }
 
+void MT_Object::AddObjectFlag(const MT_ObjectFlags FlagToAdd)
+{
+	int Temp = ObjectFlags;
+	Temp |= FlagToAdd;
+	ObjectFlags = (MT_ObjectFlags)Temp;
+}
+
 void MT_Object::Cleanup()
 {
 	ObjectName = "";
@@ -57,6 +64,8 @@ bool MT_Object::ReadFromFile(FILE* InStream)
 	// Read Name and Flags
 	FileUtils::ReadString(InStream, &ObjectName);
 	FileUtils::Read(InStream, &ObjectFlags);
+	FileUtils::Read(InStream, &ObjectType);
+
 	FileUtils::Read(InStream, &Transform);
 
 	// Read LODs
@@ -117,6 +126,8 @@ void MT_Object::WriteToFile(FILE* OutStream) const
 	// Begin to Write
 	FileUtils::WriteString(OutStream, ObjectName);
 	FileUtils::Write(OutStream, ObjectFlags);
+	FileUtils::Write(OutStream, ObjectType);
+
 	FileUtils::Write(OutStream, Transform);
 
 	// Write LODs

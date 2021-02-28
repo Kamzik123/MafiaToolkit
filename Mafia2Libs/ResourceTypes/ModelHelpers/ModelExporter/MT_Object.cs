@@ -22,6 +22,17 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         HasChildren = 8
     }
 
+    public enum MT_ObjectType
+    {
+        Null = 0,
+        StaticMesh,
+        RiggedMesh,
+        Joint,
+        Actor,
+        ItemDesc,
+        Dummy,
+    }
+
     public class MT_Object : IValidator
     {
         private const string FileHeader = "MTO";
@@ -29,6 +40,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public string ObjectName { get; set; }
         public MT_ObjectFlags ObjectFlags { get; set; }
+        public MT_ObjectType ObjectType { get; set; }
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
         public Vector3 Scale { get; set; }
@@ -86,11 +98,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     Console.WriteLine("BIG ERROR");
                 }
 
+                // TODO: Vertex buffers can contain vertices for more than one asset
+                // This means objects such as glass may need to traverse through their index buffer,
+                // then build the vertex array from said index buffer - rather than building straight from the vertex buffer.
                 // Build Vertex Array
                 for (int v = 0; v < LodObject.Vertices.Length; v++)
                 {
                     //declare data required and send to decompresser
-                    byte[] data = new byte[LodObject.Vertices.Length];
+                    byte[] data = new byte[VertexSize];
                     Array.Copy(CurrentVBuffer.Data, (v * VertexSize), data, 0, VertexSize);
                     LodObject.Vertices[v] = VertexTranslator.DecompressVertex(data, LodInfo.VertexDeclaration, GeometryInfo.DecompressionOffset, GeometryInfo.DecompressionFactor, vertexOffsets);
                 }
@@ -201,6 +216,9 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             Rotation = Vector3.Zero;
             Scale = Vector3.One;
 
+            // Convert type to enumerator
+            ObjectType = MT_ObjectUtils.GetTypeFromFrame(FrameObject);
+
             // Export Children
             ObjectFlags |= MT_ObjectFlags.HasChildren;
             Children = new MT_Object[FrameObject.Children.Count];
@@ -264,6 +282,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             // Read Meta-Data
             ObjectName = StringHelpers.ReadString8(reader);
             ObjectFlags = (MT_ObjectFlags)reader.ReadInt32();
+            ObjectType = (MT_ObjectType)reader.ReadInt32();
 
             // Read Object Transform
             Position = Vector3Extenders.ReadFromFile(reader);
@@ -339,6 +358,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             // Write Meta-Data
             StringHelpers.WriteString8(writer, ObjectName);
             writer.Write((int)ObjectFlags);
+            writer.Write((int)ObjectType);
 
             // Write Transform
             Position.WriteToFile(writer);
@@ -406,6 +426,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
 
             return bValidity;
+        }
+
+        public override string ToString()
+        {
+            return ObjectName;
         }
     }
 }

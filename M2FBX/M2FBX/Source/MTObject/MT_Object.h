@@ -18,6 +18,17 @@ enum MT_ObjectFlags : uint
 	HasChildren = 8,
 };
 
+enum MT_ObjectType : uint
+{
+	Null = 0,
+	StaticMesh,
+	RiggedMesh,
+	Joint,
+	Actor,
+	ItemDesc,
+	Dummy,
+};
+
 struct TransformStruct
 {
 	Point3 Position;
@@ -33,11 +44,13 @@ class MT_Object
 public:
 
 	bool HasObjectFlag(const MT_ObjectFlags FlagToCheck) const;
+	void AddObjectFlag(const MT_ObjectFlags FlagToAdd);
 	void Cleanup();
 
 	// Accessors
 	const std::string& GetName() const { return ObjectName; }
-	const MT_ObjectFlags& GetFlags() const { return ObjectFlags; }
+	const MT_ObjectFlags GetFlags() const { return ObjectFlags; }
+	const MT_ObjectType GetType() const { return ObjectType; }
 	const std::vector<MT_Object> GetChildren() const { return Children; }
 	const std::vector<MT_Lod> GetLods() const { return LodObjects; }
 	const TransformStruct& GetTransform() const { return Transform; }
@@ -46,29 +59,42 @@ public:
 
 	// Setters
 	void SetName(std::string& InName) { ObjectName = InName; }
-	void SetLods(std::vector<MT_Lod> InLods) { LodObjects = InLods; }
 	void SetObjectFlags(MT_ObjectFlags InFlags) { ObjectFlags = InFlags; }
+	void SetType(MT_ObjectType InType) { ObjectType = InType; }
 	void SetTransform(TransformStruct& InTransform) { Transform = InTransform; }
+
+	// TODO: Move all these to cpp file
+	void SetLods(std::vector<MT_Lod> InLods)
+	{
+		LodObjects = InLods;
+		if (InLods.size() > 0)
+		{
+			AddObjectFlag(MT_ObjectFlags::HasLODs);
+		}
+	}
 	void SetCollisions(MT_Collision* InCollision) 
 	{ 
 		CollisionObject = InCollision; 
-		int Temp = ObjectFlags;
-		Temp |= (InCollision ? MT_ObjectFlags::HasCollisions : 0);
-		ObjectFlags = (MT_ObjectFlags)Temp;
+		if (InCollision)
+		{
+			AddObjectFlag(MT_ObjectFlags::HasCollisions);
+		}
 	}
 	void SetSkeleton(MT_Skeleton* InSkeleton)
 	{
 		SkeletonObject = InSkeleton;
-		int Temp = ObjectFlags;
-		Temp |= (InSkeleton ? MT_ObjectFlags::HasSkinning : 0);
-		ObjectFlags = (MT_ObjectFlags)Temp;
+		if (InSkeleton)
+		{
+			AddObjectFlag(MT_ObjectFlags::HasSkinning);
+		}
 	}
-	void SetCollisions(std::vector<MT_Object> InChildren)
+	void SetChildren(std::vector<MT_Object> InChildren)
 	{
 		Children = InChildren;
-		int Temp = ObjectFlags;
-		Temp |= (InChildren.size() > 0 ? MT_ObjectFlags::HasChildren : 0);
-		ObjectFlags = (MT_ObjectFlags)Temp;
+		if (InChildren.size() > 0)
+		{
+			AddObjectFlag(MT_ObjectFlags::HasChildren);
+		}
 	}
 
 	// IO
@@ -81,6 +107,7 @@ private:
 
 	std::string ObjectName = "";
 	MT_ObjectFlags ObjectFlags;
+	MT_ObjectType ObjectType;
 	TransformStruct Transform;
 
 	std::vector<MT_Lod> LodObjects;
