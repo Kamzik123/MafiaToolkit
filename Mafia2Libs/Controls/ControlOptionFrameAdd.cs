@@ -33,7 +33,7 @@ namespace Forms.EditorControls
                     SelectedType = FrameResourceObjectType.SingleMesh;
                     break;
                 case 1:
-                    SelectedType = FrameResourceObjectType.Frame;
+                    SelectedType = FrameResourceObjectType.Actor;
                     break;
                 case 2:
                     SelectedType = FrameResourceObjectType.Light;
@@ -63,7 +63,7 @@ namespace Forms.EditorControls
                     SelectedType = FrameResourceObjectType.Model;
                     break;
                 case 11:
-                    SelectedType = FrameResourceObjectType.Collision;
+                    SelectedType = FrameResourceObjectType.ItemDesc;
                     break;
                 case 12:
                     SelectedType = FrameResourceObjectType.Joint;

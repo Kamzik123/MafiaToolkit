@@ -525,7 +525,7 @@
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectComponent_U005.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectDeflector.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectDummy.cs" />
-    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectFrame.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectActor.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectJoint.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectLight.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectModel.cs" />

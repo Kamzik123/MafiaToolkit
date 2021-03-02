@@ -22,7 +22,7 @@ namespace ResourceTypes.FrameResource
                 case FrameResourceObjectType.SingleMesh:
                     FrameObjectSingleMesh mesh = OwningResource.ConstructFrameAssetOfType<FrameObjectSingleMesh>();
                     return mesh;
-                case FrameResourceObjectType.Frame:
+                case FrameResourceObjectType.Actor:
                     FrameObjectActor frame = OwningResource.ConstructFrameAssetOfType<FrameObjectActor>();
                     return frame;
                 case FrameResourceObjectType.Light:
@@ -52,7 +52,7 @@ namespace ResourceTypes.FrameResource
                 case FrameResourceObjectType.Model:
                     FrameObjectModel model = OwningResource.ConstructFrameAssetOfType<FrameObjectModel>();
                     return model;
-                case FrameResourceObjectType.Collision:
+                case FrameResourceObjectType.ItemDesc:
                     FrameObjectItemDesc collision = OwningResource.ConstructFrameAssetOfType<FrameObjectItemDesc>();
                     return collision;
                 default:

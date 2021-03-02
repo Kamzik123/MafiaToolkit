@@ -243,7 +243,7 @@ namespace ResourceTypes.FrameResource
                 else if (entry.GetType() == typeof(FrameObjectSingleMesh))
                     writer.Write((int)FrameResourceObjectType.SingleMesh);
                 else if (entry.GetType() == typeof(FrameObjectActor))
-                    writer.Write((int)FrameResourceObjectType.Frame);
+                    writer.Write((int)FrameResourceObjectType.Actor);
                 else if (entry.GetType() == typeof(FrameObjectLight))
                     writer.Write((int)FrameResourceObjectType.Light);
                 else if (entry.GetType() == typeof(FrameObjectCamera))
@@ -263,7 +263,7 @@ namespace ResourceTypes.FrameResource
                 else if (entry.GetType() == typeof(FrameObjectModel))
                     writer.Write((int)FrameResourceObjectType.Model);
                 else if (entry.GetType() == typeof(FrameObjectItemDesc))
-                    writer.Write((int)FrameResourceObjectType.Collision);
+                    writer.Write((int)FrameResourceObjectType.ItemDesc);
             }
 
             foreach (var pair in frameObjects)

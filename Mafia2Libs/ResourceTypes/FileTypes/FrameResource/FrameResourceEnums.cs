@@ -7,7 +7,7 @@ namespace ResourceTypes.FrameResource
         NULL = -1,
         Joint = 0,
         SingleMesh,
-        Frame,
+        Actor,
         Light,
         Camera,
         Component_U00000005,
@@ -17,7 +17,7 @@ namespace ResourceTypes.FrameResource
         Area = 12,
         Target = 14,
         Model = 17,
-        Collision = 472
+        ItemDesc = 472
     }
 
     [Flags]

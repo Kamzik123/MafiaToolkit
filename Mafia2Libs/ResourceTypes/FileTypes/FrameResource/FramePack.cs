@@ -51,7 +51,7 @@ namespace ResourceTypes.FrameResource
             }
             else if (frame.GetType() == typeof(FrameObjectItemDesc))
             {
-                writer.Write((ushort)FrameResourceObjectType.Collision);
+                writer.Write((ushort)FrameResourceObjectType.ItemDesc);
                 (frame as FrameObjectItemDesc).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectComponent_U005))
@@ -71,7 +71,7 @@ namespace ResourceTypes.FrameResource
             }
             else if (frame.GetType() == typeof(FrameObjectActor))
             {
-                writer.Write((ushort)FrameResourceObjectType.Frame);
+                writer.Write((ushort)FrameResourceObjectType.Actor);
                 (frame as FrameObjectActor).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectJoint))
