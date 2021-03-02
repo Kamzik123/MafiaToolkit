@@ -7,7 +7,7 @@ using Utils.Types;
 
 namespace ResourceTypes.FrameResource
 {
-    public class FrameObjectFrame : FrameObjectJoint
+    public class FrameObjectActor : FrameObjectJoint
     {
         HashName actorHash;
         ActorEntry item;
@@ -21,12 +21,12 @@ namespace ResourceTypes.FrameResource
             set { item = value; }
         }
 
-        public FrameObjectFrame(FrameObjectFrame other) : base(other)
+        public FrameObjectActor(FrameObjectActor other) : base(other)
         {
             actorHash = other.actorHash;
         }
 
-        public FrameObjectFrame(FrameResource OwningResource) : base(OwningResource)
+        public FrameObjectActor(FrameResource OwningResource) : base(OwningResource)
         {
             actorHash = new HashName();
         }

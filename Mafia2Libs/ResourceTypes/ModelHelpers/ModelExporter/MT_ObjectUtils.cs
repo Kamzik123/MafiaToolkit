@@ -26,11 +26,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 return MT_ObjectType.Dummy;
             }
-            else if(FrameType == typeof(FrameObjectFrame))
+            else if(FrameType == typeof(FrameObjectActor))
             {
                 return MT_ObjectType.Actor;
             }
-            else if(FrameType == typeof(FrameObjectCollision))
+            else if(FrameType == typeof(FrameObjectItemDesc))
             {
                 return MT_ObjectType.ItemDesc;
             }

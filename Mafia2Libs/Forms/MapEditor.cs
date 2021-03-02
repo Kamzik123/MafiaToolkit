@@ -156,7 +156,7 @@ namespace Mafia2Tool
                 {
                     if (node.Tag != null)
                     {
-                        FrameObjectFrame frame = (node.Tag as FrameObjectFrame);
+                        FrameObjectActor frame = (node.Tag as FrameObjectActor);
 
                         NewObjectForm objectForm = new NewObjectForm(true);
                         objectForm.SetLabel("$SELECT_TYPE_AND_NAME");
@@ -897,10 +897,10 @@ namespace Mafia2Tool
         private void FixActorDefintions(Actor actor)
         {
             List<int> frameIndexes = new List<int>();
-            List<FrameObjectFrame> frames = new List<FrameObjectFrame>();
+            List<FrameObjectActor> frames = new List<FrameObjectActor>();
             for (int x = 0; x < SceneData.FrameResource.FrameObjects.Count; x++)
             {
-                FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects.ElementAt(x).Value as FrameObjectFrame);
+                FrameObjectActor frame = (SceneData.FrameResource.FrameObjects.ElementAt(x).Value as FrameObjectActor);
 
                 if (frame != null)
                 {
@@ -911,7 +911,7 @@ namespace Mafia2Tool
 
             for (int i = 0; i != actor.Definitions.Count; i++)
             {
-                FrameObjectFrame frame = null;
+                FrameObjectActor frame = null;
                 ActorDefinition definition = actor.Definitions[i];
                 
                 for (int c = 0; c != actor.Items.Count; c++)
@@ -922,7 +922,7 @@ namespace Mafia2Tool
                         bool sorted = false;
                         for (int x = 0; x < frames.Count; x++)
                         {
-                            FrameObjectFrame nFrame = frames[x];
+                            FrameObjectActor nFrame = frames[x];
                             if (nFrame.Name.Hash == item.FrameNameHash)
                             {
                                 if (!nFrame.ActorHash.String.Equals(item.DefinitionName))
@@ -1492,8 +1492,8 @@ namespace Mafia2Tool
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectCamera))
                     newEntry = new FrameObjectCamera((FrameObjectCamera)node.Tag);
-                else if (node.Tag.GetType() == typeof(FrameObjectCollision))
-                    newEntry = new FrameObjectCollision((FrameObjectCollision)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectItemDesc))
+                    newEntry = new FrameObjectItemDesc((FrameObjectItemDesc)node.Tag);
                 else if (node.Tag.GetType() == typeof(FrameObjectComponent_U005))
                     newEntry = new FrameObjectComponent_U005((FrameObjectComponent_U005)node.Tag);
                 else if (node.Tag.GetType() == typeof(FrameObjectDummy))
@@ -1505,8 +1505,8 @@ namespace Mafia2Tool
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectDeflector))
                     newEntry = new FrameObjectDeflector((FrameObjectDeflector)node.Tag);
-                else if (node.Tag.GetType() == typeof(FrameObjectFrame))
-                    newEntry = new FrameObjectFrame((FrameObjectFrame)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectActor))
+                    newEntry = new FrameObjectActor((FrameObjectActor)node.Tag);
                 else if (node.Tag.GetType() == typeof(FrameObjectJoint))
                     newEntry = new FrameObjectJoint((FrameObjectJoint)node.Tag);
                 else if (node.Tag.GetType() == typeof(FrameObjectLight))

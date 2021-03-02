@@ -242,7 +242,7 @@ namespace ResourceTypes.FrameResource
                     writer.Write((int)FrameResourceObjectType.Joint);
                 else if (entry.GetType() == typeof(FrameObjectSingleMesh))
                     writer.Write((int)FrameResourceObjectType.SingleMesh);
-                else if (entry.GetType() == typeof(FrameObjectFrame))
+                else if (entry.GetType() == typeof(FrameObjectActor))
                     writer.Write((int)FrameResourceObjectType.Frame);
                 else if (entry.GetType() == typeof(FrameObjectLight))
                     writer.Write((int)FrameResourceObjectType.Light);
@@ -262,7 +262,7 @@ namespace ResourceTypes.FrameResource
                     writer.Write((int)FrameResourceObjectType.Target);
                 else if (entry.GetType() == typeof(FrameObjectModel))
                     writer.Write((int)FrameResourceObjectType.Model);
-                else if (entry.GetType() == typeof(FrameObjectCollision))
+                else if (entry.GetType() == typeof(FrameObjectItemDesc))
                     writer.Write((int)FrameResourceObjectType.Collision);
             }
 
@@ -728,13 +728,13 @@ namespace ResourceTypes.FrameResource
             switch(ObjectType)
             {
                 case MT_ObjectType.Actor:
-                    return ConstructFrameAssetOfType<FrameObjectFrame>();
+                    return ConstructFrameAssetOfType<FrameObjectActor>();
                 case MT_ObjectType.Joint:
                     return ConstructFrameAssetOfType<FrameObjectJoint>();
                 case MT_ObjectType.Dummy:
                     return ConstructFrameAssetOfType<FrameObjectDummy>();
                 case MT_ObjectType.ItemDesc:
-                    return ConstructFrameAssetOfType<FrameObjectCollision>();
+                    return ConstructFrameAssetOfType<FrameObjectItemDesc>();
                 case MT_ObjectType.RiggedMesh:
                     return ConstructFrameAssetOfType<FrameObjectModel>();
                 case MT_ObjectType.StaticMesh:
@@ -750,7 +750,7 @@ namespace ResourceTypes.FrameResource
         {
             if (entry.GetType() == typeof(FrameObjectJoint) ||
                 entry.GetType() == typeof(FrameObjectSingleMesh) ||
-                entry.GetType() == typeof(FrameObjectFrame) ||
+                entry.GetType() == typeof(FrameObjectActor) ||
                 entry.GetType() == typeof(FrameObjectLight) ||
                 entry.GetType() == typeof(FrameObjectCamera) ||
                 entry.GetType() == typeof(FrameObjectComponent_U005) ||
@@ -760,7 +760,7 @@ namespace ResourceTypes.FrameResource
                 entry.GetType() == typeof(FrameObjectArea) ||
                 entry.GetType() == typeof(FrameObjectTarget) ||
                 entry.GetType() == typeof(FrameObjectModel) ||
-                entry.GetType() == typeof(FrameObjectCollision))
+                entry.GetType() == typeof(FrameObjectItemDesc))
                 return true;
 
             return false;

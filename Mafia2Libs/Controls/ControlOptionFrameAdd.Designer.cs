@@ -82,7 +82,7 @@
             this.ComboBox_Type.FormattingEnabled = true;
             this.ComboBox_Type.Items.AddRange(new object[] {
             "Single Mesh",
-            "Frame",
+            "Actor",
             "Light",
             "Camera",
             "Component_U005",
@@ -92,7 +92,7 @@
             "Area",
             "Target",
             "Model",
-            "Collision",
+            "ItemDesc",
             "Joint"});
             this.ComboBox_Type.Location = new System.Drawing.Point(182, 24);
             this.ComboBox_Type.Name = "ComboBox_Type";

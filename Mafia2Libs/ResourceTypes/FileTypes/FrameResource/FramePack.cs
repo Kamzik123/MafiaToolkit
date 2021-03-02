@@ -49,10 +49,10 @@ namespace ResourceTypes.FrameResource
                 writer.Write((ushort)FrameResourceObjectType.Camera);
                 (frame as FrameObjectCamera).WriteToFile(writer);
             }
-            else if (frame.GetType() == typeof(FrameObjectCollision))
+            else if (frame.GetType() == typeof(FrameObjectItemDesc))
             {
                 writer.Write((ushort)FrameResourceObjectType.Collision);
-                (frame as FrameObjectCollision).WriteToFile(writer);
+                (frame as FrameObjectItemDesc).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectComponent_U005))
             {
@@ -69,10 +69,10 @@ namespace ResourceTypes.FrameResource
                 writer.Write((ushort)FrameResourceObjectType.ParticleDeflector);
                 (frame as FrameObjectDeflector).WriteToFile(writer);
             }
-            else if (frame.GetType() == typeof(FrameObjectFrame))
+            else if (frame.GetType() == typeof(FrameObjectActor))
             {
                 writer.Write((ushort)FrameResourceObjectType.Frame);
-                (frame as FrameObjectFrame).WriteToFile(writer);
+                (frame as FrameObjectActor).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectJoint))
             {

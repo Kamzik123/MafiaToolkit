@@ -521,7 +521,7 @@
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectArea.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectBase.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectCamera.cs" />
-    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectCollision.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectItemDesc.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectComponent_U005.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectDeflector.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectDummy.cs" />

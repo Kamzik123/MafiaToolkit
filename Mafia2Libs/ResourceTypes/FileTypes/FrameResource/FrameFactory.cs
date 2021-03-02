@@ -23,7 +23,7 @@ namespace ResourceTypes.FrameResource
                     FrameObjectSingleMesh mesh = OwningResource.ConstructFrameAssetOfType<FrameObjectSingleMesh>();
                     return mesh;
                 case FrameResourceObjectType.Frame:
-                    FrameObjectFrame frame = OwningResource.ConstructFrameAssetOfType<FrameObjectFrame>();
+                    FrameObjectActor frame = OwningResource.ConstructFrameAssetOfType<FrameObjectActor>();
                     return frame;
                 case FrameResourceObjectType.Light:
                     FrameObjectLight light = OwningResource.ConstructFrameAssetOfType<FrameObjectLight>();
@@ -53,7 +53,7 @@ namespace ResourceTypes.FrameResource
                     FrameObjectModel model = OwningResource.ConstructFrameAssetOfType<FrameObjectModel>();
                     return model;
                 case FrameResourceObjectType.Collision:
-                    FrameObjectCollision collision = OwningResource.ConstructFrameAssetOfType<FrameObjectCollision>();
+                    FrameObjectItemDesc collision = OwningResource.ConstructFrameAssetOfType<FrameObjectItemDesc>();
                     return collision;
                 default:
                     Debug.WriteLine("Missing frame type!");

@@ -131,7 +131,7 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 7;
             else if (node.Tag.GetType() == typeof(FrameObjectSingleMesh))
                 node.SelectedImageIndex = node.ImageIndex = 6;
-            else if (node.Tag.GetType() == typeof(FrameObjectFrame))
+            else if (node.Tag.GetType() == typeof(FrameObjectActor))
                 node.SelectedImageIndex = node.ImageIndex = 0;
             else if (node.Tag.GetType() == typeof(FrameObjectLight))
                 node.SelectedImageIndex = node.ImageIndex = 5;
@@ -151,7 +151,7 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 7;
             else if (node.Tag.GetType() == typeof(FrameObjectModel))
                 node.SelectedImageIndex = node.ImageIndex = 9;
-            else if (node.Tag.GetType() == typeof(FrameObjectCollision))
+            else if (node.Tag.GetType() == typeof(FrameObjectItemDesc))
                 node.SelectedImageIndex = node.ImageIndex = 3;
             else if (node.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
                 node.SelectedImageIndex = node.ImageIndex = 4;
@@ -198,7 +198,7 @@ namespace Forms.Docking
                     EntryMenuStrip.Items[3].Visible = true;
                     EntryMenuStrip.Items[4].Visible = true;
 
-                    if(treeView1.SelectedNode.Tag is FrameObjectFrame)
+                    if(treeView1.SelectedNode.Tag is FrameObjectActor)
                     {
                         FrameActions.DropDownItems[3].Visible = true;
                     }

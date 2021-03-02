@@ -7,7 +7,7 @@ using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
 {
-    public class FrameObjectCollision : FrameObjectBase
+    public class FrameObjectItemDesc : FrameObjectBase
     {
         private ulong _Hash;
         private ItemDescLoader ItemDesc;
@@ -26,13 +26,13 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        public FrameObjectCollision(FrameResource OwningResource) : base(OwningResource)
+        public FrameObjectItemDesc(FrameResource OwningResource) : base(OwningResource)
         {
             _Hash = 0;
             ItemDesc = null;
         }
 
-        public FrameObjectCollision(FrameObjectCollision other) : base(other)
+        public FrameObjectItemDesc(FrameObjectItemDesc other) : base(other)
         {
             _Hash = other._Hash;
             ItemDesc = other.ItemDesc;
@@ -56,10 +56,10 @@ namespace ResourceTypes.FrameResource
 
             // We don't want to use this code yet, it's from old-old stuff which needs to be looked at.
             // TODO: Look at bringing this old feature back.
-            //return;
-            RenderStaticCollision CollisionMesh = RenderableFactory.BuildRenderItemDesc(Hash);
-            RenderAdapter = new Rendering.Core.RenderableAdapter();
-            RenderAdapter.InitAdaptor(CollisionMesh, this);
+            return;
+            //RenderStaticCollision CollisionMesh = RenderableFactory.BuildRenderItemDesc(Hash);
+            //RenderAdapter = new Rendering.Core.RenderableAdapter();
+            //RenderAdapter.InitAdaptor(CollisionMesh, this);
         }
 
         // TODO: Move this to a different location.
