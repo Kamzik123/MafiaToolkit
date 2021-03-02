@@ -244,7 +244,7 @@ namespace Utils.Models
 
         public void ExportObject()
         {
-            string SavePath = ToolkitSettings.ExportPath + "\\" + ModelObject.ObjectName;
+            string SavePath = ToolkitSettings.ExportPath;
             
             if (!Directory.Exists(ToolkitSettings.ExportPath))
             {
@@ -264,7 +264,7 @@ namespace Utils.Models
 
             // Export Object
             string FileName = ToolkitSettings.ExportPath + "\\" + ModelObject.ObjectName;
-            ExportObjectToM2T(FileName);
+            ExportBundle(FileName);
             switch (ToolkitSettings.Format)
             {
                 case 0:
@@ -283,12 +283,16 @@ namespace Utils.Models
             FBXHelper.ConvertM2T(File + ".m2t", File + ".fbx");
         }
 
-        private void ExportObjectToM2T(string FileToWrite)
+        private void ExportBundle(string FileToWrite)
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(FileToWrite + ".mto", FileMode.Create)))
+            MT_ObjectBundle BundleObject = new MT_ObjectBundle();
+            BundleObject.Objects = new MT_Object[1];
+            BundleObject.Objects[0] = ModelObject;
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FileToWrite + ".mtb", FileMode.Create)))
             {
-                MT_ObjectHandler.WriteObjectToFile(writer, ModelObject);
-            }        
+                MT_ObjectHandler.WriteBundleToFile(writer, BundleObject);
+            }
         }
 
         public void UpdateObjectsFromModel()

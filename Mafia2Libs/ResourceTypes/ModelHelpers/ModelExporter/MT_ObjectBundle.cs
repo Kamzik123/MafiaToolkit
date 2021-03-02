@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -40,6 +41,19 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
 
             return true;
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            StringHelpers.WriteString(writer, "MTB", false);
+            writer.Write((byte)FileVersion);
+
+            // Write Models to file
+            writer.Write(Objects.Length);
+            foreach(MT_Object ModelObject in Objects)
+            {
+                ModelObject.WriteToFile(writer);
+            }
         }
     }
 }

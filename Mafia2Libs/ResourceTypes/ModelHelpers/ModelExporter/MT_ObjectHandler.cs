@@ -48,6 +48,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
+        public static void WriteBundleToFile(BinaryWriter writer, MT_ObjectBundle BundleObject)
+        {
+            if(BundleObject != null)
+            {
+                BundleObject.WriteToFile(writer);
+            }
+        }
+
         /** End Serialize Functions */
     }
 }

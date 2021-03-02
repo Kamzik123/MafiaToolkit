@@ -33,7 +33,6 @@ namespace Mafia2Tool
 {
     // TODO: Remove/Refactor Collision construction/import code from MapEditor
     // TODO: Move all Render construction for Collisions out of the MapEditor, and possible into RenderAdaptors.
-    // TODO: Remove all RoadMap related construction functionality
 
     public partial class MapEditor : Form
     {
@@ -104,7 +103,6 @@ namespace Mafia2Tool
             Button_ImportFrame.Text = Language.GetString("$IMPORT_FRAME");
             AddSceneFolderButton.Text = Language.GetString("$ADD_SCENE_FOLDER");
             AddCollisionButton.Text = Language.GetString("$ADD_COLLISION");
-            AddRoadSplineButton.Text = Language.GetString("$ADD_ROAD_SPLINE");
             SaveButton.Text = Language.GetString("$SAVE");
             ExitButton.Text = Language.GetString("$EXIT");
         }
@@ -1690,194 +1688,11 @@ namespace Mafia2Tool
 
         private void AddSceneFolderButton_Click(object sender, EventArgs e)
         {
-            var scene = SceneData.FrameResource.AddSceneFolder("sceneNew");
+            var scene = SceneData.FrameResource.AddSceneFolder("NewScene");
             TreeNode node = new TreeNode(scene.ToString());
             node.Tag = scene;
             node.Name = scene.RefID.ToString();
             dSceneTree.AddToTree(node, frameResourceRoot);
-        }
-
-        private void AddRoadSplineButton_Click(object sender, EventArgs e)
-        {
-            if (SceneData.roadMap == null)
-                return;
-
-            RenderRoad road = new RenderRoad();
-            RenderLine spline = new RenderLine();
-            spline.Points = new Vector3[2] { new Vector3(0, 0, 0), new Vector3(10, 10, 10) };
-            road.Spline = spline;
-            road.HasToward = true;
-            road.Toward = new SplineProperties();
-            road.Toward.Flags = 0;
-            road.Toward.LaneSize0 = road.Toward.LaneSize1 = 2;
-            road.Toward.Lanes = new LaneProperties[2];
-            road.Toward.Lanes[0] = new LaneProperties();
-            road.Toward.Lanes[0].Width = 3.5f;
-            road.Toward.Lanes[0].Unk03 = 440;
-            road.Toward.Lanes[0].Flags = LaneTypes.MainRoad;
-            road.Toward.Lanes[1] = new LaneProperties();
-            road.Toward.Lanes[1].Width = 3.5f;
-            road.Toward.Lanes[1].Unk03 = 440;
-            road.Toward.Lanes[1].Flags = LaneTypes.None;
-            road.HasBackward = true;
-            road.Backward = new SplineProperties();
-            road.Backward.Flags = RoadFlags.BackwardDirection;
-            road.Backward.LaneSize0 = road.Backward.LaneSize1 = 2;
-            road.Backward.Lanes = new LaneProperties[2];
-            road.Backward.Lanes[1] = new LaneProperties();
-            road.Backward.Lanes[1].Width = 3.5f;
-            road.Backward.Lanes[1].Unk03 = 440;
-            road.Backward.Lanes[1].Flags = LaneTypes.MainRoad;
-            road.Backward.Lanes[0] = new LaneProperties();
-            road.Backward.Lanes[0].Width = 3.5f;
-            road.Backward.Lanes[0].Unk03 = 440;
-            road.Backward.Lanes[0].Flags = LaneTypes.None;
-
-
-            int generatedID = StringHelpers.GetNewRefID();
-            RenderStorageSingleton.Instance.SplineStorage.Add(spline);
-            Graphics.InitObjectStack.Add(generatedID, road);
-            int nodeID = (roadRoot.Nodes.Count);
-            TreeNode child = new TreeNode(nodeID.ToString());
-            child.Text = "Road ID: " + nodeID;
-            child.Name = generatedID.ToString();
-            child.Tag = road;
-            dSceneTree.AddToTree(child, roadRoot);
-        }
-
-        private void AddSplineTxT_Click(object sender, EventArgs e)
-        {
-            if (SceneData.roadMap == null)
-                return;
-
-            if (TxtBrowser.ShowDialog() == DialogResult.Cancel)
-                return;
-
-            RenderRoad road = new RenderRoad();
-            RenderLine spline = new RenderLine();
-
-            string[] content = File.ReadAllLines(TxtBrowser.FileName);
-            int numVertexes = int.Parse(content[0]);
-            spline.Points = new Vector3[numVertexes];
-
-            for (int i = 1; i != numVertexes; i++)
-            {
-                string[] splits = content[i].Split(' ');
-                spline.Points[i - 1] = new Vector3(float.Parse(splits[0]), float.Parse(splits[1]), float.Parse(splits[2]));
-            }
-
-            road.Spline = spline;
-            road.HasToward = true;
-            road.Toward = new SplineProperties();
-            road.Toward.Flags = 0;
-            road.Toward.LaneSize0 = road.Toward.LaneSize1 = 2;
-            road.Toward.Lanes = new LaneProperties[2];
-            road.Toward.Lanes[0] = new LaneProperties();
-            road.Toward.Lanes[0].Width = 3.5f;
-            road.Toward.Lanes[0].Unk03 = 440;
-            road.Toward.Lanes[0].Flags = LaneTypes.MainRoad;
-            road.Toward.Lanes[1] = new LaneProperties();
-            road.Toward.Lanes[1].Width = 3.5f;
-            road.Toward.Lanes[1].Unk03 = 440;
-            road.Toward.Lanes[1].Flags = LaneTypes.None;
-            road.HasBackward = true;
-            road.Backward = new SplineProperties();
-            road.Backward.Flags = RoadFlags.BackwardDirection;
-            road.Backward.LaneSize0 = road.Backward.LaneSize1 = 2;
-            road.Backward.Lanes = new LaneProperties[2];
-            road.Backward.Lanes[1] = new LaneProperties();
-            road.Backward.Lanes[1].Width = 3.5f;
-            road.Backward.Lanes[1].Unk03 = 440;
-            road.Backward.Lanes[1].Flags = LaneTypes.MainRoad;
-            road.Backward.Lanes[0] = new LaneProperties();
-            road.Backward.Lanes[0].Width = 3.5f;
-            road.Backward.Lanes[0].Unk03 = 440;
-            road.Backward.Lanes[0].Flags = LaneTypes.None;
-
-
-            int generatedID = StringHelpers.GetNewRefID();
-            RenderStorageSingleton.Instance.SplineStorage.Add(spline);
-            Graphics.InitObjectStack.Add(generatedID, road);
-            int nodeID = (roadRoot.Nodes.Count);
-            TreeNode child = new TreeNode(nodeID.ToString());
-            child.Text = "Road ID: " + nodeID;
-            child.Name = generatedID.ToString();
-            child.Tag = road;
-            dSceneTree.AddToTree(child, roadRoot);
-        }
-
-        private void AddJunctionOnClick(object sender, EventArgs e)
-        {
-            if (SceneData.roadMap == null)
-                return;
-
-            JunctionDefinition definition = new JunctionDefinition();
-            RenderJunction junction = new RenderJunction();
-            definition.JunctionIDX = junctionRoot.Nodes.Count;
-            junction.Init(definition);
-
-            int generatedID = StringHelpers.GetNewRefID();
-            Graphics.InitObjectStack.Add(generatedID, junction);
-            int nodeID = (junctionRoot.Nodes.Count);
-            TreeNode child = new TreeNode(nodeID.ToString());
-            child.Text = "Junction ID: " + nodeID;
-            child.Name = generatedID.ToString();
-            child.Tag = junction;
-            dSceneTree.AddToTree(child, junctionRoot);
-        }
-
-        private void EditUnkSet3Click(object sender, EventArgs e)
-        {
-            if (SceneData.roadMap != null)
-                dPropertyGrid.SetObject(SceneData.roadMap);
-        }
-
-        private void AddTowardClick(object sender, EventArgs e)
-        {
-            if (SceneData.roadMap != null && dSceneTree.SelectedNode != null)
-            {
-                if (dSceneTree.SelectedNode.Tag.GetType() == typeof(RenderRoad))
-                {
-                    RenderRoad road = (dSceneTree.SelectedNode.Tag as RenderRoad);
-                    road.HasToward = true;
-                    road.Toward = new SplineProperties();
-                    road.Toward.Flags = 0;
-                    road.Toward.LaneSize0 = road.Toward.LaneSize1 = 2;
-                    road.Toward.Lanes = new LaneProperties[2];
-                    road.Toward.Lanes[0] = new LaneProperties();
-                    road.Toward.Lanes[0].Width = 3.5f;
-                    road.Toward.Lanes[0].Unk03 = 440;
-                    road.Toward.Lanes[0].Flags = LaneTypes.MainRoad;
-                    road.Toward.Lanes[1] = new LaneProperties();
-                    road.Toward.Lanes[1].Width = 3.5f;
-                    road.Toward.Lanes[1].Unk03 = 440;
-                    road.Toward.Lanes[1].Flags = LaneTypes.None;
-                }
-            }
-        }
-
-        private void AddBackwardClick(object sender, EventArgs e)
-        {
-            if (SceneData.roadMap != null && dSceneTree.SelectedNode != null)
-            {
-                if (dSceneTree.SelectedNode.Tag.GetType() == typeof(RenderRoad))
-                {
-                    RenderRoad road = (dSceneTree.SelectedNode.Tag as RenderRoad);
-                    road.HasBackward = true;
-                    road.Backward = new SplineProperties();
-                    road.Backward.Flags = RoadFlags.BackwardDirection;
-                    road.Backward.LaneSize0 = road.Backward.LaneSize1 = 2;
-                    road.Backward.Lanes = new LaneProperties[2];
-                    road.Backward.Lanes[1] = new LaneProperties();
-                    road.Backward.Lanes[1].Width = 3.5f;
-                    road.Backward.Lanes[1].Unk03 = 440;
-                    road.Backward.Lanes[1].Flags = LaneTypes.MainRoad;
-                    road.Backward.Lanes[0] = new LaneProperties();
-                    road.Backward.Lanes[0].Width = 3.5f;
-                    road.Backward.Lanes[0].Unk03 = 440;
-                    road.Backward.Lanes[0].Flags = LaneTypes.None;
-                }
-            }
         }
 
         // TODO: Need to cleanup this function, it's atrocious.
@@ -2191,8 +2006,7 @@ namespace Mafia2Tool
                 return;
             }
 
-            MT_ObjectBundle BundleObject = new MT_ObjectBundle();
-            BundleObject = MT_ObjectHandler.ReadBundleFromFile(MeshBrowser.FileName);
+            MT_ObjectBundle BundleObject = MT_ObjectHandler.ReadBundleFromFile(MeshBrowser.FileName);
             if (BundleObject == null)
             {
                 return;
@@ -2251,6 +2065,7 @@ namespace Mafia2Tool
             if (ParentEntry != null)
             {
                 SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex2, NewFrame, ParentEntry);
+                SceneData.FrameResource.SetParentOfObject(ParentInfo.ParentType.ParentIndex1, NewFrame, ParentEntry);
             }
 
             // Construct renderer and add to stack

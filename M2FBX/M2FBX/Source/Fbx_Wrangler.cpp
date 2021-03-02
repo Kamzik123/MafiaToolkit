@@ -96,6 +96,8 @@ bool Fbx_Wrangler::ConvertBundleToFbx()
 		ConvertObjectToNode(Object, ObjectNode);
 	}
 
+	SaveDocument();
+
 	return true;
 }
 

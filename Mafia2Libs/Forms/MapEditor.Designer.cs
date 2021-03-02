@@ -51,13 +51,6 @@ namespace Mafia2Tool
             this.Button_ImportBundle = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_ImportFrame = new System.Windows.Forms.ToolStripMenuItem();
             this.AddCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.roadDebuggingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddBackward = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddToward = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddRoadSplineButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddSplineTxT = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddJunctionButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.EditUnkSet3 = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ViewTopButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewFrontButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -137,7 +130,7 @@ namespace Mafia2Tool
             this.PositionXTool.Name = "PositionXTool";
             this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionXTool.Size = new System.Drawing.Size(64, 24);
+            this.PositionXTool.Size = new System.Drawing.Size(60, 24);
             this.PositionXTool.Text = "0.00000";
             this.PositionXTool.Value = new decimal(new int[] {
             0,
@@ -170,7 +163,7 @@ namespace Mafia2Tool
             this.PositionYTool.Name = "PositionYTool";
             this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionYTool.Size = new System.Drawing.Size(64, 24);
+            this.PositionYTool.Size = new System.Drawing.Size(60, 24);
             this.PositionYTool.Text = "0.00000";
             this.PositionYTool.Value = new decimal(new int[] {
             0,
@@ -203,7 +196,7 @@ namespace Mafia2Tool
             this.PositionZTool.Name = "PositionZTool";
             this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionZTool.Size = new System.Drawing.Size(64, 24);
+            this.PositionZTool.Size = new System.Drawing.Size(60, 24);
             this.PositionZTool.Text = "0.00000";
             this.PositionZTool.Value = new decimal(new int[] {
             0,
@@ -236,7 +229,7 @@ namespace Mafia2Tool
             this.CameraSpeedTool.Name = "CameraSpeedTool";
             this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.CameraSpeedTool.Size = new System.Drawing.Size(64, 24);
+            this.CameraSpeedTool.Size = new System.Drawing.Size(60, 24);
             this.CameraSpeedTool.Text = "0.00000";
             this.CameraSpeedTool.Value = new decimal(new int[] {
             0,
@@ -307,8 +300,7 @@ namespace Mafia2Tool
             this.AddSceneFolderButton,
             this.Button_ImportBundle,
             this.Button_ImportFrame,
-            this.AddCollisionButton,
-            this.roadDebuggingToolStripMenuItem});
+            this.AddCollisionButton});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
@@ -350,61 +342,6 @@ namespace Mafia2Tool
             this.AddCollisionButton.Text = "$ADD_COLLISION";
             this.AddCollisionButton.Click += new System.EventHandler(this.AddCollisionButton_Click);
             // 
-            // roadDebuggingToolStripMenuItem
-            // 
-            this.roadDebuggingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AddBackward,
-            this.AddToward,
-            this.AddRoadSplineButton,
-            this.AddSplineTxT,
-            this.AddJunctionButton,
-            this.EditUnkSet3});
-            this.roadDebuggingToolStripMenuItem.Name = "roadDebuggingToolStripMenuItem";
-            this.roadDebuggingToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.roadDebuggingToolStripMenuItem.Text = "Road Debugging";
-            // 
-            // AddBackward
-            // 
-            this.AddBackward.Name = "AddBackward";
-            this.AddBackward.Size = new System.Drawing.Size(183, 22);
-            this.AddBackward.Text = "$ADD_BACKWARD";
-            this.AddBackward.Click += new System.EventHandler(this.AddBackwardClick);
-            // 
-            // AddToward
-            // 
-            this.AddToward.Name = "AddToward";
-            this.AddToward.Size = new System.Drawing.Size(183, 22);
-            this.AddToward.Text = "$ADD_TOWARD";
-            this.AddToward.Click += new System.EventHandler(this.AddTowardClick);
-            // 
-            // AddRoadSplineButton
-            // 
-            this.AddRoadSplineButton.Name = "AddRoadSplineButton";
-            this.AddRoadSplineButton.Size = new System.Drawing.Size(183, 22);
-            this.AddRoadSplineButton.Text = "$ADD_ROAD_SPLINE";
-            this.AddRoadSplineButton.Click += new System.EventHandler(this.AddRoadSplineButton_Click);
-            // 
-            // AddSplineTxT
-            // 
-            this.AddSplineTxT.Name = "AddSplineTxT";
-            this.AddSplineTxT.Size = new System.Drawing.Size(183, 22);
-            this.AddSplineTxT.Text = "$ADD_SPLINE_TXT";
-            this.AddSplineTxT.Click += new System.EventHandler(this.AddSplineTxT_Click);
-            // 
-            // AddJunctionButton
-            // 
-            this.AddJunctionButton.Name = "AddJunctionButton";
-            this.AddJunctionButton.Size = new System.Drawing.Size(183, 22);
-            this.AddJunctionButton.Text = "$ADD_JUNCTION";
-            this.AddJunctionButton.Click += new System.EventHandler(this.AddJunctionOnClick);
-            // 
-            // EditUnkSet3
-            // 
-            this.EditUnkSet3.Name = "EditUnkSet3";
-            this.EditUnkSet3.Size = new System.Drawing.Size(183, 22);
-            this.EditUnkSet3.Text = "$EDIT_UNKSET3";
-            this.EditUnkSet3.Click += new System.EventHandler(this.EditUnkSet3Click);
-            // 
             // ViewButton
             // 
             this.ViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -423,14 +360,14 @@ namespace Mafia2Tool
             // ViewTopButton
             // 
             this.ViewTopButton.Name = "ViewTopButton";
-            this.ViewTopButton.Size = new System.Drawing.Size(126, 22);
+            this.ViewTopButton.Size = new System.Drawing.Size(180, 22);
             this.ViewTopButton.Text = "$TOP";
             this.ViewTopButton.Click += new System.EventHandler(this.OnViewTopButtonClicked);
             // 
             // ViewFrontButton
             // 
             this.ViewFrontButton.Name = "ViewFrontButton";
-            this.ViewFrontButton.Size = new System.Drawing.Size(126, 22);
+            this.ViewFrontButton.Size = new System.Drawing.Size(180, 22);
             this.ViewFrontButton.Text = "$FRONT";
             this.ViewFrontButton.Click += new System.EventHandler(this.OnViewFrontButtonClicked);
             // 
@@ -438,7 +375,7 @@ namespace Mafia2Tool
             // 
             this.ViewSideButton.Enabled = false;
             this.ViewSideButton.Name = "ViewSideButton";
-            this.ViewSideButton.Size = new System.Drawing.Size(126, 22);
+            this.ViewSideButton.Size = new System.Drawing.Size(180, 22);
             this.ViewSideButton.Text = "$SIDE";
             this.ViewSideButton.Visible = false;
             this.ViewSideButton.Click += new System.EventHandler(this.OnViewSideButtonClicked);
@@ -447,7 +384,7 @@ namespace Mafia2Tool
             // 
             this.ViewBottomButton.Enabled = false;
             this.ViewBottomButton.Name = "ViewBottomButton";
-            this.ViewBottomButton.Size = new System.Drawing.Size(126, 22);
+            this.ViewBottomButton.Size = new System.Drawing.Size(180, 22);
             this.ViewBottomButton.Text = "$BOTTOM";
             this.ViewBottomButton.Visible = false;
             this.ViewBottomButton.Click += new System.EventHandler(this.OnViewBottomButtonClicked);
@@ -456,7 +393,7 @@ namespace Mafia2Tool
             // 
             this.ViewSide2Button.Enabled = false;
             this.ViewSide2Button.Name = "ViewSide2Button";
-            this.ViewSide2Button.Size = new System.Drawing.Size(126, 22);
+            this.ViewSide2Button.Size = new System.Drawing.Size(180, 22);
             this.ViewSide2Button.Text = "$SIDE 2";
             this.ViewSide2Button.Visible = false;
             this.ViewSide2Button.Click += new System.EventHandler(this.OnViewSide2ButtonClicked);
@@ -628,16 +565,9 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem ToggleWireframeButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleCullingButton;
         private System.Windows.Forms.ToolStripMenuItem AddSceneFolderButton;
-        private System.Windows.Forms.ToolStripMenuItem AddRoadSplineButton;
         private System.Windows.Forms.ToolStripMenuItem ViewOptionProperties;
-        private System.Windows.Forms.ToolStripMenuItem AddSplineTxT;
         private System.Windows.Forms.OpenFileDialog TxtBrowser;
-        private System.Windows.Forms.ToolStripMenuItem AddJunctionButton;
-        private System.Windows.Forms.ToolStripMenuItem EditUnkSet3;
-        private System.Windows.Forms.ToolStripMenuItem AddBackward;
-        private System.Windows.Forms.ToolStripMenuItem AddToward;
         private System.Windows.Forms.ToolStripMenuItem AddCollisionButton;
-        private System.Windows.Forms.ToolStripMenuItem roadDebuggingToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel Label_FPS;
         private NumericUpDownToolStrip PositionYTool;
         private NumericUpDownToolStrip PositionZTool;
