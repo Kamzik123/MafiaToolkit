@@ -339,7 +339,7 @@ namespace Mafia2Tool
                         OpenFile(item.Tag as FileBase);
                         return;
                     default:
-                        Process.Start(((FileInfo)item.Tag).FullName);
+                        Process.Start(((FileBase)item.Tag).GetUnderlyingFileInfo().FullName);
                         break;
                 }
                 return;

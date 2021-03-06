@@ -90,17 +90,32 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         }
 
         //~ IValidator Interface
-        public bool Validate()
+        protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
         {
             bool bValidity = true;
 
-            bValidity = Vertices.Length > 0;
-            bValidity = Indices.Length > 0;
-            bValidity = FaceGroups.Length > 0;
+            if(Vertices.Length == 0)
+            {
+                AddMessage(MT_MessageType.Error, "This collision object has no vertices.");
+                bValidity = false;
+            }
+
+            if (Indices.Length == 0)
+            {
+                AddMessage(MT_MessageType.Error, "This collision object has no indices");
+                bValidity = false;
+            }
+
+            if (FaceGroups.Length == 0)
+            {
+                AddMessage(MT_MessageType.Error, "This collision object has no face groups.");
+                bValidity = false;
+            }
 
             foreach(var FaceGroup in FaceGroups)
             {
-                bValidity = FaceGroup.Validate();
+                bool bIsValid = FaceGroup.ValidateObject(TrackerObject);
+                bValidity &= bIsValid;
             }
 
             return bValidity;

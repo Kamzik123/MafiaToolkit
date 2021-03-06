@@ -3,7 +3,7 @@ using Utils.StringHelpers;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
-    public class MT_ObjectBundle
+    public class MT_ObjectBundle : IValidator
     {
         private const string FileHeader = "MTB";
         private const int FileVersion = 0;
@@ -54,6 +54,19 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             {
                 ModelObject.WriteToFile(writer);
             }
+        }
+
+        protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
+        {
+            bool bIsValid = true;
+
+            foreach(MT_Object ModelObject in Objects)
+            {
+                bool bIsObjectValid = ModelObject.ValidateObject(TrackerObject);
+                bIsValid &= bIsObjectValid;
+            }
+
+            return bIsValid;
         }
     }
 }

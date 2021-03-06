@@ -596,6 +596,7 @@
     <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_MaterialInstance.cs" />
     <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_ObjectUtils.cs" />
     <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_Skeleton.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\ModelExporter\MT_ValidationTracker.cs" />
     <Compile Include="ResourceTypes\ModelHelpers\ModelWrapper.cs" />
     <Compile Include="Rendering\Core\GizmoTool.cs" />
     <Compile Include="Rendering\Core\Profiler.cs" />

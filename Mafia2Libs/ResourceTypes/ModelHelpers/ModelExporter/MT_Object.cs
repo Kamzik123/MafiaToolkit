@@ -410,23 +410,49 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
-        public bool Validate()
+        protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
         {
-            bool bValidity = false;
-            bValidity = !string.IsNullOrEmpty(ObjectName);
-            bValidity = ObjectFlags != 0;
+            bool bValidity = true;
 
-            if (ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
+            if(string.IsNullOrEmpty(ObjectName))
+            {
+                AddMessage(MT_MessageType.Error, "This Object has no name.");
+                bValidity = false;
+            }
+
+            if(ObjectFlags == 0)
+            {
+                AddMessage(MT_MessageType.Error, "This Object has no available flags.");
+                bValidity = false;
+            }
+
+            if(ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
             {
                 foreach (var LodObject in Lods)
                 {
-                    bValidity = LodObject.Validate();
+                    bool bIsLodValid = LodObject.ValidateObject(TrackerObject);
+                    bValidity &= bIsLodValid;
+                }
+            }
+
+            if (ObjectFlags.HasFlag(MT_ObjectFlags.HasChildren))
+            {
+                foreach (var ChildObject in Children)
+                {
+                    bool bIsChildValid = ChildObject.ValidateObject(TrackerObject);
+                    bValidity &= bIsChildValid;
                 }
             }
 
             if (ObjectFlags.HasFlag(MT_ObjectFlags.HasCollisions))
             {
-                bValidity = Collision.Validate();
+                bool bIsColValid = Collision.ValidateObject(TrackerObject);
+                bValidity &= bIsColValid;
+            }
+
+            if (ObjectFlags.HasFlag(MT_ObjectFlags.HasSkinning))
+            {
+                // TODO: 
             }
 
             return bValidity;

@@ -7,18 +7,31 @@ namespace Forms.EditorControls
 {
     public partial class FrameResourceModelOptions : Form
     {
+        private MT_ObjectBundle CurrentBundle;
+        private MT_ValidationTracker TrackerObject;
+
         public FrameResourceModelOptions(ModelWrapper Wrapper)
         {
             InitializeComponent();
 
             MT_Object Model = Wrapper.ModelObject;
             TreeView_Objects.Nodes.Add(ConvertObjectToNode(Model));
+
+            // Create a bundle to make it easier to validate
+            CurrentBundle = new MT_ObjectBundle();
+            CurrentBundle.Objects = new MT_Object[1];
+            CurrentBundle.Objects[0] = Model;
+
+            InitiateValidation();
         }
 
         public FrameResourceModelOptions(MT_ObjectBundle ObjectBundle)
         {
             InitializeComponent();
 
+            InitiateValidation();
+
+            CurrentBundle = ObjectBundle;
             TreeView_Objects.Nodes.Add(ConvertBundleToNode(ObjectBundle));
         }
 
@@ -26,8 +39,6 @@ namespace Forms.EditorControls
         {
             TreeNode Root = new TreeNode(Object.ObjectName);
             Root.Tag = Object;
-            Root.ImageIndex = (Object.Validate() ? 1 : 0);
-            Root.ImageIndex = 1;
 
             if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
             {
@@ -35,7 +46,6 @@ namespace Forms.EditorControls
                 {
                     TreeNode LodNode = new TreeNode("LOD" + i);
                     LodNode.Tag = Object.Lods[i];
-                    LodNode.ImageIndex = (Object.Lods[i].Validate() ? 1 : 0);
                     Root.Nodes.Add(LodNode);
                 }
             }
@@ -44,7 +54,6 @@ namespace Forms.EditorControls
             {
                 TreeNode SCollisionNode = new TreeNode("Static Collision");
                 SCollisionNode.Tag = Object.Collision;
-                SCollisionNode.ImageIndex = (Object.Collision.Validate() ? 1 : 0);
                 Root.Nodes.Add(SCollisionNode);
             }
 
@@ -111,7 +120,7 @@ namespace Forms.EditorControls
                 LodHelper.Store();
 
                 string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), "Updated Vertex Flags for LOD");
-                Label_MessageText.Text = Message;
+                //Label_MessageText.Text = Message;
             }
             else if(Selected.Tag is MT_ObjectHelper)
             {
@@ -119,7 +128,7 @@ namespace Forms.EditorControls
                 ObjectHelper.Store();
 
                 string Message = string.Format("{0} - Updated Object: {1}", DateTime.Now.ToLongTimeString(), ObjectHelper.ObjectName);
-                Label_MessageText.Text = Message;
+                //Label_MessageText.Text = Message;
             }
             else if(Selected.Tag is MT_CollisionHelper)
             {
@@ -127,8 +136,36 @@ namespace Forms.EditorControls
                 CollisionHelper.Store();
 
                 string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), "Updated COL.");
-                Label_MessageText.Text = Message;
+                //Label_MessageText.Text = Message;
             }
+        }
+
+        private void InitiateValidation()
+        {
+            TrackerObject = new MT_ValidationTracker();
+            CurrentBundle.ValidateObject(TrackerObject);
+        }
+
+        private void Button_Continue_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void Button_StopImport_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private void Button_Validate_Click(object sender, EventArgs e)
+        {
+            InitiateValidation();
+
+            PropertyGrid_Test.SelectedObject = null;
+            TreeView_Objects.Nodes.Clear();
+
+            TreeView_Objects.Nodes.Add(ConvertBundleToNode(CurrentBundle));
         }
     }
 }

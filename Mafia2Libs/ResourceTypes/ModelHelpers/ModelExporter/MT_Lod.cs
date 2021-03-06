@@ -229,16 +229,38 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             }
         }
 
-        public bool Validate()
+        protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
         {
             bool bValidity = true;
-            bValidity = Vertices.Length > 0;
-            bValidity = Indices.Length > 0;
-            bValidity = VertexDeclaration != 0;
 
-            foreach(var FaceGroup in FaceGroups)
+            if(Vertices.Length == 0)
             {
-                bValidity = FaceGroup.Validate();
+               AddMessage(MT_MessageType.Error, "This LOD object has no vertices.");
+                bValidity = false;
+            }
+
+            if (Indices.Length == 0)
+            {
+                AddMessage(MT_MessageType.Error, "This LOD object has no indices.");
+                bValidity = false;
+            }
+
+            if (VertexDeclaration == 0)
+            {
+                AddMessage(MT_MessageType.Error, "This LOD object has no vertex elements.");
+                bValidity = false;
+            }
+
+            if(FaceGroups.Length == 0)
+            {
+                AddMessage(MT_MessageType.Error, "This LOD object has no FaceGroups");
+                bValidity = false;
+            }
+
+            foreach (var FaceGroup in FaceGroups)
+            {
+                bool bIsFaceGroupValid = FaceGroup.ValidateObject(TrackerObject);
+                bValidity &= bIsFaceGroupValid;
             }
 
             return bValidity;

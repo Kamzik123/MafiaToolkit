@@ -21,16 +21,24 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             DiffuseTexture = "";
         }
 
-        public bool Validate()
+        protected override bool InternalValidate(MT_ValidationTracker TrackerObject)
         {
             bool bValidity = true;
 
-            bValidity = !string.IsNullOrEmpty(Name);
+            if(string.IsNullOrEmpty(Name))
+            {
+               AddMessage(MT_MessageType.Error, "This Material has no name.");
+                bValidity = false;
+            }
 
-            if(MaterialFlags.HasFlag(MT_MaterialInstanceFlags.IsCollision))
+            if (MaterialFlags.HasFlag(MT_MaterialInstanceFlags.IsCollision))
             {
                 Collisions.CollisionMaterials MaterialChoice = Collisions.CollisionMaterials.Undefined;
-                bValidity = Enum.TryParse(Name, out MaterialChoice);
+                if(Enum.TryParse(Name, out MaterialChoice))
+                {
+                    AddMessage(MT_MessageType.Error, "This Material is set to Collision, yet it cannot be converted to CollisionEnum - {0}", Name);
+                    bValidity = false;
+                }
             }
 
             return bValidity;
