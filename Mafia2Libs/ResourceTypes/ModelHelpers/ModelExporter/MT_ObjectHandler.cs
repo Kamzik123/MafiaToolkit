@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Utils;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -23,6 +24,14 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public static MT_ObjectBundle ReadBundleFromFile(string file)
         {
+            string FileLowered = file.ToLower();
+            if(FileLowered.Contains(".fbx"))
+            {
+                string ChangedPathName = Path.ChangeExtension(FileLowered, ".mtb");
+                FBXHelper.ConvertFBX(file, ChangedPathName);
+                file = ChangedPathName;
+            }
+
             using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
             {
                 MT_ObjectBundle Bundle = new MT_ObjectBundle();

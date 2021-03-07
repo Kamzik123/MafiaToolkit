@@ -75,7 +75,6 @@ namespace ResourceTypes.Collisions
             IList<Vector3> vertexList = CollisionObject.Vertices.ToList();
 
             // Material sections should be unique and sorted by material
-
             var sortedParts = new SortedDictionary<ushort, List<MT_FaceGroup>>(
                 CollisionObject.FaceGroups
                     .GroupBy(p => CollisionEnumUtils.MaterialNameToIndex(p.Material.Name))

@@ -60,9 +60,10 @@ namespace ResourceTypes.ItemDesc
 
         public void OverwriteConvexWithCooked(string cookedName, string output)
         {
+            // TODO: Update this to new PhysX tool.
             if (colType == CollisionTypes.Convex)
             {
-                FBXHelper.CookConvexCollision("uncooked.bin", "cooked.bin");
+                //FBXHelper.CookConvexCollision("uncooked.bin", "cooked.bin");
                 byte[] data = File.ReadAllBytes(cookedName);
 
                 using (BinaryWriter writer = new BinaryWriter(File.Open(output, FileMode.Create)))

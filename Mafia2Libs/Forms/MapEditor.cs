@@ -102,7 +102,6 @@ namespace Mafia2Tool
             AddButton.Text = Language.GetString("$ADD");
             Button_ImportFrame.Text = Language.GetString("$IMPORT_FRAME");
             AddSceneFolderButton.Text = Language.GetString("$ADD_SCENE_FOLDER");
-            AddCollisionButton.Text = Language.GetString("$ADD_COLLISION");
             SaveButton.Text = Language.GetString("$SAVE");
             ExitButton.Text = Language.GetString("$EXIT");
         }
@@ -1623,14 +1622,12 @@ namespace Mafia2Tool
 
         private void ExportCollision(Collision.CollisionModel data)
         {
-            M2TStructure structure = new M2TStructure();
-            structure.BuildCollision(data, dSceneTree.SelectedNode.Name);
-            structure.ExportCollisionToM2T(ToolkitSettings.ExportPath, data.Hash.ToString());
+            MT_Object CollisionObject = new MT_Object();
+            CollisionObject.BuildFromCollision(data);
 
-            if (ToolkitSettings.Format != 2)
-            {
-                structure.ExportToFbx(ToolkitSettings.ExportPath, false);
-            }
+            ModelWrapper WrapperObject = new ModelWrapper();
+            WrapperObject.ModelObject = CollisionObject;
+            WrapperObject.ExportObject();
         }
         private void Export3DFrame()
         {
@@ -1696,6 +1693,7 @@ namespace Mafia2Tool
         }
 
         // TODO: Need to cleanup this function, it's atrocious.
+        // TODO: This function is no longer used, I need to find a new home for this SceneData.Collisions construction.
         private void AddCollisionButton_Click(object sender, EventArgs e)
         {
             // Check if we need to create a collisions folder
@@ -1718,37 +1716,6 @@ namespace Mafia2Tool
                     return;
                 }
             }
-
-            // Try and select a model
-            if (MeshBrowser.ShowDialog() != DialogResult.OK)
-            {
-                MessageBox.Show("Failed to select model.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Read M2T file
-            M2TStructure m2tColModel = new M2TStructure();
-            if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
-            {
-                using (BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
-                {
-                    m2tColModel.ReadFromM2T(reader);
-                }
-            }
-            else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
-            {
-                m2tColModel.ReadFromFbx(MeshBrowser.FileName);
-            }
-
-            // If we have no LODs, crash happened.
-            if (m2tColModel.Lods[0] == null)
-            {
-                MessageBox.Show("Failed to load model! No LOD[0] is present.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromM2TStructure(m2tColModel);
-            AddCollision(collisionModel);
         }
 
         // TODO: Cleanup this function, it's atrocious.
@@ -1996,12 +1963,6 @@ namespace Mafia2Tool
         private void Button_ImportBundle_OnClick(object sender, EventArgs e)
         {
             if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
-            {
-                return;
-            }
-
-            string Extension = Path.GetExtension(MeshBrowser.FileName);
-            if(!Extension.Equals(".mtb"))
             {
                 return;
             }

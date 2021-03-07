@@ -280,7 +280,7 @@ namespace Utils.Models
 
         private void ExportObjectToFbx(string File, bool bIsBinary)
         {
-            FBXHelper.ConvertM2T(File + ".m2t", File + ".fbx");
+            FBXHelper.ConvertMTB(File + ".mtb", File + ".fbx");
         }
 
         private void ExportBundle(string FileToWrite)

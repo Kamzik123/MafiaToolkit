@@ -413,13 +413,10 @@ bool Fbx_Wrangler::ConvertCollisionToNode(const MT_Collision& Collision, FbxNode
 		}
 	}
 
-	// Construct Main UV (although empty)
-	FbxGeometryElementUV* CollisionUV = CreateUVElement(Mesh, "CollisionUV");
-	CollisionUV->GetDirectArray().Resize(Vertices.size());
-
 	// Setup Triangle data
 	const std::vector<MT_FaceGroup>& FaceGroups = Collision.GetFaceGroups();
 	const std::vector<Int3>& Indices = Collision.GetIndices();
+	CreateMaterialElement(Mesh, "CollisionMapping");
 
 	for (size_t i = 0; i < FaceGroups.size(); i++)
 	{
@@ -438,10 +435,6 @@ bool Fbx_Wrangler::ConvertCollisionToNode(const MT_Collision& Collision, FbxNode
 			Mesh->AddPolygon(Tri.i2);
 			Mesh->AddPolygon(Tri.i3);
 			Mesh->EndPolygon();
-
-			// Set CollisionUV Mapping
-			FBX_ASSERT(CollisionUV);//
-			CollisionUV->GetIndexArray().Add(i);
 		}
 	}
 
@@ -626,7 +619,7 @@ bool Fbx_Wrangler::SaveDocument()
 	// Convert scene to CM
 	FbxSystemUnit::cm.ConvertScene(Scene, Scene->GetRootNode());
 
-	Exporter->Initialize(FbxName, 1, SdkManager->GetIOSettings());
+	Exporter->Initialize(FbxName, 0, SdkManager->GetIOSettings());
 	Exporter->Export(Scene);
 	Exporter->Destroy();
 	return true;

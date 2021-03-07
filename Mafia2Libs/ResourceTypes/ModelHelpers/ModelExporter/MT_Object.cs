@@ -1,15 +1,19 @@
 ﻿using Mafia2Tool;
 using ResourceTypes.BufferPools;
+using ResourceTypes.Collisions;
+using ResourceTypes.Collisions.Opcode;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Utils.Models;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 using Utils.Types;
+using Collision = ResourceTypes.Collisions.Collision;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -211,6 +215,80 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
             ObjectFlags |= MT_ObjectFlags.HasSkinning;
             this.Skeleton = ModelSkeleton;
+        }
+
+        public void BuildFromCollision(Collision.CollisionModel CollisionObject)
+        {
+            Position = Vector3.Zero;
+            Rotation = Vector3.Zero;
+            Scale = Vector3.One;
+
+            if(CollisionObject == null)
+            {
+                // Failed
+                return;
+            }
+
+            ObjectFlags |= MT_ObjectFlags.HasCollisions;
+            ObjectName = CollisionObject.Hash.ToString();
+
+            Collision = new MT_Collision();
+
+            TriangleMesh TriMesh = CollisionObject.Mesh;
+
+            // Copy vertices to our array
+            Collision.Vertices = new Vector3[TriMesh.Vertices.Count];
+            TriMesh.Vertices.CopyTo(Collision.Vertices, 0);
+
+            // Copy triangles to our array
+            Collision.Indices = new uint[TriMesh.Triangles.Count * 3];
+            for (int triIdx = 0, idxIdx = 0; triIdx < TriMesh.Triangles.Count; triIdx++, idxIdx += 3)
+            {
+                Collision.Indices[idxIdx] = TriMesh.Triangles[triIdx].v0;
+                Collision.Indices[idxIdx + 1] = TriMesh.Triangles[triIdx].v1;
+                Collision.Indices[idxIdx + 2] = TriMesh.Triangles[triIdx].v2;
+            }
+
+            // sort materials in order:
+            // MTO doesn't support unorganised triangles, only triangles in order by material.
+            // basically like mafia itself, so we have to reorder them and then save.
+            // this doesn't mess anything up, just takes a little longer :)
+            Dictionary<string, List<uint>> SortedMats = new Dictionary<string, List<uint>>();
+            for (int i = 0; i < TriMesh.MaterialIndices.Count; i++)
+            {
+                string mat = ((CollisionMaterials)TriMesh.MaterialIndices[i]).ToString();
+                if (!SortedMats.ContainsKey(mat))
+                {
+                    List<uint> list = new List<uint>();
+                    list.Add(TriMesh.Triangles[i].v0);
+                    list.Add(TriMesh.Triangles[i].v1);
+                    list.Add(TriMesh.Triangles[i].v2);
+                    SortedMats.Add(mat, list);
+                }
+                else
+                {
+                    SortedMats[mat].Add(TriMesh.Triangles[i].v0);
+                    SortedMats[mat].Add(TriMesh.Triangles[i].v1);
+                    SortedMats[mat].Add(TriMesh.Triangles[i].v2);
+                }
+            }
+
+            Collision.FaceGroups = new MT_FaceGroup[SortedMats.Count];
+            List<uint> inds = new List<uint>();
+            for (int x = 0; x < Collision.FaceGroups.Length; x++)
+            {
+                MT_FaceGroup FaceGroupObject = new MT_FaceGroup();
+                FaceGroupObject.StartIndex = (uint)inds.Count;
+                inds.AddRange(SortedMats.ElementAt(x).Value);
+                FaceGroupObject.NumFaces = (uint)(SortedMats.ElementAt(x).Value.Count / 3);
+
+                MT_MaterialInstance MaterialInstance = new MT_MaterialInstance();
+                MaterialInstance.MaterialFlags = MT_MaterialInstanceFlags.IsCollision;
+                MaterialInstance.Name = SortedMats.ElementAt(x).Key;
+
+                FaceGroupObject.Material = MaterialInstance;
+                Collision.FaceGroups[x] = FaceGroupObject;
+            }
         }
 
         public void BuildStandardObject(FrameObjectBase FrameObject)

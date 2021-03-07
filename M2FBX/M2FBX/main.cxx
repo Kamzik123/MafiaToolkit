@@ -9,23 +9,31 @@
 #include <conio.h>
 
 extern "C" int  __declspec(dllexport) _stdcall RunConvertFBX(const char* source, const char* dest);
-extern "C" int  __declspec(dllexport) _stdcall RunConvertM2T(const char* source, const char* dest, unsigned char isBin);
-extern "C" int  __declspec(dllexport) _stdcall RunConvertType(const char* source, const char* dest);
+extern "C" int  __declspec(dllexport) _stdcall RunConvertMTB(const char* source, const char* dest, unsigned char isBin);
 
 extern int _stdcall RunConvertFBX(const char* source, const char* dest)
 {
 	WriteLine("Called RunConvertFBX");
-	return ConvertFBX(source, dest);
+	MT_Wrangler* Wrangler = new MT_Wrangler(source, dest);
+	Wrangler->ConstructMTBFromFbx();
+	Wrangler->SaveBundleToFile();
+
+	return 0;
 }
-extern int _stdcall RunConvertM2T(const char* source, const char* dest, unsigned char isBin)
+extern int _stdcall RunConvertMTB(const char* source, const char* dest, unsigned char isBin)
 {
-	WriteLine("Called RunConvertM2T");
-	return ConvertM2T(source, dest, isBin);
-}
-int _stdcall RunConvertType(const char* source, const char* dest)
-{
-	WriteLine("Called RunConvertType");
-	return ConvertType(source, dest);
+	WriteLine("Called RunConvertMTB");
+	MT_ObjectBundle* ObjectBundle = MT_ObjectHandler::ReadBundleFromFile(source);
+	if (ObjectBundle)
+	{
+		Fbx_Wrangler* Wrangler = new Fbx_Wrangler(source, dest);
+		Wrangler->ConvertBundleToFbx();
+
+		ObjectBundle->Cleanup();
+		ObjectBundle = nullptr;
+	}
+
+	return 0;
 }
 
 int main(int argc, char** argv)
@@ -38,9 +46,7 @@ int main(int argc, char** argv)
 	}
 	else if ((strcmp(argv[1], "-ConvertFBX") == 0) && (argc >= 4))
 	{
-		MT_Wrangler* Wrangler = new MT_Wrangler(argv[2], argv[3]);
-		Wrangler->ConstructMTBFromFbx();
-		Wrangler->SaveBundleToFile();
+		result = RunConvertFBX(argv[2], argv[3]);
 	}
 	else if ((strcmp(argv[1], "-ConvertType") == 0) && (argc >= 4))
 	{
@@ -48,17 +54,7 @@ int main(int argc, char** argv)
 	}
 	else if ((strcmp(argv[1], "-ConvertMTB") == 0) && (argc >= 4))
 	{
-		MT_ObjectBundle* ObjectBundle = MT_ObjectHandler::ReadBundleFromFile(argv[2]);
-		if (ObjectBundle)
-		{
-			Fbx_Wrangler* Wrangler = new Fbx_Wrangler(argv[2], argv[3]);
-			Wrangler->ConvertBundleToFbx();
-
-			ObjectBundle->Cleanup();
-			ObjectBundle = nullptr;
-		}
-
-		return 0;
+		result = RunConvertMTB(argv[2], argv[3], 0);
 	}
 	else if ((strcmp(argv[1], "-ConvertMTO") == 0) && (argc >= 4))
 	{
