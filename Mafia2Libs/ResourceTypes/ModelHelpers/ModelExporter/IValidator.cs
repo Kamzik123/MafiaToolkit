@@ -12,22 +12,22 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             OurTrackerObject = TrackerObject;
 
             TrackerObject.Setup(this);
+            bool bResult = InternalValidate(TrackerObject);
 
-            // Kill our reference
             OurTrackerObject = null;
 
-            return InternalValidate(TrackerObject);
+            return bResult;
         }
 
         public void AddMessage(MT_MessageType MessageType, string Format, params object[] Args)
         {
-            Debug.Assert(OurTrackerObject == null, "TrackerObject shouldn't be invalid.");
+            Debug.Assert(OurTrackerObject != null, "TrackerObject shouldn't be invalid.");
             OurTrackerObject.AddMessage(this, MessageType, Format, Args);
         }
 
         public void AddMessage(MT_MessageType MessageType, string Text)
         {
-            Debug.Assert(OurTrackerObject == null, "TrackerObject shouldn't be invalid.");
+            Debug.Assert(OurTrackerObject != null, "TrackerObject shouldn't be invalid.");
             OurTrackerObject.AddMessage(this, MessageType, Text);
         }
 

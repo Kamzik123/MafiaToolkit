@@ -25,9 +25,18 @@ Fbx_Wrangler::Fbx_Wrangler(const char* InName, const char* InDest)
 
 Fbx_Wrangler::~Fbx_Wrangler()
 {
-	LoadedObject->Cleanup();
+	if (LoadedObject)
+	{
+		LoadedObject->Cleanup();
+		LoadedObject = nullptr;
+	}
 
-	Scene->Destroy(true);
+	if (Scene)
+	{
+		Scene->Destroy(true);
+		Scene = nullptr;
+	}
+
 	Fbx_Utilities::DestroySdkObjects(SdkManager, true);
 }
 

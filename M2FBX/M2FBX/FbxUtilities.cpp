@@ -19,8 +19,15 @@ void Fbx_Utilities::DestroySdkObjects(FbxManager* pManager, bool pExitStatus)
 {
 #if _DEBUG
 	//Delete the FBX Manager. All the objects that have been allocated using the FBX Manager and that haven't been explicitly destroyed are also automatically destroyed.
-	if (pManager) pManager->Destroy();
-	if (pExitStatus) WriteLine("Program Success!");
+	if (pManager)
+	{
+		pManager->Destroy();
+		pManager = nullptr;
+	}
+	if (pExitStatus)
+	{
+		WriteLine("Program Success!");
+	}
 #endif _DEBUG
 }
 

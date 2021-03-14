@@ -20,6 +20,7 @@ public:
 
 	MT_Wrangler() = default;
 	MT_Wrangler(const char* InName, const char* InDest);
+	~MT_Wrangler();
 
 	bool SetupFbxManager();
 	bool SetupImporter();

@@ -27,6 +27,24 @@ MT_Wrangler::MT_Wrangler(const char* InName, const char* InDest)
 	MTOName = InDest;
 }
 
+MT_Wrangler::~MT_Wrangler()
+{
+	if (Scene)
+	{
+		Scene->Destroy(true);
+		Scene = nullptr;
+	}
+
+	if (LoadedBundle)
+	{
+		LoadedBundle->Cleanup();
+		LoadedBundle = nullptr;
+	}
+
+	Fbx_Utilities::DestroySdkObjects(SdkManager, true);
+
+}
+
 bool MT_Wrangler::SetupFbxManager()
 {
 	Fbx_Utilities::InitializeSdkObjects(SdkManager);
@@ -53,6 +71,7 @@ bool MT_Wrangler::SetupImporter()
 	Scene = FbxScene::Create(SdkManager, "Scene");
 	Importer->Import(Scene);
 	Importer->Destroy();
+	Importer = nullptr;
 
 	return true;
 }
@@ -145,6 +164,14 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 	TransformObject.Scale = { (float)Scale[0], (float)Scale[1], (float)Scale[2] };
 	ModelObject->SetTransform(TransformObject);
 
+	// Collision Conversion
+	FbxNode* CollisionNode = Node->FindChild("COL");
+	if (CollisionNode)
+	{
+		// checks are done in SetCollisions, flag is added too.
+		ModelObject->SetCollisions(ConstructCollision(CollisionNode));
+	}
+
 	// Setup Children
 	std::vector<MT_Object> Children = {};
 	FbxInt32 NumChildren = Node->GetChildCount();
@@ -190,15 +217,6 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 	}
 
 	ModelObject->SetLods(Lods);
-
-
-	// Collision Conversion
-	FbxNode* CollisionNode = Node->FindChild("COL");
-	if (CollisionNode)
-	{
-		// checks are done in SetCollisions, flag is added too.
-		ModelObject->SetCollisions(ConstructCollision(CollisionNode));
-	}
 
 	// Skeleton Conversion
 	FbxNode* SkeletonNode = Node->FindChild("Root");
@@ -491,5 +509,5 @@ FbxGeometryElementUV* MT_Wrangler::GetUVElementByIndex(FbxMesh* Mesh, uint Eleme
 		}
 	}
 
-	return Mesh->GetElementUV(ElementType);
+	return nullptr;
 }

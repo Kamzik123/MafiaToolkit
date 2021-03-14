@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using ResourceTypes.ModelHelpers.ModelExporter;
 using System;
+using System.Collections.Generic;
 
 namespace Forms.EditorControls
 {
@@ -29,9 +30,10 @@ namespace Forms.EditorControls
         {
             InitializeComponent();
 
+            CurrentBundle = ObjectBundle;
+
             InitiateValidation();
 
-            CurrentBundle = ObjectBundle;
             TreeView_Objects.Nodes.Add(ConvertBundleToNode(ObjectBundle));
         }
 
@@ -103,6 +105,13 @@ namespace Forms.EditorControls
                 ColHelper.Setup();
                 PropertyGrid_Test.SelectedObject = ColHelper;
             }
+
+            // Get validation messages for object and add to tab
+            List<string> Messages = TrackerObject.GetObjectMessages((IValidator)e.Node.Tag);
+            foreach(string Message in Messages)
+            {
+                ListBox_Validation.Items.Add(Message);
+            }
         }
 
         private void TreeView_OnBeforeSelect(object sender, TreeViewCancelEventArgs e)
@@ -138,6 +147,9 @@ namespace Forms.EditorControls
                 string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), "Updated COL.");
                 //Label_MessageText.Text = Message;
             }
+
+            // clear validation box
+            ListBox_Validation.Items.Clear();
         }
 
         private void InitiateValidation()
