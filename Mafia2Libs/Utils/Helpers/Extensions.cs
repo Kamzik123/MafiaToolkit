@@ -56,6 +56,15 @@ namespace Utils.Extensions
         }
     }
 
+    public class MToolStripStatusLabel : ToolStripStatusLabel
+    {
+        public void SetTextWithTimeStamp(string InText)
+        {
+            string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), InText);
+            Text = Message;
+        }
+    }
+
     public static class ConverterUtils
     {
         private static string[] replacementList = { "X", "Y", "Z", "W", ":" };

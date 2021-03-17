@@ -494,7 +494,12 @@ namespace Gibbed.Mafia2.FileFormats
                     {
                         if (!res.Value)
                         {
-                            name = sortedResources[type][res.Key];
+                            string StoredName = sortedResources[type][res.Key];
+                            if(!StoredName.Equals("not available"))
+                            {
+                                name = StoredName;
+                            }
+
                             resPatchAvailable[type][z] = new KeyValuePair<int, bool>(res.Key, true);
                             break;
                         }
@@ -626,6 +631,7 @@ namespace Gibbed.Mafia2.FileFormats
                     {
                         if (ResourceEntries[i].TypeId == type)
                         {
+                            // Fix for CrySDS archives
                             using (MemoryStream stream = new MemoryStream(ResourceEntries[i].Data))
                             {
                                 ushort authorLen = stream.ReadValueU16();
@@ -662,7 +668,7 @@ namespace Gibbed.Mafia2.FileFormats
                 //Fix for friends for life SDS files.
                 //MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Log.WriteLine("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", LoggingTypes.WARNING);
-                for (int i = 0; i != ResourceEntries.Count; i++)
+                for (int i = 0; i < ResourceEntries.Count; i++)
                 {
                     ResourceEntry Entry = ResourceEntries[i];
                     string Typename = _ResourceTypes[Entry.TypeId].Name;
@@ -684,6 +690,18 @@ namespace Gibbed.Mafia2.FileFormats
                     else if(Typename == "hkAnimation")
                     {
                         Extension = ".hkx";
+                    }
+                    else if (Typename == "NAV_PATH_DATA")
+                    {
+                        Extension = ".hkt";
+                    }
+                    else if(Typename == "EnlightenResource")
+                    {
+                        Extension = ".enl";
+                    }
+                    else if(Typename == "RoadMap")
+                    {
+                        Extension = ".gsd";
                     }
 
                     string FileName = string.Format("File_{0}{1}", i, Extension);
