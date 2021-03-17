@@ -17,6 +17,9 @@ extern int _stdcall RunConvertFBX(const char* source, const char* dest)
 	MT_Wrangler* Wrangler = new MT_Wrangler(source, dest);
 	Wrangler->ConstructMTBFromFbx();
 	Wrangler->SaveBundleToFile();
+	
+	delete Wrangler;
+	Wrangler = nullptr;
 
 	return 0;
 }
@@ -30,6 +33,11 @@ extern int _stdcall RunConvertMTB(const char* source, const char* dest, unsigned
 		Wrangler->ConvertBundleToFbx();
 
 		ObjectBundle->Cleanup();
+
+		delete Wrangler;
+		Wrangler = nullptr;
+
+		delete ObjectBundle;
 		ObjectBundle = nullptr;
 	}
 

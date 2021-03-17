@@ -7,6 +7,7 @@
 #include "Source/MTObject/MT_ObjectUtils.h"
 #include "Source/MTObject/MT_Skeleton.h"
 #include "MTObject/MT_ObjectHandler.h"
+#include "Utilities/LogSystem.h"
 
 #include <map>
 
@@ -25,6 +26,9 @@ MT_Wrangler::MT_Wrangler(const char* InName, const char* InDest)
 {
 	FbxName = InName;
 	MTOName = InDest;
+
+	Logger = new LogSystem();
+	Logger->Construct("M2Fbx_FBX_MTB_log.txt");
 }
 
 MT_Wrangler::~MT_Wrangler()
@@ -38,7 +42,15 @@ MT_Wrangler::~MT_Wrangler()
 	if (LoadedBundle)
 	{
 		LoadedBundle->Cleanup();
+		delete LoadedBundle;
 		LoadedBundle = nullptr;
+	}
+
+	if (Logger)
+	{
+		Logger->Destroy();
+		delete Logger;
+		Logger = nullptr;
 	}
 
 	Fbx_Utilities::DestroySdkObjects(SdkManager, true);
@@ -50,36 +62,62 @@ bool MT_Wrangler::SetupFbxManager()
 	Fbx_Utilities::InitializeSdkObjects(SdkManager);
 	if (!SdkManager)
 	{
-		// failed to load SDKManager
+		Logger->WriteLine(ELogType::eError, "Failed to construct Fbx SDK Manager");
 		return false;
 	}
+
 	return true;
 }
 
 bool MT_Wrangler::SetupImporter()
 {
-	Importer = FbxImporter::Create(SdkManager, "");
+	FbxImporter* Importer = FbxImporter::Create(SdkManager, "");
 	FBX_ASSERT(Importer);
 
+	// Attempt to initialise the scene
 	if (!Importer->Initialize(FbxName, -1, SdkManager->GetIOSettings()))
 	{
-		// failed to setup importer and file
+		Logger->WriteLine(ELogType::eError, "Failed to initialise Fbx Importer, cannot continue with conversion.");
 		return false;
 	}
 
 	// move imported data into scene
 	Scene = FbxScene::Create(SdkManager, "Scene");
-	Importer->Import(Scene);
+	if (!Scene)
+	{
+		Logger->WriteLine(ELogType::eError, "Failed to construct an FbxScene, cannot continue with conversion.");
+		return false;
+	}
+
+	// Attempt to import the scene
+	if (!Importer->Import(Scene))
+	{
+		Logger->WriteLine(ELogType::eError, "Failed to import Fbx file into the FbxScene, cannot continue with conversion.");
+		return false;
+	}
+
+	// destroy importer
 	Importer->Destroy();
 	Importer = nullptr;
+
+	Logger->Printf(ELogType::eInfo, "Imported file:- %s", FbxName);
 
 	return true;
 }
 
 bool MT_Wrangler::ConstructMTBFromFbx()
 {
-	SetupFbxManager();
-	SetupImporter();
+	if (!SetupFbxManager())
+	{
+		Logger->WriteLine(ELogType::eError, "Failed setup FbxManager!");
+		return false;
+	}
+
+	if (!SetupImporter())
+	{
+		Logger->WriteLine(ELogType::eError, "Failed to import Fbx file!");
+		return false;
+	}
 
 	LoadedBundle = new MT_ObjectBundle();
 
@@ -91,8 +129,12 @@ bool MT_Wrangler::ConstructMTBFromFbx()
 		const FbxString& NodeName = ChildNode->GetName();
 		FbxNodeAttribute::EType NodeAttribute = GetNodeType(ChildNode);
 
+		Logger->Printf(ELogType::eInfo, "Handling FbxNode:- %s", NodeName);
+
 		if (Fbx_Utilities::FindInString(NodeName, "[MESH]"))
 		{
+			Logger->Printf(ELogType::eInfo, "Detected as MESH");
+
 			MT_Object* NewObject = ConstructMesh(ChildNode);
 			if (NewObject)
 			{
@@ -101,10 +143,13 @@ bool MT_Wrangler::ConstructMTBFromFbx()
 		}
 		else if (Fbx_Utilities::FindInString(NodeName, "[MODEL]"))
 		{
+			Logger->Printf(ELogType::eInfo, "Detected as RIGGED MODEL");
 			// Convert to RIGGED Model.
 		}	
 		else 
 		{
+			Logger->Printf(ELogType::eInfo, "Did not detect any special types, exporting as base MT_Object.");
+
 			// Attempt conversion to other Frame Type
 			MT_Object* NewObject = ConstructBaseObject(ChildNode);
 			if (NewObject)
@@ -112,6 +157,8 @@ bool MT_Wrangler::ConstructMTBFromFbx()
 				ObjectsForBundle.push_back(*NewObject);
 			}
 		}
+
+		Logger->Printf(ELogType::eInfo, "Finished FbxNode:- %s", NodeName);
 	}
 
 	LoadedBundle->SetObjects(ObjectsForBundle);
@@ -123,6 +170,7 @@ bool MT_Wrangler::SaveBundleToFile()
 {
 	if (LoadedBundle)
 	{
+		Logger->Printf(ELogType::eInfo, "Saving MTB file:- %s", MTOName);
 		MT_ObjectHandler::WriteBundleToFile(MTOName, *LoadedBundle);
 		return true;
 	}
@@ -147,6 +195,7 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 	FbxString NodeName = Node->GetName();
 	std::string RawName = NodeName.Buffer();
 	MT_ObjectUtils::RemoveMetaTagFromName(RawName);
+	Logger->Printf(ELogType::eInfo, "Setup MT_Object called:- %s", RawName.data());
 
 	// Construct object and set name
 	MT_Object* ModelObject = new MT_Object();
@@ -169,12 +218,14 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 	if (CollisionNode)
 	{
 		// checks are done in SetCollisions, flag is added too.
+		Logger->WriteLine(ELogType::eInfo, "Detected STATIC collision, converting to MT_Collisions");
 		ModelObject->SetCollisions(ConstructCollision(CollisionNode));
 	}
 
 	// Setup Children
 	std::vector<MT_Object> Children = {};
 	FbxInt32 NumChildren = Node->GetChildCount();
+	Logger->Printf(ELogType::eInfo, "Detected %i children nodes.", NumChildren);
 	for (int i = 0; i < NumChildren; i++)
 	{
 		MT_Object* NewChildObject;
@@ -183,15 +234,19 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 		const FbxString& ChildName = ChildNode->GetName();
 		if (Fbx_Utilities::FindInString(ChildName, "MESH"))
 		{
+			Logger->Printf(ELogType::eInfo, "CHILD: Constructing MESH:- %s", ChildName.Buffer());
 			NewChildObject = ConstructMesh(ChildNode);
 			Children.push_back(*NewChildObject);
 		}
 		else if(ChildName.Find('[') != std::string::npos && ChildName.Find(']') != std::string::npos)
 		{
+			Logger->Printf(ELogType::eInfo, "CHILD: Constructing MT_Object:- %s", ChildName.Buffer());
 			NewChildObject = ConstructBaseObject(ChildNode);
 			Children.push_back(*NewChildObject);
 		}		
 	}
+
+	Logger->WriteLine(ELogType::eInfo, "Done handling children nodes.");
 
 	// Update ModelObject's array
 	ModelObject->SetChildren(Children);
@@ -201,6 +256,7 @@ MT_Object* MT_Wrangler::ConstructBaseObject(FbxNode* Node)
 
 MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 {
+	// Construct base object
 	MT_Object* ModelObject = ConstructBaseObject(Node);
 
 	// Model Conversion
@@ -212,6 +268,7 @@ MT_Object* MT_Wrangler::ConstructMesh(FbxNode* Node)
 		FbxString NodeName = LodNode->GetName();
 		if (NodeName.Find("LOD") != -1)
 		{
+			Logger->Printf(ELogType::eInfo, "Constructing LOD index: %i", i);
 			Lods.push_back(*ConstructFromLod(LodNode));
 		}
 	}
@@ -287,6 +344,11 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 
 	// Construct Vertex Array
 	FbxInt32 NumVertices = Mesh->GetControlPointsCount();
+	if (NumVertices == 0)
+	{
+		Logger->WriteLine(ELogType::eWarning, "This mesh has no vertices");
+
+	}
 	std::vector<Vertex> Vertices = {};
 	Vertices.resize(NumVertices);
 	for (int i = 0; i < NumVertices; i++)
@@ -365,13 +427,18 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 		FbxSurfaceMaterial* Material = Lod->GetMaterial(i);
 		FBX_ASSERT(Material);
 
+		// Create a new MT_Material instance
 		MT_MaterialInstance* NewInstance = new MT_MaterialInstance();
 		NewInstance->SetName(Material->GetName());
 
+		// Setup rest of MT_MaterialInstance
 		const char* DiffuseTexture = Material->sDiffuse;
 		NewInstance->SetTextureName(DiffuseTexture);
 		NewInstance->SetMaterialFlags(MT_MaterialInstanceFlags::HasDiffuse);
 		FaceGroup.SetMatInstance(NewInstance);
+
+		// log Name
+		Logger->Printf(ELogType::eInfo, "Setup material called:- %s", Material->GetName());
 	}
 
 	// Finally, set face groups.
@@ -481,8 +548,16 @@ void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std
 	FbxUInt32 CurrentTotal = 0;
 	for (int i = 0; i < FaceGroupLookup.size(); i++)
 	{
+		const std::vector<Int3> FaceGroupIndices = FaceGroupLookup[i];
+		if (FaceGroupIndices.size() == 0)
+		{
+			Logger->WriteLine(ELogType::eWarning, "A FaceGroup for this mesh has no indices/triangles/polygons");
+		}
+
+		// push into main indices array
 		Indices->insert(Indices->end(), FaceGroupLookup[i].begin(), FaceGroupLookup[i].end());
 
+		// setup facegroup
 		size_t NumFaces = FaceGroupLookup[i].size();
 		MT_FaceGroup NewFaceGroup = {};
 		NewFaceGroup.SetNumFaces(NumFaces);
@@ -505,7 +580,12 @@ FbxGeometryElementUV* MT_Wrangler::GetUVElementByIndex(FbxMesh* Mesh, uint Eleme
 		Element = Mesh->GetElementUV(ElementName.data());
 		if (Element)
 		{
+			Logger->Printf(ELogType::eWarning, "Found Vertex Element:- %s", ElementName.data());
 			return Element;
+		}
+		else
+		{
+			Logger->Printf(ELogType::eWarning, "Did not find Vertex Element:- %s", ElementName.data());
 		}
 	}
 

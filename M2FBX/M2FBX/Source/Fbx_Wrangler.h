@@ -8,6 +8,7 @@ class MT_MaterialInstance;
 class MT_Object;
 class MT_Lod;
 class MT_Skeleton;
+class LogSystem;
 
 enum class UVElementType
 {
@@ -63,4 +64,6 @@ private:
 	// Fbx related
 	FbxManager* SdkManager = nullptr;
 	FbxScene* Scene = nullptr;
+
+	LogSystem* Logger = nullptr;
 };

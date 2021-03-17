@@ -7,6 +7,7 @@
 #include "Source/MTObject/MT_ObjectHandler.h"
 #include "Source/MTObject/MT_Lod.h"
 #include "Source/MTObject/MT_Skeleton.h"
+#include "Utilities/LogSystem.h"
 
 namespace WranglerUtils
 {
@@ -21,6 +22,9 @@ Fbx_Wrangler::Fbx_Wrangler(const char* InName, const char* InDest)
 {
 	MTOName = InName;
 	FbxName = InDest;
+
+	Logger = new LogSystem();
+	Logger->Construct("M2Fbx_MTB_FBX_log.txt");
 }
 
 Fbx_Wrangler::~Fbx_Wrangler()
@@ -28,6 +32,7 @@ Fbx_Wrangler::~Fbx_Wrangler()
 	if (LoadedObject)
 	{
 		LoadedObject->Cleanup();
+		delete LoadedObject;
 		LoadedObject = nullptr;
 	}
 
@@ -35,6 +40,13 @@ Fbx_Wrangler::~Fbx_Wrangler()
 	{
 		Scene->Destroy(true);
 		Scene = nullptr;
+	}
+
+	if (Logger)
+	{
+		Logger->Destroy();
+		delete Logger;
+		Logger = nullptr;
 	}
 
 	Fbx_Utilities::DestroySdkObjects(SdkManager, true);
@@ -45,7 +57,7 @@ bool Fbx_Wrangler::SetupFbxManager()
 	Fbx_Utilities::InitializeSdkObjects(SdkManager);
 	if (!SdkManager)
 	{
-		// failed to load SDKManager
+		Logger->WriteLine(ELogType::eError, "Failed to load Fbx manager!");
 		return false;
 	}
 	return true;
@@ -58,11 +70,17 @@ bool Fbx_Wrangler::ConstructScene()
 	DocInfo->mTitle = "FBX Model";
 	DocInfo->mSubject = "FBX Created by M2FBX - Used by MafiaToolkit.";
 	DocInfo->mAuthor = "Greavesy";
-	DocInfo->mRevision = "rev. 0.30";
+	DocInfo->mRevision = "rev. 0.50";
 	DocInfo->mKeywords = "";
 	DocInfo->mComment = "";
 
 	Scene = FbxScene::Create(SdkManager, "ToolkitScene");
+	if (!Scene)
+	{
+		Logger->WriteLine(ELogType::eError, "Failed to construct scene!");
+		return false;
+	}
+
 	Scene->SetDocumentInfo(DocInfo);
 	
 	return true;
@@ -76,12 +94,24 @@ bool Fbx_Wrangler::ConvertObjectToFbx()
 	MT_Object* Object = MT_ObjectHandler::ReadObjectFromFile(MTOName);
 	if (!Object)
 	{
-		// Failed
+		Logger->Printf(ELogType::eError, "Failed to read objects from file:- %s", MTOName);
 		return false;
 	}
 
+	Logger->Printf(ELogType::eInfo, "Loaded MTB file:- %s", MTOName);
+
+	// Attempt to convert to workable FbxNode.
 	FbxNode* RootNode = nullptr;
 	bool bResult = ConvertObjectToNode(*Object, RootNode);
+	if (!bResult)
+	{
+		Logger->WriteLine(ELogType::eError, "Failed to convert MT_Object to viable Fbx model!");
+		return false;
+	}
+
+	Logger->Printf(ELogType::eInfo, "Converted MTB file to Fbx");
+
+	// Save document
 	SaveDocument();
 	return bResult;
 }
@@ -113,7 +143,7 @@ bool Fbx_Wrangler::ConvertBundleToFbx()
 bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object, FbxNode*& RootNode)
 {
 	std::string ObjectName = Object.GetName();
-	printf("%s\n", ObjectName.data());
+	Logger->Printf(ELogType::eInfo, "Processing object:- %s", ObjectName.data());
 
 	// Construct name
 	std::string TypeEnclosed = {};
@@ -157,12 +187,16 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object, FbxNode*& RootNo
 			{
 				bResult = ApplySkinToMesh(Lod, Skin, NewLodNode);
 			}
+
+			Logger->Printf(ELogType::eInfo, "Added LODIndex [%i]", i);
 		}
 	}
 
 	if (Object.HasObjectFlag(HasChildren))
 	{
 		const std::vector<MT_Object>& Children = Object.GetChildren();
+		Logger->Printf(ELogType::eInfo, "Detected %i children for object [%s]", Children.size(), ObjectName.data());
+		
 		for (size_t i = 0; i < Children.size(); i++)
 		{
 			// Convert Node
@@ -173,17 +207,25 @@ bool Fbx_Wrangler::ConvertObjectToNode(const MT_Object& Object, FbxNode*& RootNo
 			if (ChildNode)
 			{
 				RootNode->AddChild(ChildNode);
+				Logger->Printf(ELogType::eInfo, "Added child called:= %s", ChildNode->GetName());
 			}
 		}
 	}
 
 	if (Object.HasObjectFlag(HasCollisions))
 	{
-		const MT_Collision* Collision = Object.GetCollision();
+		if (const MT_Collision* Collision = Object.GetCollision())
+		{
+			FbxNode* CollisionNode = FbxNode::Create(SdkManager, "COL");
+			bool bResult = ConvertCollisionToNode(*Collision, CollisionNode);
+			RootNode->AddChild(CollisionNode);
 
-		FbxNode* CollisionNode = FbxNode::Create(SdkManager, "COL");
-		bool bResult = ConvertCollisionToNode(*Collision, CollisionNode);
-		RootNode->AddChild(CollisionNode);
+			Logger->Printf(ELogType::eInfo, "Added collision to object:- ", ObjectName.data());
+		}
+		else
+		{
+			Logger->Printf(ELogType::eError, "Collision flag is enabled on [%s], but no collision data is present", ObjectName.data());
+		}
 	}
 
 	FbxNode* SceneRootNode = Scene->GetRootNode();
@@ -199,7 +241,7 @@ bool Fbx_Wrangler::ApplySkinToMesh(const MT_Lod& LodObject, FbxSkin*& Skin, FbxN
 		const std::vector<Vertex>& Vertices = LodObject.GetVertices();
 		for (size_t x = 0; x < Vertices.size(); x++)
 		{
-			Vertex Vert = Vertices[x];
+			const Vertex& Vert = Vertices[x];
 			for (int z = 0; z < 4; z++)
 			{
 				if (Vert.boneWeights[z] != 0.0f)
@@ -525,23 +567,33 @@ FbxGeometryElementUV* Fbx_Wrangler::CreateUVElement(FbxMesh* Mesh, const UVEleme
 
 FbxGeometryElementUV* Fbx_Wrangler::CreateUVElement(FbxMesh* Mesh, const char* Name)
 {
-	FbxGeometryElementUV* UVElement = Mesh->CreateElementUV(Name);
-	FBX_ASSERT(UVElement);
+	if (FbxGeometryElementUV* UVElement = Mesh->CreateElementUV(Name))
+	{
+		Logger->Printf(ELogType::eInfo, "Setup UV element called:- %s", Name);
 
-	UVElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
-	UVElement->SetReferenceMode(FbxGeometryElement::eDirect);
-	return UVElement;
+		UVElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		UVElement->SetReferenceMode(FbxGeometryElement::eDirect);
+
+		return UVElement;
+	}
+
+	return nullptr;
 }
 
 FbxGeometryElementMaterial* Fbx_Wrangler::CreateMaterialElement(FbxMesh* pMesh, const char* pName)
 {
-	FbxGeometryElementMaterial* MatElement = pMesh->CreateElementMaterial();
-	FBX_ASSERT(MatElement);
+	if (FbxGeometryElementMaterial* MatElement = pMesh->CreateElementMaterial())
+	{
+		Logger->Printf(ELogType::eInfo, "Setup material called:- %s", pName);
 
-	MatElement->SetName(pName);
-	MatElement->SetMappingMode(FbxLayerElement::eByPolygon);
-	MatElement->SetReferenceMode(FbxLayerElement::eIndexToDirect);
-	return MatElement;
+		MatElement->SetName(pName);
+		MatElement->SetMappingMode(FbxLayerElement::eByPolygon);
+		MatElement->SetReferenceMode(FbxLayerElement::eIndexToDirect);
+
+		return MatElement;
+	}
+
+	return nullptr;
 }
 
 FbxSurfacePhong* Fbx_Wrangler::CreateMaterial(const MT_MaterialInstance& MaterialInstance)
@@ -549,16 +601,22 @@ FbxSurfacePhong* Fbx_Wrangler::CreateMaterial(const MT_MaterialInstance& Materia
 	const FbxString& MaterialName = MaterialInstance.GetName().data();
 	const FbxString& ShadingName = "Phong";
 
-	FbxSurfacePhong* NewMaterial = FbxSurfacePhong::Create(SdkManager, MaterialName.Buffer());
-	NewMaterial->ShadingModel.Set(ShadingName);
-
-	if (MaterialInstance.HasMaterialFlag(HasDiffuse))
+	// Try and construct a new material.
+	if (FbxSurfacePhong* NewMaterial = FbxSurfacePhong::Create(SdkManager, MaterialName.Buffer()))
 	{
-		NewMaterial->Diffuse.ConnectSrcObject(CreateTexture(MaterialInstance.GetTextureName()));
+		Logger->Printf(ELogType::eInfo, "Setup material called:- %s", MaterialName.Buffer());
+
+		// Set shading (and possibly diffuse texture if we have material flag)
+		NewMaterial->ShadingModel.Set(ShadingName);
+		if (MaterialInstance.HasMaterialFlag(HasDiffuse))
+		{
+			NewMaterial->Diffuse.ConnectSrcObject(CreateTexture(MaterialInstance.GetTextureName()));
+		}
+
+		return NewMaterial;
 	}
 
-	return NewMaterial;
-
+	return nullptr;
 }
 
 FbxTexture* Fbx_Wrangler::CreateTexture(const std::string& Name)
@@ -628,8 +686,25 @@ bool Fbx_Wrangler::SaveDocument()
 	// Convert scene to CM
 	FbxSystemUnit::cm.ConvertScene(Scene, Scene->GetRootNode());
 
-	Exporter->Initialize(FbxName, 0, SdkManager->GetIOSettings());
-	Exporter->Export(Scene);
-	Exporter->Destroy();
-	return true;
+	bool bWasSuccessful = false;
+
+	// attempt to initialise
+	if (Exporter->Initialize(FbxName, 0, SdkManager->GetIOSettings()))
+	{
+		// attempt to export
+		if (Exporter->Export(Scene))
+		{
+			Logger->Printf(ELogType::eInfo, "Exported to file called:- %s", FbxName);
+			bWasSuccessful = true;
+		}
+
+		// destroy
+		Exporter->Destroy();
+		Exporter = nullptr;
+
+		return bWasSuccessful;
+	}
+	
+	Logger->WriteLine(ELogType::eError, "Failed to export the file!");
+	return bWasSuccessful;
 }

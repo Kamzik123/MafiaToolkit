@@ -172,7 +172,7 @@
     <ClCompile Include="Source\MTObject\MT_Object.cpp" />
     <ClCompile Include="Source\MTObject\MT_ObjectHandler.cpp" />
     <ClCompile Include="Source\Utilities\FileUtils.cpp" />
-    <ClCompile Include="Source\Utilities\LogFile.cpp" />
+    <ClCompile Include="Source\Utilities\LogSystem.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -193,7 +193,7 @@
     <ClInclude Include="Source\MTObject\MT_Object.h" />
     <ClInclude Include="Source\MTObject\MT_ObjectHandler.h" />
     <ClInclude Include="Source\Utilities\FileUtils.h" />
-    <ClInclude Include="Source\Utilities\LogFile.h" />
+    <ClInclude Include="Source\Utilities\LogSystem.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,4 +1,4 @@
-#include "LogFile.h"
+#include "LogSystem.h"
 
 #include <cstdarg>
 
@@ -11,15 +11,15 @@ namespace LogFileUtils
 
 std::ofstream mFile;
 
-void LogFile::Construct(const std::string& name)
+void LogSystem::Construct(const std::string& name)
 {
-	if (IsOpen())
+	if (!IsOpen())
 	{
 		mFile.open(name.data(), ios::out | ios::trunc);
 	}
 }
 
-void LogFile::Destroy()
+void LogSystem::Destroy()
 {
 	if (IsOpen())
 	{
@@ -27,7 +27,7 @@ void LogFile::Destroy()
 	}
 }
 
-void LogFile::Printf(const ELogError Error, const char* Text, ...)
+void LogSystem::Printf(const ELogType Error, const char* Text, ...)
 {
 	if (IsOpen()) 
 	{
@@ -41,7 +41,7 @@ void LogFile::Printf(const ELogError Error, const char* Text, ...)
 	}
 }
 
-void LogFile::WriteLine(const ELogError Error, const char* Text)
+void LogSystem::WriteLine(const ELogType Error, const char* Text)
 {
 	if (IsOpen())
 	{
@@ -50,12 +50,12 @@ void LogFile::WriteLine(const ELogError Error, const char* Text)
 	}
 }
 
-bool LogFile::IsOpen()
+bool LogSystem::IsOpen()
 {
 	return mFile.is_open();
 }
 
-void LogFile::Append()
+void LogSystem::Append()
 {
 	if (IsOpen())
 	{
@@ -63,23 +63,26 @@ void LogFile::Append()
 	}
 }
 
-void LogFile::Write(const ELogError Error, const char* Text)
+void LogSystem::Write(const ELogType Error, const char* Text)
 {
 	// TODO: We can probably separate this to another function
 	std::string ErrorType = "";
 	switch (Error)
 	{
-	case ELogError::eError:
+	case ELogType::eError:
 	{
 		ErrorType = LogFileUtils::ErrorString;
+		break;
 	}
-	case ELogError::eInfo:
+	case ELogType::eInfo:
 	{
 		ErrorType = LogFileUtils::InfoString;
+		break;
 	}
-	case ELogError::eWarning:
+	case ELogType::eWarning:
 	{
 		ErrorType = LogFileUtils::WarningString;
+		break;
 	}
 	default:
 	{
@@ -92,4 +95,6 @@ void LogFile::Write(const ELogError Error, const char* Text)
 		mFile << ErrorType << " ";
 		mFile << Text;
 	}
+
+	printf("%s %s\n", ErrorType.data(), Text);
 }
