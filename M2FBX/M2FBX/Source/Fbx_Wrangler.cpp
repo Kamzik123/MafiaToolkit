@@ -683,8 +683,11 @@ bool Fbx_Wrangler::SaveDocument()
 	IOS_REF.SetBoolProp(EXP_FBX_ANIMATION, false);
 	IOS_REF.SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
 
-	// Convert scene to CM
-	FbxSystemUnit::cm.ConvertScene(Scene, Scene->GetRootNode());
+	// Force set axis system
+	FbxGlobalSettings& GlobalSettings = Scene->GetGlobalSettings();
+	GlobalSettings.SetAxisSystem(FbxAxisSystem::eMax);
+	GlobalSettings.SetSystemUnit(FbxSystemUnit::cm);
+
 
 	bool bWasSuccessful = false;
 

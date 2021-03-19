@@ -41,6 +41,7 @@ namespace Forms.EditorControls
         {
             TreeNode Root = new TreeNode(Object.ObjectName);
             Root.Tag = Object;
+            ValidateObject(Root);
 
             if (Object.ObjectFlags.HasFlag(MT_ObjectFlags.HasLODs))
             {
@@ -48,6 +49,7 @@ namespace Forms.EditorControls
                 {
                     TreeNode LodNode = new TreeNode("LOD" + i);
                     LodNode.Tag = Object.Lods[i];
+                    ValidateObject(LodNode);
                     Root.Nodes.Add(LodNode);
                 }
             }
@@ -56,6 +58,7 @@ namespace Forms.EditorControls
             {
                 TreeNode SCollisionNode = new TreeNode("Static Collision");
                 SCollisionNode.Tag = Object.Collision;
+                ValidateObject(SCollisionNode);
                 Root.Nodes.Add(SCollisionNode);
             }
 
@@ -74,8 +77,9 @@ namespace Forms.EditorControls
         {
             TreeNode Root = new TreeNode("Bundle");
             Root.Tag = Bundle;
+            ValidateObject(Root);
 
-            foreach(MT_Object ObjectInfo in Bundle.Objects)
+            foreach (MT_Object ObjectInfo in Bundle.Objects)
             {
                 Root.Nodes.Add(ConvertObjectToNode(ObjectInfo));
             }
@@ -150,6 +154,16 @@ namespace Forms.EditorControls
 
             // clear validation box
             ListBox_Validation.Items.Clear();
+        }
+
+        private void ValidateObject(TreeNode CurrentNode)
+        {
+            IValidator ValidationObject = (CurrentNode.Tag as IValidator);
+            if(ValidationObject != null)
+            {
+                bool bIsValid = TrackerObject.IsObjectValid((IValidator)CurrentNode.Tag);
+                CurrentNode.ImageIndex = (bIsValid ? 1 : 0);
+            }
         }
 
         private void InitiateValidation()
