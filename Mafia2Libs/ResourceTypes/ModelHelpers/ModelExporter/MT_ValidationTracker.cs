@@ -17,17 +17,40 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     public class MT_ValidationTracker
     {
         private Dictionary<IValidator, List<string>> Messages;
+        private Stack<IValidator> ObjectStack;
 
         public MT_ValidationTracker()
         {
             Messages = new Dictionary<IValidator, List<string>>();
+            ObjectStack = new Stack<IValidator>();
         }
 
         public void Setup(IValidator ValidationObject)
         {
-            if(!Messages.ContainsKey(ValidationObject))
+            if (ObjectStack.Count > 0)
             {
-                Messages.Add(ValidationObject, new List<string>());
+                IValidator TopMostObject = ObjectStack.Peek();
+                if (TopMostObject != null)
+                {
+                    TopMostObject.AddLinkedObject(ValidationObject);
+                }
+            }
+
+            ObjectStack.Push(ValidationObject);
+        }
+
+        public void PopObject(IValidator ValidationObject)
+        {
+            IValidator TopObject = ObjectStack.Peek();
+            if (TopObject == ValidationObject)
+            {
+                ObjectStack.Pop();
+
+                // add if doesn't exist
+                if (!Messages.ContainsKey(TopObject))
+                {
+                    Messages.Add(TopObject, new List<string>());
+                }
             }
         }
 
@@ -46,14 +69,37 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public bool IsObjectValid(IValidator ObjectToCheck)
         {
-            List<string> ObjectMsgs = Messages.TryGet(ObjectToCheck);
+            List<string> ObjectMsgs = InternalGetObjectMessages(ObjectToCheck);
 
             return ObjectMsgs.Count == 0;
         }
 
+        public int GetMessageCount()
+        {
+            int CurrentCount = 0;
+            foreach(var Entry in Messages)
+            {
+                CurrentCount += Entry.Value.Count;
+            }
+
+            return CurrentCount;
+        }
         public List<string> GetObjectMessages(IValidator ObjectToCheck)
         {
-            return Messages.TryGet(ObjectToCheck);
+            return InternalGetObjectMessages(ObjectToCheck);
+        }
+
+        private List<string> InternalGetObjectMessages(IValidator ObjectToCheck)
+        {
+            List<string> OutMessageList = new List<string>();
+            OutMessageList.AddRange(Messages.TryGet(ObjectToCheck));
+
+            foreach (IValidator ObjectEntry in ObjectToCheck.GetLinkedObjects())
+            {
+                OutMessageList.AddRange(InternalGetObjectMessages(ObjectEntry));
+            }
+
+            return OutMessageList;
         }
     }
 }

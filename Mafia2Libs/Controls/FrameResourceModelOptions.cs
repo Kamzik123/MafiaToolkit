@@ -170,6 +170,8 @@ namespace Forms.EditorControls
         {
             TrackerObject = new MT_ValidationTracker();
             CurrentBundle.ValidateObject(TrackerObject);
+
+            Label_DebugMessage.Text = string.Format("MESSAGE DEBUG: {0}", TrackerObject.GetMessageCount());
         }
 
         private void Button_Continue_Click(object sender, EventArgs e)

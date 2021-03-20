@@ -285,7 +285,7 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 		for (size_t i = 0; i < Vertices.size(); i++)
 		{
 			const Point3& VertexEntry = Vertices[i].position;
-			ControlPoints[i] = FbxVector4{ VertexEntry.x, VertexEntry.y, VertexEntry.z };
+			ControlPoints[i] = { VertexEntry.x, VertexEntry.y, VertexEntry.z };
 		}
 	}
 

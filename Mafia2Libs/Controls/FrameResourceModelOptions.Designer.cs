@@ -37,14 +37,15 @@
             this.PropertyGrid_Test = new System.Windows.Forms.PropertyGrid();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.Tab_Root = new System.Windows.Forms.TabControl();
-            this.TabPage_Validation = new System.Windows.Forms.TabPage();
-            this.TabPage_ConvertLogs = new System.Windows.Forms.TabPage();
-            this.ListBox_ImportLog = new System.Windows.Forms.ListBox();
-            this.ListBox_Validation = new System.Windows.Forms.ListBox();
             this.Button_Validate = new System.Windows.Forms.ToolStripButton();
             this.Button_Continue = new System.Windows.Forms.ToolStripButton();
             this.Button_StopImport = new System.Windows.Forms.ToolStripButton();
+            this.Tab_Root = new System.Windows.Forms.TabControl();
+            this.TabPage_Validation = new System.Windows.Forms.TabPage();
+            this.ListBox_Validation = new System.Windows.Forms.ListBox();
+            this.TabPage_ConvertLogs = new System.Windows.Forms.TabPage();
+            this.ListBox_ImportLog = new System.Windows.Forms.ListBox();
+            this.Label_DebugMessage = new System.Windows.Forms.ToolStripLabel();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer_Root)).BeginInit();
             this.SplitContainer_Root.Panel1.SuspendLayout();
             this.SplitContainer_Root.Panel2.SuspendLayout();
@@ -134,65 +135,13 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Button_Validate,
             this.Button_Continue,
-            this.Button_StopImport});
+            this.Button_StopImport,
+            this.Label_DebugMessage});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(624, 25);
             this.toolStrip1.TabIndex = 18;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // Tab_Root
-            // 
-            this.Tab_Root.Controls.Add(this.TabPage_Validation);
-            this.Tab_Root.Controls.Add(this.TabPage_ConvertLogs);
-            this.Tab_Root.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Tab_Root.Location = new System.Drawing.Point(3, 295);
-            this.Tab_Root.Name = "Tab_Root";
-            this.Tab_Root.SelectedIndex = 0;
-            this.Tab_Root.Size = new System.Drawing.Size(618, 143);
-            this.Tab_Root.TabIndex = 19;
-            // 
-            // TabPage_Validation
-            // 
-            this.TabPage_Validation.Controls.Add(this.ListBox_Validation);
-            this.TabPage_Validation.Location = new System.Drawing.Point(4, 22);
-            this.TabPage_Validation.Name = "TabPage_Validation";
-            this.TabPage_Validation.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPage_Validation.Size = new System.Drawing.Size(610, 117);
-            this.TabPage_Validation.TabIndex = 0;
-            this.TabPage_Validation.Text = "Validation";
-            this.TabPage_Validation.UseVisualStyleBackColor = true;
-            // 
-            // TabPage_ConvertLogs
-            // 
-            this.TabPage_ConvertLogs.Controls.Add(this.ListBox_ImportLog);
-            this.TabPage_ConvertLogs.Location = new System.Drawing.Point(4, 22);
-            this.TabPage_ConvertLogs.Name = "TabPage_ConvertLogs";
-            this.TabPage_ConvertLogs.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPage_ConvertLogs.Size = new System.Drawing.Size(610, 117);
-            this.TabPage_ConvertLogs.TabIndex = 1;
-            this.TabPage_ConvertLogs.Text = "Import Log";
-            this.TabPage_ConvertLogs.UseVisualStyleBackColor = true;
-            // 
-            // ListBox_ImportLog
-            // 
-            this.ListBox_ImportLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ListBox_ImportLog.FormattingEnabled = true;
-            this.ListBox_ImportLog.Location = new System.Drawing.Point(3, 3);
-            this.ListBox_ImportLog.Name = "ListBox_ImportLog";
-            this.ListBox_ImportLog.ScrollAlwaysVisible = true;
-            this.ListBox_ImportLog.Size = new System.Drawing.Size(604, 111);
-            this.ListBox_ImportLog.TabIndex = 0;
-            // 
-            // ListBox_Validation
-            // 
-            this.ListBox_Validation.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ListBox_Validation.FormattingEnabled = true;
-            this.ListBox_Validation.Location = new System.Drawing.Point(3, 3);
-            this.ListBox_Validation.Name = "ListBox_Validation";
-            this.ListBox_Validation.ScrollAlwaysVisible = true;
-            this.ListBox_Validation.Size = new System.Drawing.Size(604, 111);
-            this.ListBox_Validation.TabIndex = 0;
             // 
             // Button_Validate
             // 
@@ -223,6 +172,65 @@
             this.Button_StopImport.Size = new System.Drawing.Size(74, 22);
             this.Button_StopImport.Text = "Stop Import";
             this.Button_StopImport.Click += new System.EventHandler(this.Button_StopImport_Click);
+            // 
+            // Tab_Root
+            // 
+            this.Tab_Root.Controls.Add(this.TabPage_Validation);
+            this.Tab_Root.Controls.Add(this.TabPage_ConvertLogs);
+            this.Tab_Root.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Tab_Root.Location = new System.Drawing.Point(3, 295);
+            this.Tab_Root.Name = "Tab_Root";
+            this.Tab_Root.SelectedIndex = 0;
+            this.Tab_Root.Size = new System.Drawing.Size(618, 143);
+            this.Tab_Root.TabIndex = 19;
+            // 
+            // TabPage_Validation
+            // 
+            this.TabPage_Validation.Controls.Add(this.ListBox_Validation);
+            this.TabPage_Validation.Location = new System.Drawing.Point(4, 22);
+            this.TabPage_Validation.Name = "TabPage_Validation";
+            this.TabPage_Validation.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPage_Validation.Size = new System.Drawing.Size(610, 117);
+            this.TabPage_Validation.TabIndex = 0;
+            this.TabPage_Validation.Text = "Validation";
+            this.TabPage_Validation.UseVisualStyleBackColor = true;
+            // 
+            // ListBox_Validation
+            // 
+            this.ListBox_Validation.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ListBox_Validation.FormattingEnabled = true;
+            this.ListBox_Validation.Location = new System.Drawing.Point(3, 3);
+            this.ListBox_Validation.Name = "ListBox_Validation";
+            this.ListBox_Validation.ScrollAlwaysVisible = true;
+            this.ListBox_Validation.Size = new System.Drawing.Size(604, 111);
+            this.ListBox_Validation.TabIndex = 0;
+            // 
+            // TabPage_ConvertLogs
+            // 
+            this.TabPage_ConvertLogs.Controls.Add(this.ListBox_ImportLog);
+            this.TabPage_ConvertLogs.Location = new System.Drawing.Point(4, 22);
+            this.TabPage_ConvertLogs.Name = "TabPage_ConvertLogs";
+            this.TabPage_ConvertLogs.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPage_ConvertLogs.Size = new System.Drawing.Size(610, 117);
+            this.TabPage_ConvertLogs.TabIndex = 1;
+            this.TabPage_ConvertLogs.Text = "Import Log";
+            this.TabPage_ConvertLogs.UseVisualStyleBackColor = true;
+            // 
+            // ListBox_ImportLog
+            // 
+            this.ListBox_ImportLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ListBox_ImportLog.FormattingEnabled = true;
+            this.ListBox_ImportLog.Location = new System.Drawing.Point(3, 3);
+            this.ListBox_ImportLog.Name = "ListBox_ImportLog";
+            this.ListBox_ImportLog.ScrollAlwaysVisible = true;
+            this.ListBox_ImportLog.Size = new System.Drawing.Size(604, 111);
+            this.ListBox_ImportLog.TabIndex = 0;
+            // 
+            // Label_DebugMessage
+            // 
+            this.Label_DebugMessage.Name = "Label_DebugMessage";
+            this.Label_DebugMessage.Size = new System.Drawing.Size(86, 22);
+            this.Label_DebugMessage.Text = "toolStripLabel1";
             // 
             // FrameResourceModelOptions
             // 
@@ -266,5 +274,6 @@
         private System.Windows.Forms.ToolStripButton Button_Validate;
         private System.Windows.Forms.ToolStripButton Button_Continue;
         private System.Windows.Forms.ToolStripButton Button_StopImport;
+        private System.Windows.Forms.ToolStripLabel Label_DebugMessage;
     }
 }
