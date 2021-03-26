@@ -423,8 +423,10 @@
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_6.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_Temp.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyWeatherParam.cs" />
+    <Compile Include="ResourceTypes\FileTypes\EntityActivator.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FramePack.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResourceEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResourceXML.cs" />
     <Compile Include="ResourceTypes\FileTypes\ItemDesc\ItemDescEnums.cs" />
@@ -486,11 +488,17 @@
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarSkidmarksTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarTuningItemTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarWindowTintTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\HealthSystem\HealthSystemItem.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\HealthSystem\HealthSystemTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\HumanDamageZonesTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\HumanWeaponImpactTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\TableContainer.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\VehiclesTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\CoreTypes\XBinVector2.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\CoreTypes\XBinVector3.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBin.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinFactory.cs" />
-    <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinHashName.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\CoreTypes\XBinHashName.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinWriter.cs" />
     <Compile Include="ResourceTypes\FileTypes\Material\Enumerator.cs" />
     <Compile Include="ResourceTypes\FileTypes\Material\MaterialFactory.cs" />
@@ -999,6 +1007,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GameExplorer.resx">
       <DependentUpon>GameExplorer.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MaterialEditor.resx">
       <DependentUpon>MaterialEditor.cs</DependentUpon>

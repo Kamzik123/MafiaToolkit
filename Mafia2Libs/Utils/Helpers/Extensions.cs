@@ -56,6 +56,15 @@ namespace Utils.Extensions
         }
     }
 
+    public class MToolStripStatusLabel : ToolStripStatusLabel
+    {
+        public void SetTextWithTimeStamp(string InText)
+        {
+            string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), InText);
+            Text = Message;
+        }
+    }
+
     public static class ConverterUtils
     {
         private static string[] replacementList = { "X", "Y", "Z", "W", ":" };
@@ -656,6 +665,18 @@ namespace Utils.Extensions
                     index++;
             }
             return -1;
+        }
+
+        public static bool AddRange<TKey, TValue>(this Dictionary<TKey, TValue> Dic, Dictionary<TKey, TValue> OtherDic)
+        {
+            bool bResult = true;
+
+            foreach(var Pair in OtherDic)
+            {
+                bResult = Dic.TryAdd(Pair.Key, Pair.Value);
+            }
+
+            return bResult;
         }
 
         public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value)

@@ -208,17 +208,11 @@ namespace Mafia2Tool
 
             FrameObjectBase frame = (node.Tag as FrameObjectBase);
 
-            // We can remove this when we have support. 
-            if(node.Nodes.Count > 0)
-            {
-                MessageBox.Show("Warning: Child Frames are not currently supported!", "Toolkit", MessageBoxButtons.OK);
-            }
-
             if (node != null)
             {
                 if(node.Tag != null)
                 {
-                    SceneData.FrameResource.SaveFramesToFile(frame, "file.frame");
+                    SceneData.FrameResource.SaveFramesToFile(frame);
                 }
             }        
         }
@@ -1495,9 +1489,11 @@ namespace Mafia2Tool
                 if (FrameResource.IsFrameType(node.Nodes[i].Tag))
                 {
                     FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
-                    SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
+                    bool bDidRemove = SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
                     Graphics.Assets.TryRemove(entry.RefID);
                     DeleteFrames(node.Nodes[i]);
+
+                    Debug.Assert(bDidRemove == true, "Failed to remove!");
                 }
             }
         }
