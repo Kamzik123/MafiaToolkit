@@ -28,6 +28,7 @@ using Utils.Extensions;
 using Rendering.Core;
 using Rendering.Factories;
 using Gibbed.Illusion.FileFormats.Hashing;
+using Utils.Helpers;
 
 namespace Mafia2Tool
 {
@@ -696,47 +697,22 @@ namespace Mafia2Tool
             }
             if (SceneData.OBJData != null)
             {
-                var data = new OBJData[SceneData.OBJData.Length];
-                for (int i = 0; i < SceneData.OBJData.Length; i++)
+                //var data = new OBJData[SceneData.OBJData.Length];
+                /*for (int i = 0; i < SceneData.OBJData.Length; i++)
                 {
                     data[i] = (OBJData)SceneData.OBJData[i].data;
                 }
                 TreeNode Grids = Graphics.SetNavigationGrid(data);
-                dSceneTree.AddToTree(Grids);
-               /* for (int i = 0; i < SceneData.OBJData.Length; i++)
+                dSceneTree.AddToTree(Grids);*/
+                for (int i = 0; i < SceneData.OBJData.Length; i++)
                 {
-                    int generatedID = StringHelpers.GetNewRefID();
-                    TreeNode navNode = new TreeNode();
-                    navNode.Text = string.Format("NAV: {0}", i);
-                    navNode.Name = generatedID.ToString();
                     var obj = (SceneData.OBJData[i].data as OBJData);
+                    obj.ConstructRenderable();
 
-                    for (int x = 0; x < obj.vertices.Length; x++)
-                    {
-                        var childID = StringHelpers.GetNewRefID();
-                        RenderNav navigationPoints = new RenderNav();
-                        navigationPoints.Init(obj, x);
-                        assets.Add(childID, navigationPoints);
-
-                        TreeNode childNode = new TreeNode();
-                        childNode.Text = string.Format("NAVNode: {0}", x);
-                        childNode.Name = childID.ToString();
-                        childNode.Tag = navigationPoints;
-                        navNode.Nodes.Add(childNode);
-                    }
-
-                    for (int y = 0; y < obj.connections.Length; y++)
-                    {
-                        RenderLine navigationLine = new RenderLine();
-                        navigationLine.SetUnselectedColour(System.Drawing.Color.AliceBlue);
-                        navigationLine.Init(new Vector3[2] { obj.vertices[obj.connections[y].NodeID].Position, obj.vertices[obj.connections[y].ConnectedNodeID].Position });
-                        navigationLine.SetSelectedColour(System.Drawing.Color.AliceBlue);
-                        navigationLine.SetUnselectedColour(System.Drawing.Color.AliceBlue);
-                        assets.Add(StringHelpers.GetNewRefID(), navigationLine);
-                    }
-
-                    dSceneTree.AddToTree(navNode);
-                }*/
+                    RenderNav NavObject = (obj.GetRenderItem() as RenderNav);
+                    dSceneTree.AddToTree(NavObject.GetTreeNodes());
+                    assets.Add(NavObject.RefID, NavObject);
+                }
             }
             if (SceneData.Collisions != null)
             {
@@ -862,32 +838,44 @@ namespace Mafia2Tool
 
         private void TreeViewUpdateSelected()
         {
-            var node = dSceneTree.SelectedNode;
-            if (node.Tag == null)
+            var SelectedNode = dSceneTree.SelectedNode;
+            var ParentNode = SelectedNode.Parent;
+
+            if (SelectedNode.Tag == null)
             {
                 return;
             }
 
-            if (FrameResource.IsFrameType(node.Tag))
+            if (FrameResource.IsFrameType(SelectedNode.Tag))
             {
-                Graphics.SelectEntry((node.Tag as FrameEntry).RefID);
+                SelectEntryParams SelectParams = new SelectEntryParams((SelectedNode.Tag as FrameEntry).RefID);
+                Graphics.SelectEntry(SelectParams);
             }
-            else if(node.Tag is SpatialCell)
+            else if (SelectedNode.Tag is SpatialCell)
             {
-                SpatialGrid grid = (node.Parent.Tag as SpatialGrid);
-                grid.SetSelectedCell(node.Index);
+                SpatialGrid grid = (ParentNode.Tag as SpatialGrid);
+                grid.SetSelectedCell(SelectedNode.Index);
+            }
+            else if(ParentNode != null && ToolkitUtils.IsOfType(SelectedNode.Parent.Tag, typeof(RenderNav)))
+            {
+                RenderNav NavigationData = (SelectedNode.Parent.Tag as RenderNav);
+
+                SelectEntry_RenderNav RenderNavSelectEntry = new SelectEntry_RenderNav(NavigationData.RefID);
+                RenderNavSelectEntry.VertexIndex = SelectedNode.Index-1; // minus index because index starts at 1
+                Graphics.SelectEntry(RenderNavSelectEntry);
             }
             else
             {
                 int result = 0;
-                if(int.TryParse(node.Name, out result))
+                if (int.TryParse(SelectedNode.Name, out result))
                 {
-                    Graphics.SelectEntry(result);
+                    SelectEntryParams SelectParams = new SelectEntryParams((SelectedNode.Tag as FrameEntry).RefID);
+                    Graphics.SelectEntry(SelectParams);
                 }
-                
+
             }
 
-            dPropertyGrid.SetObject(node.Tag);
+            dPropertyGrid.SetObject(SelectedNode.Tag);
         }
 
         private void FixActorDefintions(Actor actor)

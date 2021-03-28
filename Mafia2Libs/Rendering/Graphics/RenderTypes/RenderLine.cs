@@ -119,7 +119,7 @@ namespace Rendering.Graphics
             isUpdatedNeeded = false;
         }
 
-        public override void Select()
+        public override void Select(SelectEntryParams SelectParams)
         {
             UpdateVertices(true);
             isUpdatedNeeded = true;

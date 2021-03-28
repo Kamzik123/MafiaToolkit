@@ -128,9 +128,9 @@ namespace Rendering.Graphics
                 plane.UpdateBuffers(device, deviceContext);
         }
 
-        public override void Select()
+        public override void Select(SelectEntryParams SelectParams)
         {
-            Spline.Select();
+            Spline.Select(SelectParams);
         }
 
         public override void Unselect()

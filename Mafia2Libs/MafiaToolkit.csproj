@@ -514,6 +514,7 @@
     <Compile Include="ResourceTypes\FileTypes\Navigation\HPD.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\OBJ_DATA\KynogonRuntimeMesh.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\OBJ_DATA\OBJData.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\Utilities\NavigationWriter.cs" />
     <Compile Include="ResourceTypes\FileTypes\SdsConfigFile.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\Actor.cs" />
@@ -632,6 +633,7 @@
     <Compile Include="Utils\Helpers\Reflection\ReflectionHelpers.cs" />
     <Compile Include="Utils\Helpers\StreamExtensions.cs" />
     <Compile Include="Utils\Helpers\StringHelpers.cs" />
+    <Compile Include="Utils\Helpers\ToolkitUtils.cs" />
     <Compile Include="Utils\Settings\GameStorage.cs" />
     <Compile Include="Utils\Types\Half.cs" />
     <Compile Include="Utils\Helpers\HalfHelper.cs" />

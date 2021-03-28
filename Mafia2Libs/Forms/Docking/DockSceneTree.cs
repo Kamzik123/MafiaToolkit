@@ -222,8 +222,8 @@ namespace Forms.Docking
             if(data.GetType() == typeof(Rendering.Graphics.RenderJunction))
                 return (data as Rendering.Graphics.RenderJunction).Data.Position;
 
-            if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
-                return (data as Rendering.Graphics.RenderNav).NavigationBox.Transform.TranslationVector;
+            //if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
+            //    return (data as Rendering.Graphics.RenderNav).NavigationBox.Transform.TranslationVector;
 
             if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
                 return (data as ResourceTypes.Actors.ActorEntry).Position;

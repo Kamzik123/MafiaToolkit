@@ -22,7 +22,7 @@ namespace Rendering.Graphics
             throw new NotImplementedException();
         }
 
-        public override void Select()
+        public override void Select(SelectEntryParams SelectParams)
         {
             throw new NotImplementedException();
         }

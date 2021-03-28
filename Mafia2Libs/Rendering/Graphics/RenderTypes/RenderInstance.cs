@@ -50,9 +50,9 @@ namespace Rendering.Graphics
             return (instance as RenderStaticCollision);
         }
 
-        public override void Select()
+        public override void Select(SelectEntryParams SelectParams)
         {     
-            (instance as RenderStaticCollision).Select();
+            (instance as RenderStaticCollision).Select(SelectParams);
         }
 
         public override void Unselect()

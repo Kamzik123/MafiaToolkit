@@ -2,6 +2,7 @@
 using Rendering.Graphics;
 using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
+using ResourceTypes.Navigation;
 using SharpDX;
 
 namespace Rendering.Factories
@@ -61,6 +62,13 @@ namespace Rendering.Factories
                 }
             }
             return null;
+        }
+
+        public static RenderNav BuildRenderNav(OBJData NavigationData)
+        {
+            RenderNav NewNavObject = new RenderNav();
+            NewNavObject.Init(NavigationData);
+            return NewNavObject;
         }
     }
 }

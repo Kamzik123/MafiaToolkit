@@ -27,7 +27,7 @@ namespace Rendering.Graphics
 
         public EventHandler<UpdateSelectedEventArgs> OnSelectedObjectUpdated;
 
-        private int selectedID;
+        private SelectEntryParams SelectedEntryParams;
         private RenderBoundingBox selectionBox;
         private RenderModel sky;
         private RenderModel clouds;
@@ -47,6 +47,8 @@ namespace Rendering.Graphics
             selectionBox = new RenderBoundingBox();
             translokatorGrid = new SpatialGrid();
             navigationGrids = new SpatialGrid[0];
+
+            SelectedEntryParams = new SelectEntryParams(-1);
 
             OnSelectedObjectUpdated += OnSelectedObjectHasUpdated;
         }
@@ -268,13 +270,13 @@ namespace Rendering.Graphics
             InitObjectStack.Clear();
         }
 
-        public void SelectEntry(int id)
+        public void SelectEntry(SelectEntryParams SelectParams)
         {
             IRenderer newObj, oldObj;
-            bool foundNew = Assets.TryGetValue(id, out newObj);
-            bool foundOld = Assets.TryGetValue(selectedID, out oldObj);
+            bool foundNew = Assets.TryGetValue(SelectParams.RefID, out newObj);
+            bool foundOld = Assets.TryGetValue(SelectedEntryParams.RefID, out oldObj);
 
-            if (selectedID == id)
+            if (SelectedEntryParams == SelectParams)
             {
                 return;
             }
@@ -287,11 +289,11 @@ namespace Rendering.Graphics
                 }
 
                 TranslationGizmo.OnSelectEntry(newObj.Transform, true);
-                newObj.Select();
+                newObj.Select(SelectParams);
                 selectionBox.DoRender = true;
                 selectionBox.SetTransform(newObj.Transform);
                 selectionBox.Update(newObj.BoundingBox);
-                selectedID = id;
+                SelectedEntryParams = SelectParams;
             }
         }
 
@@ -313,7 +315,7 @@ namespace Rendering.Graphics
 
         private void OnSelectedObjectHasUpdated(object Sender, UpdateSelectedEventArgs Args)
         {
-            if(selectedID == Args.RefID)
+            if(SelectedEntryParams.RefID == Args.RefID)
             {
                 IRenderer RenderAsset = Assets[Args.RefID];
                 selectionBox.SetTransform(RenderAsset.Transform);

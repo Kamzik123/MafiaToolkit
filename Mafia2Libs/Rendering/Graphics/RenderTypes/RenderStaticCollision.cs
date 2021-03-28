@@ -181,7 +181,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Select()
+        public override void Select(SelectEntryParams SelectParams)
         {
             SelectionColour = Color.Red;
         }

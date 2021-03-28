@@ -108,12 +108,13 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Select()
+        public override void Select(SelectEntryParams SelectParams)
         {
             if (Boundary != null)
             {
-                Boundary.Select();
+                Boundary.Select(SelectParams);
             }
+
             isUpdatedNeeded = true;
         }
 

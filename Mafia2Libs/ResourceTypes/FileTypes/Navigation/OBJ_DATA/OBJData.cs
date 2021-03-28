@@ -1,4 +1,7 @@
-﻿using SharpDX;
+﻿using Rendering.Core;
+using Rendering.Factories;
+using Rendering.Graphics;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -80,7 +83,6 @@ namespace ResourceTypes.Navigation
                 set { unk6 = value; }
             }
 
-
             public override string ToString()
             {
                 return string.Format("{0} {1} {2} {3} {4} {5} {6}", unk7, unk0, unk2, unk3, unk4, unk5, unk6);
@@ -96,13 +98,17 @@ namespace ResourceTypes.Navigation
         public VertexStruct[] vertices;
         public ConnectionStruct[] connections;
         public KynogonRuntimeMesh runtimeMesh;
+        int Padding;
+        string Name;
+
+        public RenderableAdapter RenderAdapter { get; private set; }
 
         public OBJData(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(NavigationWriter writer)
         {
             writer.Write(unk0);
             writer.Write(fileIDHPD);
@@ -128,7 +134,8 @@ namespace ResourceTypes.Navigation
                 writer.Write(vertex.Unk3);
                 writer.Write(vertex.Unk4);
                 writer.Write(vertex.Unk5);
-                writer.Write(vertex.Unk6);
+                //writer.Write(vertex.Unk6);
+                writer.Write(13369346);
             }
 
             for (int i = 0; i < connections.Length; i++)
@@ -140,6 +147,12 @@ namespace ResourceTypes.Navigation
             }
 
             runtimeMesh.WriteToFile(writer);
+
+            // write footer
+            writer.Write(Padding);
+            StringHelpers.WriteString(writer, Name);
+            writer.Write(Name.Length+1); // extra 1 is the padding
+            writer.Write(303296513);
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -151,12 +164,7 @@ namespace ResourceTypes.Navigation
             
             vertSize = reader.ReadInt32();
             triSize = reader.ReadInt32();
-            //writer.WriteLine(string.Format("{0}, )
 
-            StreamWriter writer = File.CreateText("NAV_AI_OBJ_DATA_" + fileIDHPD + ".txt");
-            writer.WriteLine(string.Format("{0} {1} {2} {3}", unk0, fileIDHPD, unk3HPD, bitFlagsHPD));
-
-            //List<string> data = new List<string>();
             List<Vector3> Points = new List<Vector3>();
 
             vertices = new VertexStruct[vertSize];
@@ -170,7 +178,6 @@ namespace ResourceTypes.Navigation
                 pos.Y = -pos.Z;
                 pos.Z = y;
                 vertex.Position = pos;
-                //writer.WriteLine(vertex.Position);
                 vertex.Unk0 = reader.ReadSingle();
                 vertex.Unk1 = reader.ReadSingle();
                 vertex.Unk2 = reader.ReadInt32();
@@ -183,21 +190,84 @@ namespace ResourceTypes.Navigation
                 Points.Add(vertex.Position);
             }
 
-            writer.WriteLine("");
             connections = new ConnectionStruct[triSize];
             for (int i = 0; i < triSize; i++)
             {
                 ConnectionStruct connection = new ConnectionStruct();
                 connection.Flags = reader.ReadUInt32() & 0x7FFFFFFF;
                 connection.NodeID = reader.ReadUInt32() & 0x7FFFFFFF;
-                connection.ConnectedNodeID = reader.ReadUInt32() & 0x7FFFFFFF;
+                connection.ConnectedNodeID = reader.ReadUInt32() & 0x7FFFFFFF; //  & 0x7FFFFFFF
                 connections[i] = connection;
-                writer.WriteLine(string.Format("{0} {1} {2}", connection.Flags, connection.NodeID, connection.ConnectedNodeID));
             }
 
-            //Read KynogonRuntimeMesh
+            // Read KynogonRuntimeMesh
             runtimeMesh = new KynogonRuntimeMesh();
-            runtimeMesh.ReadFromFile(reader, writer);
+            runtimeMesh.ReadFromFile(reader);
+
+            // read footer
+            Padding = reader.ReadInt32();
+            Name = StringHelpers.ReadString(reader);
+            uint SizeofName = reader.ReadUInt32();
+            uint Header = reader.ReadUInt32();
+        }
+
+        public ConnectionStruct[] GetConnectionsFromVertex(int Index)
+        {
+            VertexStruct OurVertex = vertices[Index];
+
+            int StartOffset = OurVertex.Unk2 - 1;
+            int EndOffset = 0;
+
+
+            if (vertices.Length == Index)
+            {
+                EndOffset = vertices[vertices.Length].Unk2;
+            }
+            else
+            {
+                VertexStruct NextVertex = vertices[Index+1];
+                EndOffset = NextVertex.Unk2;
+            }
+
+            ConnectionStruct[] OutArray = new ConnectionStruct[(EndOffset - 1) - StartOffset];
+            int IndexInOutArray = 0;
+            for(int i = StartOffset; i < (EndOffset - 1); i++)
+            {
+                OutArray[IndexInOutArray] = connections[i];
+                IndexInOutArray++;
+            }
+
+            return OutArray;
+        }
+
+        public VertexStruct[] GetRelatedFromVertex(int Index)
+        {
+            VertexStruct OurVertex = vertices[Index];
+
+            VertexStruct[] OutVertices = new VertexStruct[3];
+            OutVertices[0] = vertices[OurVertex.Unk3];
+            OutVertices[1] = vertices[OurVertex.Unk4];
+            OutVertices[2] = vertices[OurVertex.Unk5];
+
+            return OutVertices;
+        }
+
+        public IRenderer GetRenderItem()
+        {
+            if(RenderAdapter != null)
+            {
+                return RenderAdapter.GetRenderItem();
+            }
+
+            return null;
+        }
+
+        public void ConstructRenderable()
+        {
+            RenderNav OurNavObject = RenderableFactory.BuildRenderNav(this);
+
+            RenderAdapter = new RenderableAdapter();
+            RenderAdapter.InitAdaptor(OurNavObject, this);
         }
     }
 }

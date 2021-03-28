@@ -47,10 +47,10 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Select()
+        public override void Select(SelectEntryParams SelectParams)
         {
-            BBox.Select();
-            Path.Select();
+            BBox.Select(SelectParams);
+            Path.Select(SelectParams);
         }
         public override void SetTransform(Matrix matrix)
         {
