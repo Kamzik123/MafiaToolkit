@@ -4,22 +4,6 @@ namespace Rendering.Graphics
 {
     public class CollisionShader : BaseShader
     {
-        public CollisionShader(Device device, InputElement[] elements, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
-        {
-            if (!Init(device, elements, vsPath, psPath, vsEntryPoint, psEntryPoint))
-            {
-                throw new System.Exception("Failed to load Shader!");
-            }
-        }
-
-        public override bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
-        {
-            if (!base.Init(device, elements, vsFileName, psFileName, vsEntryPoint, psEntryPoint))
-            {
-                return false;
-            }
-
-            return true;
-        }
+        public CollisionShader(Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
     }
 }
