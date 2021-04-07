@@ -55,6 +55,11 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     }
                 }
 
+                if(LocalDeclaration.HasFlag(VertexFlags.DamageGroup))
+                {
+                    NewVertex.DamageGroup = reader.ReadUInt32();
+                }
+
                 if (LocalDeclaration.HasFlag(VertexFlags.Color))
                 {
                     NewVertex.Color0 = reader.ReadBytes(4);
@@ -154,6 +159,10 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
                     {
                         writer.Write(Vert.BoneWeights[z]);
                     }
+                }
+                if(LocalDeclaration.HasFlag(VertexFlags.DamageGroup))
+                {
+                    writer.Write(Vert.DamageGroup);
                 }
                 if (LocalDeclaration.HasFlag(VertexFlags.Color))
                 {

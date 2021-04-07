@@ -28,7 +28,7 @@ namespace Utils.Models
         float[] boneWeights;
         byte[] boneIDs;
         Half2[] uvs;
-        int damageGroup;
+        uint damageGroup;
         byte[] color0;
         byte[] color1;
         Vector3 bbCoeffs;
@@ -61,7 +61,7 @@ namespace Utils.Models
             get { return boneIDs; }
             set { boneIDs = value; }
         }
-        public int DamageGroup {
+        public uint DamageGroup {
             get { return damageGroup; }
             set { damageGroup = value; }
         }

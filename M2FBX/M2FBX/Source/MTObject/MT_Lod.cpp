@@ -80,6 +80,10 @@ void MT_Lod::ReadFromFile(FILE* InStream)
 			FileUtils::Read(InStream, &NewVertex.boneIDs);
 			FileUtils::Read(InStream, &NewVertex.boneWeights);
 		}
+		if (HasVertexFlag(VertexFlags::DamageGroup))
+		{
+			FileUtils::Read(InStream, &NewVertex.damageGroup);
+		}
 		if (HasVertexFlag(VertexFlags::Color))
 		{
 			FileUtils::Read(InStream, &NewVertex.color0);
@@ -156,6 +160,10 @@ void MT_Lod::WriteToFile(FILE* OutStream) const
 		{
 			FileUtils::Write(OutStream, VertexInfo.boneIDs);
 			FileUtils::Write(OutStream, VertexInfo.boneWeights);
+		}
+		if (HasVertexFlag(VertexFlags::DamageGroup))
+		{
+			FileUtils::Write(OutStream, VertexInfo.damageGroup);
 		}
 		if (HasVertexFlag(VertexFlags::Color))
 		{

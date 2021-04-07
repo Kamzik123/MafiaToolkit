@@ -285,12 +285,12 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 		for (size_t i = 0; i < Vertices.size(); i++)
 		{
 			const Point3& VertexEntry = Vertices[i].position;
-			ControlPoints[i] = { VertexEntry.x, VertexEntry.y, VertexEntry.z };
+			ControlPoints[i] = { VertexEntry.x, VertexEntry.y, VertexEntry.z, 0.0f };
 		}
 	}
 
 	// Construct normal information
-	if (Lod.HasVertexFlag(Normals))
+	if (Lod.HasVertexFlag(VertexFlags::Normals))
 	{
 		FbxLayerElementNormal* LayerElementNormal = FbxLayerElementNormal::Create(Mesh, "");
 		LayerElementNormal->SetMappingMode(FbxLayerElement::eByControlPoint);
@@ -307,7 +307,7 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 	}
 
 	// Construct tangent information
-	if (Lod.HasVertexFlag(Tangent))
+	if (Lod.HasVertexFlag(VertexFlags::Tangent))
 	{
 		FbxLayerElementTangent* LayerElementTangent = FbxLayerElementTangent::Create(Mesh, "");
 		LayerElementTangent->SetMappingMode(FbxLayerElement::eByControlPoint);
@@ -326,7 +326,7 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 	// Construct TexCoord0
 	FbxGeometryElementUV* DiffuseUV = nullptr;
 	FbxGeometryElementMaterial* DiffuseMat = nullptr;
-	if (Lod.HasVertexFlag(TexCoords0))
+	if (Lod.HasVertexFlag(VertexFlags::TexCoords0))
 	{
 		DiffuseUV = CreateUVElement(Mesh, UVElementType::UV_Diffuse);
 		DiffuseMat = CreateMaterialElement(Mesh, "Diffuse Mapping");
@@ -341,7 +341,7 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 	// Construct TexCoord0
 	FbxGeometryElementUV* TexCoord1UV = nullptr;
 	FbxGeometryElementMaterial* TexCoord1Mat = nullptr;
-	if (Lod.HasVertexFlag(TexCoords1))
+	if (Lod.HasVertexFlag(VertexFlags::TexCoords1))
 	{
 		TexCoord1UV = CreateUVElement(Mesh, UVElementType::UV_1);
 		TexCoord1Mat = CreateMaterialElement(Mesh, "UV1 Mapping");
@@ -356,7 +356,7 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 	// Construct TexCoord2
 	FbxGeometryElementUV* TexCoord2UV = nullptr;
 	FbxGeometryElementMaterial* TexCoord2Mat = nullptr;
-	if (Lod.HasVertexFlag(TexCoords2))
+	if (Lod.HasVertexFlag(VertexFlags::TexCoords2))
 	{
 		TexCoord2UV = CreateUVElement(Mesh, UVElementType::UV_2);
 		TexCoord2Mat = CreateMaterialElement(Mesh, "UV2 Mapping");
@@ -371,7 +371,7 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 	// Construct OMUV
 	FbxGeometryElementUV* OmissiveUV = nullptr;
 	FbxGeometryElementMaterial* OmmisiveMat = nullptr;
-	if (Lod.HasVertexFlag(ShadowTexture))
+	if (Lod.HasVertexFlag(VertexFlags::ShadowTexture))
 	{
 		OmissiveUV = CreateUVElement(Mesh, UVElementType::UV_Omissive);
 		OmmisiveMat = CreateMaterialElement(Mesh, "Omissive Mapping");
@@ -381,6 +381,29 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 			const UVVert& VertexEntry = Vertices[i].uv3;
 			OmissiveUV->GetDirectArray().Add({ VertexEntry.x, VertexEntry.y });
 		}
+	}
+
+	// Construct Damage Group channel
+	FbxGeometryElementVertexColor* DamageGroupChannel = nullptr;
+	if (Lod.HasVertexFlag(VertexFlags::DamageGroup))
+	{
+		DamageGroupChannel = Mesh->CreateElementVertexColor();
+		DamageGroupChannel->SetName("DamageGroup_VertexColours");
+		DamageGroupChannel->SetMappingMode(FbxLayerElement::eByPolygonVertex);
+		DamageGroupChannel->SetReferenceMode(FbxLayerElement::eDirect);
+		DamageGroupChannel->GetIndexArray().SetCount(Lod.GetIndices().size());
+
+		FbxLayerElementArrayTemplate<FbxColor>& ColourArray = DamageGroupChannel->GetDirectArray();
+		for (size_t i = 0; i < Vertices.size(); i++)
+		{
+			const unsigned int DamageGroup = Vertices[i].damageGroup;
+			float VertexColour = (DamageGroup / 10.0f);
+
+			FbxColor colour = { VertexColour, VertexColour, VertexColour };
+			ColourArray.Add(colour);
+		}
+
+		Layer0->SetVertexColors(DamageGroupChannel);
 	}
 
 	// Setup Indices of object
@@ -405,28 +428,28 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 			Mesh->EndPolygon();
 
 			// Set DiffuseUV Mapping
-			if (Lod.HasVertexFlag(TexCoords0))
+			if (Lod.HasVertexFlag(VertexFlags::TexCoords0))
 			{
 				FBX_ASSERT(DiffuseUV);//
 				DiffuseUV->GetIndexArray().Add(i);
 			}
 
 			// Set UV1 Mapping
-			if (Lod.HasVertexFlag(TexCoords1))
+			if (Lod.HasVertexFlag(VertexFlags::TexCoords1))
 			{
 				FBX_ASSERT(TexCoord1UV);
 				TexCoord1UV->GetIndexArray().Add(0);
 			}
 
 			// Set UV2 Mapping
-			if (Lod.HasVertexFlag(TexCoords2))
+			if (Lod.HasVertexFlag(VertexFlags::TexCoords2))
 			{
 				FBX_ASSERT(TexCoord2UV);
 				TexCoord2UV->GetIndexArray().Add(0);
 			}
 
 			// Set Omissive Mapping
-			if (Lod.HasVertexFlag(ShadowTexture))
+			if (Lod.HasVertexFlag(VertexFlags::ShadowTexture))
 			{
 				FBX_ASSERT(OmissiveUV);
 				OmissiveUV->GetIndexArray().Add(0);
@@ -692,7 +715,7 @@ bool Fbx_Wrangler::SaveDocument()
 	bool bWasSuccessful = false;
 
 	// attempt to initialise
-	if (Exporter->Initialize(FbxName, 0, SdkManager->GetIOSettings()))
+	if (Exporter->Initialize(FbxName, 1, SdkManager->GetIOSettings()))
 	{
 		// attempt to export
 		if (Exporter->Export(Scene))

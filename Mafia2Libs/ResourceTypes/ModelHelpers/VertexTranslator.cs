@@ -193,9 +193,9 @@ namespace Utils.Models
             return new Vector2(x, y);
         }
 
-        private static int ReadDamageGroupFromVB(byte[] data, int i)
+        private static uint ReadDamageGroupFromVB(byte[] data, int i)
         {
-            return BitConverter.ToInt32(data, i);
+            return BitConverter.ToUInt32(data, i);
         }
 
         // Colour format is BGRA??

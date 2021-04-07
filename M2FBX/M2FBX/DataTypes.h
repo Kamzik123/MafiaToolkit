@@ -68,6 +68,7 @@ struct Vertex
 	Point3 tangent;
 	unsigned char boneIDs[4];
 	float boneWeights[4];
+	unsigned int damageGroup;
 	unsigned char color0[4];
 	unsigned char color1[4];
 	UVVert uv0;
