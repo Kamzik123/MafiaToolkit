@@ -7,7 +7,6 @@
 #include <string>
 
 #include <fbxsdk.h>
-#include "Utilities.h"
 #include "DataTypes.h"
 #define WIN32
 

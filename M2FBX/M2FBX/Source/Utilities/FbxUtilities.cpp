@@ -6,10 +6,13 @@ void Fbx_Utilities::InitializeSdkObjects(FbxManager*& pManager)
 	pManager = FbxManager::Create();
 	if (!pManager)
 	{
-		WriteLine("Error: Unable to create FBX Manager!");
+		FBXSDK_printf("Error: Unable to create FBX Manager!\n");
 		exit(1);
 	}
-	else WriteLine("Autodesk FBX SDK version %s", pManager->GetVersion());
+	else
+	{
+		FBXSDK_printf("Autodesk FBX SDK version %s\n", pManager->GetVersion());
+	}
 
 	//Create an IOSettings object. This object holds all import/export settings.
 	FbxIOSettings* ios = FbxIOSettings::Create(pManager, IOSROOT);
@@ -26,7 +29,7 @@ void Fbx_Utilities::DestroySdkObjects(FbxManager* pManager, bool pExitStatus)
 	}
 	if (pExitStatus)
 	{
-		WriteLine("Program Success!");
+		FBXSDK_printf("Program Success!\n");
 	}
 #endif _DEBUG
 }

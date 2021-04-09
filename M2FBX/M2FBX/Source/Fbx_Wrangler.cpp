@@ -384,7 +384,7 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 	}
 
 	// Construct Damage Group channel
-	FbxGeometryElementVertexColor* DamageGroupChannel = nullptr;
+	/*FbxGeometryElementVertexColor* DamageGroupChannel = nullptr;
 	if (Lod.HasVertexFlag(VertexFlags::DamageGroup))
 	{
 		DamageGroupChannel = Mesh->CreateElementVertexColor();
@@ -404,7 +404,7 @@ bool Fbx_Wrangler::ConvertLodToNode(const MT_Lod& Lod, FbxNode* LodNode)
 		}
 
 		Layer0->SetVertexColors(DamageGroupChannel);
-	}
+	}*/
 
 	// Setup Indices of object
 	const std::vector<MT_FaceGroup>& FaceGroups = Lod.GetFaceGroups();

@@ -1,54 +1,633 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Source">
+      <UniqueIdentifier>{56EB95D1-428D-C0A7-2B48-D4FB178947F8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="vendors">
+      <UniqueIdentifier>{86EAAF72-F2C9-2E0E-FBE1-B9E46740956F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="vendors\Cooking">
+      <UniqueIdentifier>{DFC3B2FA-4B4F-20BF-5460-A3B3C06A7CBF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendors\Cooking\include">
+      <UniqueIdentifier>{525AB9C9-BE91-0161-C79B-65843352285A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendors\Foundation">
+      <UniqueIdentifier>{0C77E730-F85A-A886-61BB-A2D94DBE9208}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendors\Foundation\include">
+      <UniqueIdentifier>{7FEAD070-6BFA-7C41-D4B3-E15FC0E26BDA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendors\PhysXLoader">
+      <UniqueIdentifier>{48265009-B487-2D17-3DF5-73C9A95564D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendors\PhysXLoader\include">
+      <UniqueIdentifier>{BB15A38F-2723-D175-B009-CD601C169D2C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendors\Physics">
+      <UniqueIdentifier>{F813CDD3-649F-3A98-6DB0-BD8CD9BA9698}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendors\Physics\include">
+      <UniqueIdentifier>{6BB34A60-D7EA-92F7-E0F4-F61A4CABB9F0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendors\Physics\include\cloth">
+      <UniqueIdentifier>{9467BB89-0080-A2B3-C92C-324D3504374D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendors\Physics\include\fluids">
+      <UniqueIdentifier>{61EF2AC8-4D15-F52E-365B-7AFA22201AFB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendors\Physics\include\softbody">
+      <UniqueIdentifier>{0461B342-F0B1-9E84-1916-8D4605C631EE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\PhysXCooker.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PhysXModel.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PhysXModelBundle.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PhysXModelBundleHandler.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PhysXStream.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Cooking\include\NxCooking.h">
+      <Filter>vendors\Cooking\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Cooking\include\Nxc.h">
+      <Filter>vendors\Cooking\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Cooking\include\fw-convex-cooker.h">
+      <Filter>vendors\Cooking\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\Nx.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\Nx12F32.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\Nx16F32.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\Nx9F32.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxAllocatorDefault.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxArray.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxAssert.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxBitField.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxBounds3.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxBox.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxBuildNumber.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxCapsule.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxDebugRenderable.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxException.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxFoundation.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxFoundationSDK.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxI16Vec3.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxMat33.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxMat34.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxMath.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxPlane.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxPool.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxProfiler.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxQuat.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxQuickSort.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxRay.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxRemoteDebugger.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxSegment.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxSimpleTriangleMesh.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxSimpleTypes.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxSphere.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxStream.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxUserAllocator.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxUserAllocatorDefault.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxUserOutputStream.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxUtilities.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxVec3.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxVersionNumber.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\NxVolumeIntegration.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Foundation\include\Nxf.h">
+      <Filter>vendors\Foundation\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\PhysXLoader\include\PhysXLoader.h">
+      <Filter>vendors\PhysXLoader\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\PhysXLoader\include\Win32RegistryAccess.h">
+      <Filter>vendors\PhysXLoader\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxActor.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxActorDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxAllocateable.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxBodyDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxBoxForceFieldShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxBoxForceFieldShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxBoxShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxBoxShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxCCDSkeleton.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxCapsuleForceFieldShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxCapsuleForceFieldShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxCapsuleShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxCapsuleShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxClothUserNotify.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxCompartment.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxCompartmentDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxContactStreamIterator.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxConvexForceFieldShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxConvexForceFieldShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxConvexMesh.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxConvexMeshDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxConvexShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxConvexShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxCylindricalJoint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxCylindricalJointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxD6Joint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxD6JointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxDistanceJoint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxDistanceJointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxEffector.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxEffectorDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxExportedUtils.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxExpression.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxFixedJoint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxFixedJointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxFluidUserNotify.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxForceField.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxForceFieldDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxForceFieldKernel.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxForceFieldKernelDefs.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxForceFieldLinearKernel.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxForceFieldLinearKernelDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxForceFieldShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxForceFieldShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxForceFieldShapeGroup.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxForceFieldShapeGroupDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxHeightField.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxHeightFieldDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxHeightFieldSample.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxHeightFieldShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxHeightFieldShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxHwParser.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxHwTarget.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxInertiaTensor.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxInterface.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxInterfaceStats.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxIntersectionBoxBox.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxIntersectionPointTriangle.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxIntersectionRayPlane.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxIntersectionRaySphere.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxIntersectionRayTriangle.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxIntersectionSegmentBox.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxIntersectionSegmentCapsule.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxIntersectionSweptSpheres.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxJoint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxJointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxJointLimitDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxJointLimitPairDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxJointLimitSoftDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxJointLimitSoftPairDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxMaterial.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxMaterialDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxMeshData.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxMotorDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPMap.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPhysics.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPhysicsSDK.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPlaneShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPlaneShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPointInPlaneJoint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPointInPlaneJointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPointOnLineJoint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPointOnLineJointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPrismaticJoint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPrismaticJointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPulleyJoint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxPulleyJointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxRevoluteJoint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxRevoluteJointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxScene.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSceneDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSceneQuery.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSceneStats.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSceneStats2.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxScheduler.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSmoothNormals.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSoftBodyUserNotify.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSphereForceFieldShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSphereForceFieldShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSphereShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSphereShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSphericalJoint.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSphericalJointDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSpringAndDamperEffector.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSpringAndDamperEffectorDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSpringDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxSwTarget.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxTargets.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxTriangle.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxTriangleMesh.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxTriangleMeshDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxTriangleMeshShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxTriangleMeshShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxUserContactReport.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxUserEntityReport.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxUserNotify.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxUserRaycastReport.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxUtilLib.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxWheelShape.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\NxWheelShapeDesc.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\Nxp.h">
+      <Filter>vendors\Physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\cloth\NxCloth.h">
+      <Filter>vendors\Physics\include\cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\cloth\NxClothDesc.h">
+      <Filter>vendors\Physics\include\cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\cloth\NxClothMesh.h">
+      <Filter>vendors\Physics\include\cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\cloth\NxClothMeshDesc.h">
+      <Filter>vendors\Physics\include\cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\fluids\NxFluid.h">
+      <Filter>vendors\Physics\include\fluids</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\fluids\NxFluidDesc.h">
+      <Filter>vendors\Physics\include\fluids</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\fluids\NxFluidEmitter.h">
+      <Filter>vendors\Physics\include\fluids</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\fluids\NxFluidEmitterDesc.h">
+      <Filter>vendors\Physics\include\fluids</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\fluids\NxFluidPacketData.h">
+      <Filter>vendors\Physics\include\fluids</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\fluids\NxParticleData.h">
+      <Filter>vendors\Physics\include\fluids</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\fluids\NxParticleIdData.h">
+      <Filter>vendors\Physics\include\fluids</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\fluids\NxParticleUpdateData.h">
+      <Filter>vendors\Physics\include\fluids</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\softbody\NxSoftBody.h">
+      <Filter>vendors\Physics\include\softbody</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\softbody\NxSoftBodyDesc.h">
+      <Filter>vendors\Physics\include\softbody</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\softbody\NxSoftBodyMesh.h">
+      <Filter>vendors\Physics\include\softbody</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\Physics\include\softbody\NxSoftBodyMeshDesc.h">
+      <Filter>vendors\Physics\include\softbody</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PhysXModelBundle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PhysXModelBundleHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PhysXModel.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\PhysXCooker.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PhysXModel.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PhysXModelBundle.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PhysXModelBundleHandler.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\PhysXStream.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Source\PhysXModelBundle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\PhysXModelBundleHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\PhysXModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\PhysXCooker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\PhysXStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
