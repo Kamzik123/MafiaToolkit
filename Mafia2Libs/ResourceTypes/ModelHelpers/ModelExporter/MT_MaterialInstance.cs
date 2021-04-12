@@ -1,4 +1,5 @@
 ﻿using System;
+using ResourceTypes.Materials;
 
 namespace ResourceTypes.ModelHelpers.ModelExporter
 {
@@ -25,19 +26,36 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
         {
             bool bValidity = true;
 
-            if(string.IsNullOrEmpty(Name))
-            {
-               AddMessage(MT_MessageType.Error, "This Material has no name.");
-                bValidity = false;
-            }
-
+            // First make sure to handle collisions
             if (MaterialFlags.HasFlag(MT_MaterialInstanceFlags.IsCollision))
             {
                 Collisions.CollisionMaterials MaterialChoice = Collisions.CollisionMaterials.Undefined;
-                if(Enum.TryParse(Name, out MaterialChoice))
+                if(!Enum.TryParse(Name, out MaterialChoice))
                 {
                     AddMessage(MT_MessageType.Error, "This Material is set to Collision, yet it cannot be converted to CollisionEnum - {0}", Name);
                     bValidity = false;
+                }
+            }
+            else
+            {
+                // Then handle normal materials
+                if (MaterialFlags.HasFlag(MT_MaterialInstanceFlags.HasDiffuse))
+                {
+                    // check if Material name is valid
+                    if (string.IsNullOrEmpty(Name))
+                    {
+                        AddMessage(MT_MessageType.Error, "This Material has no name.");
+                        bValidity = false;
+                    }
+                    else
+                    {
+                        // Check if Material exists in MTLs
+                        if (MaterialsManager.LookupMaterialByName(Name) == null)
+                        {
+                            AddMessage(MT_MessageType.Error, "The Material [{0}] was not found in the currently loaded MTLs", Name);
+                            bValidity = false;
+                        }
+                    }
                 }
             }
 

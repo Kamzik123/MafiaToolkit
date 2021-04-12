@@ -1,12 +1,12 @@
 #include "MT_Wrangler.h"
 
-#include "FbxUtilities.h"
 #include "Source/MTObject/MT_Collision.h"
 #include "Source/MTObject/MT_FaceGroup.h"
 #include "Source/MTObject/MT_Object.h"
 #include "Source/MTObject/MT_ObjectUtils.h"
 #include "Source/MTObject/MT_Skeleton.h"
 #include "MTObject/MT_ObjectHandler.h"
+#include "Utilities/FbxUtilities.h"
 #include "Utilities/LogSystem.h"
 
 #include <map>
@@ -420,27 +420,6 @@ MT_Lod* MT_Wrangler::ConstructFromLod(FbxNode* Lod)
 	// Finish by setting indices
 	LodObject->SetIndices(Indices);
 
-	// Get Material name and texture from FbxSurfaceMaterials
-	for (int i = 0; i < Lod->GetMaterialCount(); i++)
-	{
-		MT_FaceGroup& FaceGroup = FaceGroups[i];
-		FbxSurfaceMaterial* Material = Lod->GetMaterial(i);
-		FBX_ASSERT(Material);
-
-		// Create a new MT_Material instance
-		MT_MaterialInstance* NewInstance = new MT_MaterialInstance();
-		NewInstance->SetName(Material->GetName());
-
-		// Setup rest of MT_MaterialInstance
-		const char* DiffuseTexture = Material->sDiffuse;
-		NewInstance->SetTextureName(DiffuseTexture);
-		NewInstance->SetMaterialFlags(MT_MaterialInstanceFlags::HasDiffuse);
-		FaceGroup.SetMatInstance(NewInstance);
-
-		// log Name
-		Logger->Printf(ELogType::eInfo, "Setup material called:- %s", Material->GetName());
-	}
-
 	// Finally, set face groups.
 	LodObject->SetFaceGroups(FaceGroups);
 
@@ -557,16 +536,48 @@ void MT_Wrangler::ConstructIndicesAndFaceGroupsFromNode(FbxNode* TargetNode, std
 		// push into main indices array
 		Indices->insert(Indices->end(), FaceGroupLookup[i].begin(), FaceGroupLookup[i].end());
 
-		// setup facegroup
+		// setup FaceGroups
+		// TODO: Improve validity of Fbx Material
 		size_t NumFaces = FaceGroupLookup[i].size();
-		MT_FaceGroup NewFaceGroup = {};
-		NewFaceGroup.SetNumFaces(NumFaces);
-		NewFaceGroup.SetStartIndex(CurrentTotal);
+		if (NumFaces > 0)
+		{
+			// Construct the new FaceGroup
+			MT_FaceGroup NewFaceGroup = {};
+			NewFaceGroup.SetNumFaces(NumFaces);
+			NewFaceGroup.SetStartIndex(CurrentTotal);
 
-		// Update CurrentTotal, then insert into array
-		CurrentTotal += NumFaces * 3;
-		FaceGroups->push_back(NewFaceGroup);
+			// add MaterialInstance to our FaceGroup
+			int MaterialCount = TargetNode->GetMaterialCount();
+			FbxSurfaceMaterial* Material = TargetNode->GetMaterial(i);
+			FBX_ASSERT(Material);
+
+			const char* ExpectedName = Material ? Material->GetName() : "UNKNOWN";
+
+			// Create a new MT_Material instance
+			MT_MaterialInstance* NewInstance = new MT_MaterialInstance();
+			NewInstance->SetName(ExpectedName);
+
+			if (Material)
+			{
+				// Setup rest of MT_MaterialInstance
+				const char* DiffuseTexture = Material->sDiffuse;
+				NewInstance->SetTextureName(DiffuseTexture);
+			}
+
+			NewInstance->SetMaterialFlags(MT_MaterialInstanceFlags::HasDiffuse);
+			NewFaceGroup.SetMatInstance(NewInstance);
+
+			// Update CurrentTotal, then insert into array
+			CurrentTotal += NumFaces * 3;
+			FaceGroups->push_back(NewFaceGroup);
+
+			// log Name
+			Logger->Printf(ELogType::eInfo, "Setup material called:- %s", Material->GetName());
+		}
 	}
+
+	//bool bDidGenerate = Mesh->GenerateNormals(true, true);
+	//int i = 0;
 }
 
 FbxGeometryElementUV* MT_Wrangler::GetUVElementByIndex(FbxMesh* Mesh, uint ElementType) const

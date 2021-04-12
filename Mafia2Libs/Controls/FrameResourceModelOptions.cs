@@ -11,6 +11,8 @@ namespace Forms.EditorControls
         private MT_ObjectBundle CurrentBundle;
         private MT_ValidationTracker TrackerObject;
 
+        private IImportHelper CurrentHelper;
+
         public FrameResourceModelOptions(ModelWrapper Wrapper)
         {
             InitializeComponent();
@@ -95,22 +97,27 @@ namespace Forms.EditorControls
             {
                 MT_LodHelper LodHelper = new MT_LodHelper((MT_Lod)e.Node.Tag);
                 LodHelper.Setup();
+                CurrentHelper = LodHelper;
                 PropertyGrid_Test.SelectedObject = LodHelper;
+                
             }
             else if (e.Node.Tag is MT_Object)
             {
                 MT_ObjectHelper ObjectHelper = new MT_ObjectHelper((MT_Object)e.Node.Tag);
                 ObjectHelper.Setup();
+                CurrentHelper = ObjectHelper;
                 PropertyGrid_Test.SelectedObject = ObjectHelper;
             }
             else if(e.Node.Tag is MT_Collision)
             {
                 MT_CollisionHelper ColHelper = new MT_CollisionHelper((MT_Collision)e.Node.Tag);
                 ColHelper.Setup();
+                CurrentHelper = ColHelper;
                 PropertyGrid_Test.SelectedObject = ColHelper;
             }
 
             // Get validation messages for object and add to tab
+            ListBox_Validation.Items.Clear();
             List<string> Messages = TrackerObject.GetObjectMessages((IValidator)e.Node.Tag);
             foreach(string Message in Messages)
             {
@@ -127,25 +134,25 @@ namespace Forms.EditorControls
                 return;
             }
 
-            if(Selected.Tag is MT_LodHelper)
+            if(Selected.Tag is MT_Lod)
             {
-                MT_LodHelper LodHelper = (Selected.Tag as MT_LodHelper);
+                MT_LodHelper LodHelper = (CurrentHelper as MT_LodHelper);
                 LodHelper.Store();
 
                 string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), "Updated Vertex Flags for LOD");
                 //Label_MessageText.Text = Message;
             }
-            else if(Selected.Tag is MT_ObjectHelper)
+            else if(Selected.Tag is MT_Object)
             {
-                MT_ObjectHelper ObjectHelper = (Selected.Tag as MT_ObjectHelper);
+                MT_ObjectHelper ObjectHelper = (CurrentHelper as MT_ObjectHelper);
                 ObjectHelper.Store();
 
                 string Message = string.Format("{0} - Updated Object: {1}", DateTime.Now.ToLongTimeString(), ObjectHelper.ObjectName);
                 //Label_MessageText.Text = Message;
             }
-            else if(Selected.Tag is MT_CollisionHelper)
+            else if(Selected.Tag is MT_Collision)
             {
-                MT_CollisionHelper CollisionHelper = (Selected.Tag as MT_CollisionHelper);
+                MT_CollisionHelper CollisionHelper = (CurrentHelper as MT_CollisionHelper);
                 CollisionHelper.Store();
 
                 string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), "Updated COL.");
@@ -154,6 +161,9 @@ namespace Forms.EditorControls
 
             // clear validation box
             ListBox_Validation.Items.Clear();
+
+            // clear helper
+            CurrentHelper = null;
         }
 
         private void ValidateObject(TreeNode CurrentNode)
@@ -177,13 +187,23 @@ namespace Forms.EditorControls
         private void Button_Continue_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
+            CleanupHelper();
             Close();
         }
 
         private void Button_StopImport_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
+            CleanupHelper();
             Close();
+        }
+
+        private void CleanupHelper()
+        {
+            if(CurrentHelper != null)
+            {
+                CurrentHelper.Store();
+            }
         }
 
         private void Button_Validate_Click(object sender, EventArgs e)

@@ -16,7 +16,7 @@ project "M2FBX"
       "$(ProjectDir)vendors/fbx/lib/vs2019/"
    }
 
-   files { "**.h", "**.c" , "**.cpp"}
+   files { "**.h", "**.c" , "**.cpp", "**.cxx" }
 
    -- Kind is "ConsoleApp" here so we can debug via exe
    filter "configurations:Debug"

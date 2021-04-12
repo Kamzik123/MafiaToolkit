@@ -1007,5 +1007,6 @@
     <ClCompile Include="Source\Utilities\LogSystem.cpp">
       <Filter>Source\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="main.cxx" />
   </ItemGroup>
 </Project>

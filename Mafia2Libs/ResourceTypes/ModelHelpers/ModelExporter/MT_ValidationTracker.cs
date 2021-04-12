@@ -18,23 +18,30 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
     {
         private Dictionary<IValidator, List<string>> Messages;
         private Stack<IValidator> ObjectStack;
+        private Dictionary<IValidator, List<IValidator>> LinkedObjects;
 
         public MT_ValidationTracker()
         {
             Messages = new Dictionary<IValidator, List<string>>();
             ObjectStack = new Stack<IValidator>();
+            LinkedObjects = new Dictionary<IValidator, List<IValidator>>();
         }
 
         public void Setup(IValidator ValidationObject)
         {
             if (ObjectStack.Count > 0)
             {
+                // Try add linked objects
                 IValidator TopMostObject = ObjectStack.Peek();
                 if (TopMostObject != null)
                 {
-                    TopMostObject.AddLinkedObject(ValidationObject);
+                    LinkedObjects[TopMostObject].Add(ValidationObject);
                 }
             }
+
+            // Add new message array (and construct linked object)
+            Messages.Add(ValidationObject, new List<string>());
+            LinkedObjects.Add(ValidationObject, new List<IValidator>());
 
             ObjectStack.Push(ValidationObject);
         }
@@ -62,7 +69,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
 
         public void AddMessage(IValidator CallerObject, MT_MessageType MessageType, string Text)
         {
-            string FinalMessage = string.Format("{0} - {1}", MessageType.ToString(), Text);
+            string FinalMessage = string.Format("[{0}] - {1}", MessageType.ToString(), Text);
 
             Messages.TryGet(CallerObject)?.Add(FinalMessage);
         }
@@ -94,7 +101,7 @@ namespace ResourceTypes.ModelHelpers.ModelExporter
             List<string> OutMessageList = new List<string>();
             OutMessageList.AddRange(Messages.TryGet(ObjectToCheck));
 
-            foreach (IValidator ObjectEntry in ObjectToCheck.GetLinkedObjects())
+            foreach (IValidator ObjectEntry in LinkedObjects[ObjectToCheck])
             {
                 OutMessageList.AddRange(InternalGetObjectMessages(ObjectEntry));
             }

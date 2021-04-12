@@ -152,20 +152,14 @@ namespace Utils.Models
             byte tempByte = 0;
             float tempNormal = 0f;
 
-            //X..
             tempNormal = Normal.X * 127.0f + 127.0f;
-            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
-            data[i] = tempByte;
+            data[i] = Convert.ToByte(tempNormal);
 
-            //Y..
             tempNormal = Normal.Y * 127.0f + 127.0f;
-            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
-            data[i + 1] = tempByte;
+            data[i + 1] = Convert.ToByte(tempNormal);
 
-            //Z..
             tempNormal = Normal.Z * 127.0f + 127.0f;
-            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
-            data[i + 2] = tempByte;
+            data[i + 2] = Convert.ToByte(tempNormal);
         }
 
         public void WriteUvData(byte[] data, int i, int uvNum)

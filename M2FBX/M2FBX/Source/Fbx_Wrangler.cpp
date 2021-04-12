@@ -1,12 +1,12 @@
 #include "Fbx_Wrangler.h"
 
-#include "FbxUtilities.h"
 #include "Source/MTObject/MT_Collision.h"
 #include "Source/MTObject/MT_Object.h"
 #include "Source/MTObject/MT_ObjectUtils.h"
 #include "Source/MTObject/MT_ObjectHandler.h"
 #include "Source/MTObject/MT_Lod.h"
 #include "Source/MTObject/MT_Skeleton.h"
+#include "Utilities/FbxUtilities.h"
 #include "Utilities/LogSystem.h"
 
 namespace WranglerUtils
