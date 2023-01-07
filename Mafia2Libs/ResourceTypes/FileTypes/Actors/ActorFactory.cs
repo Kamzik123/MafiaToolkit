@@ -61,12 +61,12 @@ namespace ResourceTypes.Actors
             }
         }
 
-        public static IActorExtraDataInterface LoadEntityDataStorage(ActorEDSTypes type, MemoryStream stream, bool isBigEndian, System.Collections.Generic.Dictionary<string, dynamic> OverridesMin, System.Collections.Generic.Dictionary<string, dynamic> OverridesMax)
+        public static IActorExtraDataInterface LoadEntityDataStorage(ActorEDSTypes type, MemoryStream stream, bool isBigEndian, System.Collections.Generic.Dictionary<string, dynamic> OverridesMin, System.Collections.Generic.Dictionary<string, dynamic> OverridesMax, System.Collections.Generic.Dictionary<string, Array> OverridesArrays)
         {
             switch(type)
             {
                 case ActorEDSTypes.C_Car:
-                    return new ActorCar(stream, isBigEndian, OverridesMin, OverridesMax);
+                    return new ActorCar(stream, isBigEndian, OverridesMin, OverridesMax, OverridesArrays);
                 case ActorEDSTypes.C_ActionPointScript:
                     return new ActorActionPointScript(stream, isBigEndian);
                 case ActorEDSTypes.C_Train:

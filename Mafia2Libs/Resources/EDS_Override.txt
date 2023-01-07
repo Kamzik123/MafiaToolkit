@@ -256,7 +256,7 @@ SqueakingBrakesSndCategory Int32 0 25
 SqueakingBrakesSndId Int32 0 19
 SqueakingBrakesVolume Single 16 100
 SqueakingBrakesSpeedHi Single 36 100
-RainSndCategory Int32 0 26
+RainSndCategory Int32[] 69|420
 RainSndId Int32 0 24
 RainVolumeLo Single 5 5
 RainVolumeHi Single 100 100

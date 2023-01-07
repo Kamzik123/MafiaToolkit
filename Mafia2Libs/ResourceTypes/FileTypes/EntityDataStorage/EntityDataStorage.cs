@@ -6,6 +6,7 @@ using ResourceTypes.Actors;
 using Utils.Helpers.Reflection;
 using System.Xml.Linq;
 using Gibbed.Squish;
+using System;
 
 namespace ResourceTypes.EntityDataStorage
 {
@@ -29,14 +30,32 @@ namespace ResourceTypes.EntityDataStorage
         {
             System.Collections.Generic.Dictionary<string, dynamic> OverridesMin = new System.Collections.Generic.Dictionary<string, dynamic>();
             System.Collections.Generic.Dictionary<string, dynamic> OverridesMax = new System.Collections.Generic.Dictionary<string, dynamic>();
+            System.Collections.Generic.Dictionary<string, Array> OverridesArrays = new System.Collections.Generic.Dictionary<string, Array>();
             string[] lines = File.ReadAllLines("Resources\\EDS_Override.txt");
 
             foreach (string line in lines)
             {
                 string[] values = line.Split(" ");
 
-                OverridesMin.Add(values[0], ConverterUtils.ConvertObjectToValue(System.Type.GetType("System." + values[1]), values[2]));
-                OverridesMax.Add(values[0], ConverterUtils.ConvertObjectToValue(System.Type.GetType("System." + values[1]), values[3]));
+                if (values[1].Contains("[]"))
+                {
+                    string typeName = values[1].Replace("[]", "");
+                    Type type = System.Type.GetType("System." + typeName);
+                    string[] arrayValues = values[2].Split("|");
+                    Array ArrayObject = Array.CreateInstance(type, arrayValues.Length);
+
+                    for (int i = 0; i < arrayValues.Length; i++)
+                    {
+                        ArrayObject.SetValue(ConverterUtils.ConvertObjectToValue(type, arrayValues[i]), i);
+                    }
+
+                    OverridesArrays.Add(values[0], ArrayObject);
+                }
+                else
+                {
+                    OverridesMin.Add(values[0], ConverterUtils.ConvertObjectToValue(System.Type.GetType("System." + values[1]), values[2]));
+                    OverridesMax.Add(values[0], ConverterUtils.ConvertObjectToValue(System.Type.GetType("System." + values[1]), values[3]));
+                }
             }
 
             using (var fileStream = new MemoryStream(File.ReadAllBytes(fileName)))
@@ -63,7 +82,7 @@ namespace ResourceTypes.EntityDataStorage
                 {
                     using (MemoryStream stream = new MemoryStream(fileStream.ReadBytes(TableSize)))
                     {
-                        var item = ActorFactory.LoadEntityDataStorage(EntityType, stream, isBigEndian, OverridesMin, OverridesMax);
+                        var item = ActorFactory.LoadEntityDataStorage(EntityType, stream, isBigEndian, OverridesMin, OverridesMax, OverridesArrays);
                         Tables[i] = item;
                     }
                 }

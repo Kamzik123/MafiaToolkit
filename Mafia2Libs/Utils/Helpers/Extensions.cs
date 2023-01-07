@@ -235,6 +235,55 @@ namespace Utils.Extensions
             return 0;
         }
 
+        public static dynamic GenerateRandom(Type info, Array Arrays)
+        {
+            Random r = new Random();
+            int index = r.Next(0, Arrays.Length);
+
+            if (info == typeof(sbyte))
+            {
+                return (sbyte)Arrays.GetValue(index);
+            }
+            else if (info == typeof(byte))
+            {
+                return (byte)Arrays.GetValue(index);
+            }
+            else if (info == typeof(short))
+            {
+                return (short)Arrays.GetValue(index);
+            }
+            else if (info == typeof(ushort))
+            {
+                return (ushort)Arrays.GetValue(index);
+            }
+            else if (info == typeof(int))
+            {
+                return (int)Arrays.GetValue(index);
+            }
+            else if (info == typeof(uint))
+            {
+                return (uint)Arrays.GetValue(index);
+            }
+            else if (info == typeof(long))
+            {
+                return (long)Arrays.GetValue(index);
+            }
+            else if (info == typeof(ulong))
+            {
+                return (ulong)Arrays.GetValue(index);
+            }
+            else if (info == typeof(float))
+            {
+                return (float)Arrays.GetValue(index);
+            }
+            else if (info == typeof(double))
+            {
+                return (double)Arrays.GetValue(index);
+            }
+
+            return 0;
+        }
+
         public static long LongRandom(this Random rand, long min, long max)
         {
             byte[] buf = new byte[8];

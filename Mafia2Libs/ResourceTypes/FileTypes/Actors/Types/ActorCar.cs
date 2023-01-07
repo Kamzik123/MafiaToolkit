@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using Utils.Extensions;
 using Utils.Helpers;
@@ -782,6 +783,7 @@ namespace ResourceTypes.Actors
         public int ExplodeID { get; set; }
         System.Collections.Generic.Dictionary<string, dynamic> Min { get; set; }
         System.Collections.Generic.Dictionary<string, dynamic> Max { get; set; }
+        System.Collections.Generic.Dictionary<string, Array> Arrays { get; set; }
 
         public ActorCar()
         {
@@ -798,12 +800,13 @@ namespace ResourceTypes.Actors
             CrashData = new CrashTableData[4];
         }
 
-        public ActorCar(MemoryStream stream, bool isBigEndian, System.Collections.Generic.Dictionary<string, dynamic> OverridesMin, System.Collections.Generic.Dictionary<string, dynamic> OverridesMax)
+        public ActorCar(MemoryStream stream, bool isBigEndian, System.Collections.Generic.Dictionary<string, dynamic> OverridesMin, System.Collections.Generic.Dictionary<string, dynamic> OverridesMax, System.Collections.Generic.Dictionary<string, Array> OverridesArrays)
         {
             CenterOfMass = new EDSVector3();
             Inertia = new EDSVector3();
             Min = OverridesMin;
             Max = OverridesMax;
+            Arrays = OverridesArrays;
 
             ReadFromFile(stream, isBigEndian);
         }
@@ -1526,6 +1529,10 @@ namespace ResourceTypes.Actors
                         if (Min.ContainsKey(propertyInfo.Name))
                         {
                             propertyInfo.SetValue(obj, ConverterUtils.GenerateRandom(propertyInfo.PropertyType, Min[propertyInfo.Name], Max[propertyInfo.Name]));
+                        }
+                        else if (Arrays.ContainsKey(propertyInfo.Name))
+                        {
+                            propertyInfo.SetValue(obj, ConverterUtils.GenerateRandom(propertyInfo.PropertyType, Arrays[propertyInfo.Name]));
                         }
                     }
                 }
