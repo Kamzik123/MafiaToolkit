@@ -59,7 +59,7 @@ namespace Toolkit.Forms
 
         private void CreateTable()
         {
-            string EntityName = string.Format("Entity [{0}]", tables.Hash);
+            string EntityName = string.Format("Entity [{0}]", tables.Name);
             TreeNode entityNode = new TreeNode(EntityName);
             entityNode.Tag = tables;
             TreeView_Tables.Nodes.Add(entityNode);
@@ -68,7 +68,7 @@ namespace Toolkit.Forms
             {
                 for (int i = 0; i < tables.Tables.Length; i++)
                 {
-                    string TableName = string.Format("Table [{0}]", tables.TableHashes[i]);
+                    string TableName = string.Format("Table [{0}]", EDSHashes.GetHashName(tables.TableHashes[i]));
                     TreeNode node = new TreeNode(TableName);
                     node.Tag = tables.Tables[i];
                     entityNode.Nodes.Add(node);
