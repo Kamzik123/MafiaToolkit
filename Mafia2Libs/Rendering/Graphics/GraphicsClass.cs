@@ -4,6 +4,7 @@ using Rendering.Input;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Translokator;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Windows.Forms;
@@ -216,7 +217,6 @@ namespace Rendering.Graphics
                         {
                             lowest = distance;
                             lowestRefID = model.Key;
-                            WorldPosIntersect = worldPosition;
                         }
                     }
                 }
@@ -326,6 +326,42 @@ namespace Rendering.Graphics
             return bCameraUpdated;
         }
 
+        private bool CheckFrustum(IRenderer RenderEntry)
+        {
+            var T = RenderEntry.Transform;
+            var TW = T.GetRow(3);
+            var Pos = new Vector3(TW.X, TW.Y, TW.Z);
+            var M = Camera.ViewMatrix;
+            var MW = M.GetColumn(2);
+            float FOV = (60.0f * ((float)Math.PI / 180.0f)) / (float)Math.PI;
+            float FarClippingPlane = 1500.0f * 1500.0f;
+            float NearClippingPlane = 0.1f * 0.1f;
+            Vector3 CamPos = Camera.Position;
+            Vector3 CamRot = new Vector3(MW.X, MW.Y, MW.Z);
+            Vector3[] Corners = RenderEntry.BoundingBox.GetCorners();
+
+            Vector3 CenterDirToPos = Pos - CamPos;
+            float CenterDistance = CenterDirToPos.X * CenterDirToPos.X + CenterDirToPos.Y * CenterDirToPos.Y + CenterDirToPos.Z * CenterDirToPos.Z;
+            //Debug.WriteLine(Vector3.Dot(Vector3.Normalize(CamRot), Vector3.Normalize(DirToPos)));
+            if (!(Vector3.Dot(Vector3.Normalize(CamRot), Vector3.Normalize(CenterDirToPos)) + 1.0f > FOV) && CenterDistance < FarClippingPlane && CenterDistance > NearClippingPlane)
+            {
+                return true;
+            }
+
+            foreach (Vector3 Corner in Corners)
+            {
+                Vector3 DirToPos = (Corner + Pos) - CamPos;
+                float Distance = DirToPos.X * DirToPos.X + DirToPos.Y * DirToPos.Y + DirToPos.Z * DirToPos.Z;
+                //Debug.WriteLine(Vector3.Dot(Vector3.Normalize(CamRot), Vector3.Normalize(DirToPos)));
+                if (!(Vector3.Dot(Vector3.Normalize(CamRot), Vector3.Normalize(DirToPos)) + 1.0f > FOV) && Distance < FarClippingPlane && Distance > NearClippingPlane)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool Render()
         {
             D3D.BeginScene(0.0f, 0f, 0f, 1.0f);
@@ -338,8 +374,11 @@ namespace Rendering.Graphics
 
             foreach (IRenderer RenderEntry in Assets.Values)
             {
-                RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-                RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);
+                if (CheckFrustum(RenderEntry))
+                {
+                    RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+                    RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);
+                }
             }
 
             //navigationGrids[0].Render(D3D.Device, D3D.DeviceContext, Camera);

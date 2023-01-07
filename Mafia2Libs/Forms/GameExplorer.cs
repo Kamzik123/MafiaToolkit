@@ -22,7 +22,6 @@ namespace Mafia2Tool
         private DirectoryInfo pcDirectory;
         private FileInfo launcher;
         private Game game;
-        private FileFrameResource CachedFrameResourceFile;
 
         private FileSystemWatcher DirectoryWatcher;
 
@@ -108,8 +107,6 @@ namespace Mafia2Tool
             Button_PackSDS.ToolTipText = Language.GetString("$PACK");
             Button_Settings.Text = Language.GetString("$OPTIONS");
             Button_Settings.ToolTipText = Language.GetString("$OPTIONS");
-            Button_OpenMapEditor.Text = Language.GetString("$OPEN_MAP_EDITOR");
-            Button_OpenMapEditor.ToolTipText = Language.GetString("$OPEN_MAP_EDITOR");
         }
 
         public void InitExplorerSettings()
@@ -197,8 +194,6 @@ namespace Mafia2Tool
         {
             // Make sure toolstrip buttons are reset
             SetPackUnpackButtonEnabled(false);
-            Button_OpenMapEditor.Enabled = false;
-            CachedFrameResourceFile = null;
 
             infoText.Text = "Loading Directory..";
             fileListView.Items.Clear();
@@ -273,12 +268,6 @@ namespace Mafia2Tool
                 }
 
                 var file = FileFactory.ConstructFromFileInfo(info);
-
-                if(file is FileFrameResource)
-                {
-                    CachedFrameResourceFile = file as FileFrameResource;
-                    Button_OpenMapEditor.Enabled = true;
-                }
 
                 item = new ListViewItem(info.Name, imageBank.Images.IndexOfKey(info.Extension));
                 item.Tag = file;
@@ -481,14 +470,6 @@ namespace Mafia2Tool
             }
         }
 
-        private void ContextOpenMapEditor_Click(object sender, EventArgs e)
-        {
-            if (CachedFrameResourceFile != null)
-            {
-                CachedFrameResourceFile.Open();
-            }
-        }
-
         private void onPathChange(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '\r')
@@ -525,8 +506,6 @@ namespace Mafia2Tool
         {
             ContextSDSUnpack.Visible = false;
             ContextSDSPack.Visible = false;
-            ContextSTBLExport.Visible = false;
-            ContextSTBLImport.Visible = false;
             ContextForceBigEndian.Visible = false;
             ContextDeleteSelectedFiles.Visible = false;
             ContextUnpackSelectedSDS.Visible = false;
@@ -549,11 +528,6 @@ namespace Mafia2Tool
                 else if(Tag is FileFrameResource)
                 {
                     ContextForceBigEndian.Visible = true;
-                }
-                else if (Tag is FileSoundTable)
-                {
-                    ContextSTBLExport.Visible = true;
-                    ContextSTBLImport.Visible = true;
                 }
             }
 
@@ -860,32 +834,6 @@ namespace Mafia2Tool
                 if (ActualObject is FileSDS)
                 {
                     (ActualObject as FileSDS).Save();
-                }
-            }
-        }
-
-        private void ContextSTBLExport_OnClick(object sender, EventArgs e)
-        {
-            foreach (ListViewItem SelectedObject in fileListView.SelectedItems)
-            {
-                object ActualObject = SelectedObject.Tag;
-
-                if (ActualObject is FileSoundTable)
-                {
-                    (ActualObject as FileSoundTable).Open();
-                }
-            }
-        }
-
-        private void ContextSTBLImport_OnClick(object sender, EventArgs e)
-        {
-            foreach (ListViewItem SelectedObject in fileListView.SelectedItems)
-            {
-                object ActualObject = SelectedObject.Tag;
-
-                if (ActualObject is FileSoundTable)
-                {
-                    (ActualObject as FileSoundTable).Save();
                 }
             }
         }

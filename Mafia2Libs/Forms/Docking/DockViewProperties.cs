@@ -1,58 +1,57 @@
-﻿using Rendering.Graphics;
-using System;
-using System.Numerics;
-using Utils.Language;
+﻿using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking
 {
     public partial class DockViewProperties : DockContent
     {
-        private Vector3 Offset = Vector3.Zero;
+        public bool[] VisibleProperties;
 
         public DockViewProperties()
         {
             InitializeComponent();
-
-            TextBox_PickWSLocation.Text = String.Format("0.0 0.0 0.0");
-            TextBox_WithOffset.Text = String.Format("0.0 0.0 0.0");
+            Localise();
+            Init();
         }
 
-        public void SetPickInfo(PickOutParams InPickParams)
+        private void Localise()
         {
-            // Reformat string
-            TextBox_PickWSLocation.Text = string.Format("{0} {1} {2}",
-                InPickParams.WorldPosition.X,
-                InPickParams.WorldPosition.Y,
-                InPickParams.WorldPosition.Z);
+            label1.Text = Language.GetString("$TOGGLE_MODELS");
+            label2.Text = Language.GetString("$TOGGLE_COLLISIONS");
+            label3.Text = Language.GetString("$TOGGLE_BOXES");
+            ModelComboBox.Items[0] = Language.GetString("$VISIBLE");
+            ModelComboBox.Items[1] = Language.GetString("$HIDDEN");
+            CollisionComboBox.Items[0] = Language.GetString("$VISIBLE");
+            CollisionComboBox.Items[1] = Language.GetString("$HIDDEN");
+            BoxComboBox.Items[0] = Language.GetString("$VISIBLE");
+            BoxComboBox.Items[1] = Language.GetString("$HIDDEN");
+        }
 
-            // Create Offset vector
-            Vector3 WithOffset = InPickParams.WorldPosition + Offset;
-            TextBox_WithOffset.Text = string.Format("{0} {1} {2}",
-                WithOffset.X,
-                WithOffset.Y,
-                WithOffset.Z);
+        private void Init()
+        {
+            VisibleProperties = new bool[3];
+            VisibleProperties[0] = true;
+            ModelComboBox.SelectedIndex = 0;
+            VisibleProperties[1] = true;
+            CollisionComboBox.SelectedIndex = 0;
+            VisibleProperties[2] = true;
+            BoxComboBox.SelectedIndex = 0;
+        }
 
+        private void OnSelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            VisibleProperties[0] = (ModelComboBox.SelectedIndex == 0) ? true : false;
+            VisibleProperties[1] = (CollisionComboBox.SelectedIndex == 0) ? true : false;
+            VisibleProperties[2] = (BoxComboBox.SelectedIndex == 0) ? true : false;
         }
 
         private void OnResize(object sender, System.EventArgs e)
         {
-        }
-
-        private void Numeric_OnValueChanged(object sender, System.EventArgs e)
-        {
-            if(sender == Numeric_PosX)
-            {
-                Offset.X = Convert.ToSingle(Numeric_PosX.Value);
-            }
-            else if(sender == Numeric_PosY)
-            {
-                Offset.Y = Convert.ToSingle(Numeric_PosY.Value);
-            }
-            else if(sender == Numeric_PosZ)
-            {
-                Offset.Z = Convert.ToSingle(Numeric_PosZ.Value);
-            }
+            //small idea
+            //Size size = ModelComboBox.Size;
+            //size.Width = Size.Width - 10;
+            //ModelComboBox.Size = size;
+            //CollisionComboBox.Size = size;
         }
     }
 }

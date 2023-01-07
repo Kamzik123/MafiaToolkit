@@ -50,8 +50,6 @@ namespace Mafia2Tool
             this.GEContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextSDSUnpack = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextSDSPack = new System.Windows.Forms.ToolStripMenuItem();
-            this.ContextSTBLExport = new System.Windows.Forms.ToolStripMenuItem();
-            this.ContextSTBLImport = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextSDSUnpackAll = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextView = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,7 +68,6 @@ namespace Mafia2Tool
             this.Button_Settings = new System.Windows.Forms.ToolStripButton();
             this.Button_PackSDS = new System.Windows.Forms.ToolStripButton();
             this.Button_UnpackSDS = new System.Windows.Forms.ToolStripButton();
-            this.Button_OpenMapEditor = new System.Windows.Forms.ToolStripButton();
             this.tools = new System.Windows.Forms.ToolStrip();
             this.dropdownFile = new System.Windows.Forms.ToolStripDropDownButton();
             this.OpenGameFolderButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -242,7 +239,7 @@ namespace Mafia2Tool
             this.fileListView.Location = new System.Drawing.Point(4, 35);
             this.fileListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(610, 391);
+            this.fileListView.Size = new System.Drawing.Size(616, 391);
             this.fileListView.SmallImageList = this.imageBank;
             this.fileListView.TabIndex = 0;
             this.fileListView.UseCompatibleStateImageBehavior = false;
@@ -278,8 +275,6 @@ namespace Mafia2Tool
             this.GEContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ContextSDSUnpack,
             this.ContextSDSPack,
-            this.ContextSTBLExport,
-            this.ContextSTBLImport,
             this.ContextOpenFolder,
             this.ContextSDSUnpackAll,
             this.ContextView,
@@ -289,7 +284,7 @@ namespace Mafia2Tool
             this.ContextUnpackSelectedSDS,
             this.ContextPackSelectedSDS});
             this.GEContext.Name = "SDSContext";
-            this.GEContext.Size = new System.Drawing.Size(294, 252);
+            this.GEContext.Size = new System.Drawing.Size(294, 208);
             this.GEContext.Text = "$VIEW";
             this.GEContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
             // 
@@ -310,20 +305,6 @@ namespace Mafia2Tool
             this.ContextSDSPack.Text = "$PACK";
             this.ContextSDSPack.Visible = false;
             this.ContextSDSPack.Click += new System.EventHandler(this.ContextSDSPack_Click);
-            // 
-            // ContextSTBLExport
-            // 
-            this.ContextSTBLExport.Name = "ContextSTBLExport";
-            this.ContextSTBLExport.Size = new System.Drawing.Size(293, 22);
-            this.ContextSTBLExport.Text = "$STBL_EXPORT";
-            this.ContextSTBLExport.Click += new System.EventHandler(this.ContextSTBLExport_OnClick);
-            // 
-            // ContextSTBLImport
-            // 
-            this.ContextSTBLImport.Name = "ContextSTBLImport";
-            this.ContextSTBLImport.Size = new System.Drawing.Size(293, 22);
-            this.ContextSTBLImport.Text = "$STBL_IMPORT";
-            this.ContextSTBLImport.Click += new System.EventHandler(this.ContextSTBLImport_OnClick);
             // 
             // ContextOpenFolder
             // 
@@ -454,8 +435,7 @@ namespace Mafia2Tool
             this.Toolstrip_ButtonContainer.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Button_Settings,
             this.Button_PackSDS,
-            this.Button_UnpackSDS,
-            this.Button_OpenMapEditor});
+            this.Button_UnpackSDS});
             this.Toolstrip_ButtonContainer.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.Toolstrip_ButtonContainer.Location = new System.Drawing.Point(0, 22);
             this.Toolstrip_ButtonContainer.Name = "Toolstrip_ButtonContainer";
@@ -500,20 +480,6 @@ namespace Mafia2Tool
             this.Button_UnpackSDS.Size = new System.Drawing.Size(32, 32);
             this.Button_UnpackSDS.Text = "Button_PackSDS";
             this.Button_UnpackSDS.Click += new System.EventHandler(this.ContextSDSUnpack_Click);
-            // 
-            // Button_OpenMapEditor
-            // 
-            this.Button_OpenMapEditor.AutoSize = false;
-            this.Button_OpenMapEditor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Button_OpenMapEditor.Enabled = false;
-            this.Button_OpenMapEditor.Image = ((System.Drawing.Image)(resources.GetObject("Button_OpenMapEditor.Image")));
-            this.Button_OpenMapEditor.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.Button_OpenMapEditor.ImageTransparentColor = System.Drawing.Color.White;
-            this.Button_OpenMapEditor.Name = "Button_OpenMapEditor";
-            this.Button_OpenMapEditor.Size = new System.Drawing.Size(32, 32);
-            this.Button_OpenMapEditor.Text = "toolStripButton1";
-            this.Button_OpenMapEditor.ToolTipText = "Button_OpenMapEditor";
-            this.Button_OpenMapEditor.Click += new System.EventHandler(this.ContextOpenMapEditor_Click);
             // 
             // tools
             // 
@@ -652,20 +618,20 @@ namespace Mafia2Tool
             // 
             this.OptionsItem.Image = ((System.Drawing.Image)(resources.GetObject("OptionsItem.Image")));
             this.OptionsItem.Name = "OptionsItem";
-            this.OptionsItem.Size = new System.Drawing.Size(179, 22);
+            this.OptionsItem.Size = new System.Drawing.Size(180, 22);
             this.OptionsItem.Text = "$OPTIONS";
             this.OptionsItem.Click += new System.EventHandler(this.OnOptionsItem_Clicked);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(176, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // PackCurrentSDSButton
             // 
             this.PackCurrentSDSButton.Image = ((System.Drawing.Image)(resources.GetObject("PackCurrentSDSButton.Image")));
             this.PackCurrentSDSButton.Name = "PackCurrentSDSButton";
-            this.PackCurrentSDSButton.Size = new System.Drawing.Size(179, 22);
+            this.PackCurrentSDSButton.Size = new System.Drawing.Size(180, 22);
             this.PackCurrentSDSButton.Text = "$PACK_CUR_SDS";
             this.PackCurrentSDSButton.Click += new System.EventHandler(this.ContextPackSelectedSDS_OnClick);
             // 
@@ -673,14 +639,14 @@ namespace Mafia2Tool
             // 
             this.UnpackCurrentSDSButton.Image = ((System.Drawing.Image)(resources.GetObject("UnpackCurrentSDSButton.Image")));
             this.UnpackCurrentSDSButton.Name = "UnpackCurrentSDSButton";
-            this.UnpackCurrentSDSButton.Size = new System.Drawing.Size(179, 22);
+            this.UnpackCurrentSDSButton.Size = new System.Drawing.Size(180, 22);
             this.UnpackCurrentSDSButton.Text = "$UNPACK_CUR_SDS";
             this.UnpackCurrentSDSButton.Click += new System.EventHandler(this.ContextUnpackSelectedSDS_OnClick);
             // 
             // UnpackAllSDSButton
             // 
             this.UnpackAllSDSButton.Name = "UnpackAllSDSButton";
-            this.UnpackAllSDSButton.Size = new System.Drawing.Size(179, 22);
+            this.UnpackAllSDSButton.Size = new System.Drawing.Size(180, 22);
             this.UnpackAllSDSButton.Text = "$UNPACK_ALL_SDS";
             this.UnpackAllSDSButton.Click += new System.EventHandler(this.UnpackAllSDSButton_Click);
             // 
@@ -843,8 +809,5 @@ namespace Mafia2Tool
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem PackCurrentSDSButton;
         private ToolStripMenuItem UnpackCurrentSDSButton;
-        private ToolStripButton Button_OpenMapEditor;
-        private ToolStripMenuItem ContextSTBLExport;
-        private ToolStripMenuItem ContextSTBLImport;
     }
 }

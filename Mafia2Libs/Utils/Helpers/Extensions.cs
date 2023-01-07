@@ -10,6 +10,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using System.Xml;
 
 namespace Utils.Extensions
 {
@@ -92,6 +93,196 @@ namespace Utils.Extensions
                 floats[i] = value;
             }
             return floats;
+        }
+
+        public static dynamic ConvertObjectToValue(Type info, string value)
+        {
+            if (info == typeof(bool))
+            {
+                return XmlConvert.ToBoolean(value.ToLower());
+            }
+            else if (info == typeof(sbyte))
+            {
+                return XmlConvert.ToSByte(value);
+            }
+            else if (info == typeof(byte))
+            {
+                return XmlConvert.ToByte(value);
+            }
+            else if (info == typeof(short))
+            {
+                return XmlConvert.ToInt16(value);
+            }
+            else if (info == typeof(ushort))
+            {
+                return XmlConvert.ToUInt16(value);
+            }
+            else if (info == typeof(int))
+            {
+                return XmlConvert.ToInt32(value);
+            }
+            else if (info == typeof(uint))
+            {
+                return XmlConvert.ToUInt32(value);
+            }
+            else if (info == typeof(long))
+            {
+                return XmlConvert.ToInt64(value);
+            }
+            else if (info == typeof(ulong))
+            {
+                return XmlConvert.ToUInt64(value);
+            }
+            else if (info == typeof(float))
+            {
+                return value.ToSingle();
+            }
+            else if (info == typeof(double))
+            {
+                return value.ToDouble();
+            }
+            else if (info == typeof(string))
+            {
+                return value;
+            }
+            else if (info.IsEnum)
+            {
+                return Enum.Parse(Type.GetType(info.Namespace + "." + info.Name), value);
+            }
+            else if (info == typeof(System.Numerics.Matrix4x4))
+            {
+                System.Numerics.Matrix4x4 Matrix = new System.Numerics.Matrix4x4();
+                object M = Matrix;
+
+                value = value.Replace(", ", "|");
+                value = value.Replace("(", "");
+                value = value.Replace(")", "");
+                value = value.Replace(" \n", "_");
+                value = value.Replace(" ", "_");
+
+                string[] Rows = value.Split("_");
+
+                for (int i = 0; i < Rows.Length; i++)
+                {
+                    string[] Values = Rows[i].Split("|");
+
+                    for (int j = 0; j < Values.Length; j++)
+                    {
+                        string PropertyName = "M" + (i + 1).ToString() + (j + 1).ToString();
+                        float Value = Values[j].ToSingle();
+
+                        System.Reflection.FieldInfo fi = info.GetField(PropertyName);
+                        fi.SetValue(M, Value);
+                    }
+                }
+
+                Matrix = (System.Numerics.Matrix4x4)M;
+
+                return Matrix;
+            }
+
+            return value;
+        }
+
+        public static dynamic GenerateRandom(Type info, dynamic Min, dynamic Max)
+        {
+            Random r = new Random();
+            if (info == typeof(sbyte))
+            {
+                return (sbyte)r.Next(Math.Clamp(Min, sbyte.MinValue, sbyte.MaxValue), Math.Clamp(Max, sbyte.MinValue, sbyte.MaxValue));
+            }
+            else if (info == typeof(byte))
+            {
+                return (byte)r.Next(Math.Clamp(Min, byte.MinValue, byte.MaxValue), Math.Clamp(Max, byte.MinValue, byte.MaxValue));
+            }
+            else if (info == typeof(short))
+            {
+                return (short)r.Next(Math.Clamp(Min, short.MinValue, short.MaxValue), Math.Clamp(Max, short.MinValue, short.MaxValue));
+            }
+            else if (info == typeof(ushort))
+            {
+                return (ushort)r.Next(Math.Clamp(Min, ushort.MinValue, ushort.MaxValue), Math.Clamp(Max, ushort.MinValue, ushort.MaxValue));
+            }
+            else if (info == typeof(int))
+            {
+                return (int)r.Next(Math.Clamp(Min, int.MinValue, int.MaxValue), Math.Clamp(Max, int.MinValue, int.MaxValue));
+            }
+            else if (info == typeof(uint))
+            {
+                return (uint)r.Next(Math.Clamp(Min, int.MinValue, int.MaxValue), Math.Clamp(Max, int.MinValue, int.MaxValue));
+            }
+            else if (info == typeof(long))
+            {
+                return (long)r.Next(Math.Clamp(Min, int.MinValue, int.MaxValue), Math.Clamp(Max, int.MinValue, int.MaxValue));
+            }
+            else if (info == typeof(ulong))
+            {
+                return (ulong)r.Next(Math.Clamp(Min, int.MinValue, int.MaxValue), Math.Clamp(Max, int.MinValue, int.MaxValue));
+            }
+            else if (info == typeof(float))
+            {
+                long newMin = Math.Clamp((long)(Min * 1000000.0f), long.MinValue, long.MaxValue);
+                long newMax = Math.Clamp((long)(Max * 1000000.0f), long.MinValue, long.MaxValue);
+                return (float)(r.LongRandom(newMin, newMax) / 1000000.0f);
+            }
+            else if (info == typeof(double))
+            {
+                long newMin = Math.Clamp((long)(Min * 1000000.0f), long.MinValue, long.MaxValue);
+                long newMax = Math.Clamp((long)(Max * 1000000.0f), long.MinValue, long.MaxValue);
+                return (double)(r.LongRandom(newMin, newMax) / 1000000.0f);
+            }
+
+            return 0;
+        }
+
+        public static long LongRandom(this Random rand, long min, long max)
+        {
+            byte[] buf = new byte[8];
+            rand.NextBytes(buf);
+            long longRand = BitConverter.ToInt64(buf, 0);
+
+            long offset = (max - min);
+
+            if (offset == 0)
+            {
+                offset = 1;
+            }
+
+            return (Math.Abs(longRand % offset) + min);
+        }
+
+        public static float ToSingle(this string s)
+        {
+            s = TrimString(s);
+            s = s.Replace(',', '.');
+            if (s == "-INF") return Single.NegativeInfinity;
+            if (s == "INF") return Single.PositiveInfinity;
+            float f = float.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture);
+            if (f == 0 && s[0] == '-')
+            {
+                return -0f;
+            }
+            return f;
+        }
+
+        public static double ToDouble(this string s)
+        {
+            s = TrimString(s);
+            s = s.Replace(',', '.');
+            if (s == "-INF") return Double.NegativeInfinity;
+            if (s == "INF") return Double.PositiveInfinity;
+            double dVal = double.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture);
+            if (dVal == 0 && s[0] == '-')
+            {
+                return -0d;
+            }
+            return dVal;
+        }
+
+        internal static readonly char[] WhitespaceChars = new char[] { ' ', '\t', '\n', '\r' };
+        internal static string TrimString(string value)
+        {
+            return value.Trim(WhitespaceChars);
         }
     }
 

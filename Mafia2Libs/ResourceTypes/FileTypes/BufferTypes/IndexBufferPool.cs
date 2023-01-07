@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -211,16 +212,20 @@ namespace ResourceTypes.BufferPools
             size = stream.ReadUInt32(isBigEndian);
 
             uint result = (size & 2147483648);
+            uint test = 0;
 
             for (int i = 0; i != numBuffers; i++)
             {
                 IndexBuffer buffer = new IndexBuffer(stream, isBigEndian);
+                test += buffer.GetLength();
 
                 if (!buffers.ContainsKey(buffer.Hash))
                 {
                     buffers.Add(buffer.Hash, buffer);
                 }
             }
+
+            Debug.WriteLine(test + " " + (test & 2147483648));
         }
 
         public void WriteToFile(MemoryStream stream, bool isBigEndian)
@@ -294,6 +299,7 @@ namespace ResourceTypes.BufferPools
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             hash = stream.ReadUInt64(isBigEndian);
+            //Debug.WriteLine(hash.ToString("X"));
             indexFormat = stream.ReadInt32(isBigEndian);
             length = stream.ReadUInt32(isBigEndian);
 
@@ -363,14 +369,14 @@ namespace ResourceTypes.BufferPools
 
         public uint GetLength()
         {
-            length = (uint)(indexFormat == 2 ? data.Length * 4 : data.Length * 2);
+            //length = (uint)(indexFormat == 2 ? data.Length * 4 : data.Length * 2);
             return length;
         }
 
         public void SetData(uint[] data)
         {
             this.data = data;
-            length = (uint)(indexFormat == 2 ? data.Length * 4 : data.Length * 2);
+            //length = (uint)(indexFormat == 2 ? data.Length * 4 : data.Length * 2);
         }
     }
 }

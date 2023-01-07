@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using ThirdParty.OPCODE;
 using Utils.Extensions;
@@ -74,6 +75,7 @@ namespace ResourceTypes.FrameResource
         {
             distance = reader.ReadSingle(isBigEndian);
             indexBufferRef = new HashName(reader, isBigEndian);
+            //Debug.WriteLine(indexBufferRef.Hash.ToString("X") + " " + indexBufferRef.String);
             vertexDeclaration = (VertexFlags)reader.ReadUInt32(isBigEndian);
             vertexBufferRef = new HashName(reader, isBigEndian);
             numVerts = reader.ReadInt32(isBigEndian);

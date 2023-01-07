@@ -5,6 +5,7 @@ using Utils.Extensions;
 using ResourceTypes.Actors;
 using Utils.Helpers.Reflection;
 using System.Xml.Linq;
+using Gibbed.Squish;
 
 namespace ResourceTypes.EntityDataStorage
 {
@@ -26,6 +27,18 @@ namespace ResourceTypes.EntityDataStorage
 
         public void ReadFromFile(string fileName, bool isBigEndian)
         {
+            System.Collections.Generic.Dictionary<string, dynamic> OverridesMin = new System.Collections.Generic.Dictionary<string, dynamic>();
+            System.Collections.Generic.Dictionary<string, dynamic> OverridesMax = new System.Collections.Generic.Dictionary<string, dynamic>();
+            string[] lines = File.ReadAllLines("Resources\\EDS_Override.txt");
+
+            foreach (string line in lines)
+            {
+                string[] values = line.Split(" ");
+
+                OverridesMin.Add(values[0], ConverterUtils.ConvertObjectToValue(System.Type.GetType("System." + values[1]), values[2]));
+                OverridesMax.Add(values[0], ConverterUtils.ConvertObjectToValue(System.Type.GetType("System." + values[1]), values[3]));
+            }
+
             using (var fileStream = new MemoryStream(File.ReadAllBytes(fileName)))
             {
                 EntityType = (ActorEDSTypes)fileStream.ReadInt32(isBigEndian);
@@ -43,12 +56,14 @@ namespace ResourceTypes.EntityDataStorage
                     TableHashes[i] = fileStream.ReadUInt64(isBigEndian);
                 }
 
+                Directory.CreateDirectory("EDSFiles");
+
                 // Iterate and Read all tables
                 for (int i = 0; i < numTables; i++)
                 {
                     using (MemoryStream stream = new MemoryStream(fileStream.ReadBytes(TableSize)))
                     {
-                        var item = ActorFactory.LoadEntityDataStorage(EntityType, stream, isBigEndian);
+                        var item = ActorFactory.LoadEntityDataStorage(EntityType, stream, isBigEndian, OverridesMin, OverridesMax);
                         Tables[i] = item;
                     }
                 }

@@ -4,7 +4,6 @@ namespace ResourceTypes.Actors
 {
     public enum ActorTypes
     {
-        None = 0,
         Human = 14,
         C_CrashObject = 20,
         C_TrafficCar = 21,
@@ -23,7 +22,6 @@ namespace ResourceTypes.Actors
         Radio = 48,
         JukeBox = 49,
         StaticEntity = 52,
-        C_TranslocatedCar = 53,
         Garage = 54,
         FrameWrapper = 55,
         C_ActorDetector = 56,
@@ -39,7 +37,6 @@ namespace ResourceTypes.Actors
         Airplane = 104,
         C_Pinup = 106,
         SpikeStrip = 107,
-        C_DummyDoor = 109,
         FramesController = 110,
         Wardrobe = 112,
         PhysicsScene = 113,

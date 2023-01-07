@@ -433,8 +433,6 @@ namespace Gibbed.Mafia2.FileFormats
 
         public void ExtractPatch(FileInfo file)
         {
-            FileNamesAndHash = ReadFileNameDB("Resources/GameData/M2_Textures.txt");
-
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.IndentChars = ("\t");
@@ -515,10 +513,13 @@ namespace Gibbed.Mafia2.FileFormats
                         {
                             TextureResource tRes = new TextureResource();
                             tRes.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
-
-                            if (FileNamesAndHash.ContainsKey(tRes.NameHash))
+                            var resName = sortedResources[type][res.Key];
+                            var hash = FNV64.Hash(resName);
+                            if (tRes.NameHash == hash)
                             {
-                                name = FileNamesAndHash[tRes.NameHash];
+                                Console.WriteLine("Detected possible candidate: {0}", resName);
+                                name = resName;
+                                break;
                             }
                         }
                         else
@@ -551,10 +552,9 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = textureName;
                         break;
                     case "Mipmap":
-                        string ActualName = PATCH_FixMipmapName(entry, name);
-                        string FixedName = string.Format("MIP_{0}", ActualName);
-                        ReadMipmapEntry(entry, resourceXML, FixedName);
-                        saveName = FixedName;
+                        var mipName = (!bContainsDDS) ? "MIP_ " + name + ".dds" : "MIP_ " + name;
+                        ReadMipmapEntry(entry, resourceXML, name);
+                        saveName = mipName;
                         break;
                     case "IndexBufferPool":
                         saveName = ReadBasicEntry(resourceXML, name);
@@ -742,18 +742,6 @@ namespace Gibbed.Mafia2.FileFormats
                     _TextureNames.Add(Hash, File);
                 }
             }
-        }
-
-        public string PATCH_FixMipmapName(ResourceEntry entry, string name)
-        {
-            TextureResource resource = new TextureResource();
-            resource.DeserializeMIP(entry.Version, new MemoryStream(entry.Data), Endian);
-            if (FileNamesAndHash.ContainsKey(resource.NameHash))
-            {
-                return FileNamesAndHash[resource.NameHash];
-            }
-
-            return name;
         }
     }
     #endregion

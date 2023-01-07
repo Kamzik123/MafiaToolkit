@@ -44,6 +44,10 @@ namespace ResourceTypes.FrameResource
             decompressionOffset = Vector3Utils.ReadFromFile(reader, isBigEndian);
             decompressionFactor = reader.ReadSingle(isBigEndian);
 
+            System.Diagnostics.Debug.WriteLine("FrameGeometry unk01: " + unk01);
+            System.Diagnostics.Debug.WriteLine("FrameGeometry decompressionOffset: " + decompressionOffset);
+            System.Diagnostics.Debug.WriteLine("FrameGeometry decompressionFactor: " + decompressionFactor);
+
             LOD = new FrameLOD[numLods];
 
             for (int i = 0; i < numLods; i++)

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using Utils.Extensions;
 using Utils.Helpers;
 using Utils.Helpers.Reflection;
@@ -21,7 +22,17 @@ namespace ResourceTypes.Actors
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4} {5}", GearRatio, RotationsGearUp, RotationsGearDown, SlowStyleGearUpCoeff, MinClutch, MinClutchAngleCoeff);
+                string message = "";
+
+                foreach (PropertyInfo propertyInfo in GetType().GetProperties())
+                {
+                    if (propertyInfo.PropertyType != typeof(string) && propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(bool))
+                    {
+                        message += propertyInfo.Name + " " + propertyInfo.PropertyType.Name + " " + propertyInfo.GetValue(this).ToString() + "\n";
+                    }
+                }
+
+                return message;
             }
         }
         public class DifferentialTableData
@@ -32,7 +43,17 @@ namespace ResourceTypes.Actors
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2}", ViscousClutch, ViscousClutchRotLim, DiffInertia);
+                string message = "";
+
+                foreach (PropertyInfo propertyInfo in GetType().GetProperties())
+                {
+                    if (propertyInfo.PropertyType != typeof(string) && propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(bool))
+                    {
+                        message += propertyInfo.Name + " " + propertyInfo.PropertyType.Name + " " + propertyInfo.GetValue(this).ToString() + "\n";
+                    }
+                }
+
+                return message;
             }
         }
         public class WheelTableData
@@ -66,12 +87,42 @@ namespace ResourceTypes.Actors
                 WheelModel = "";
                 Tyre = "";
             }
+
+            public override string ToString()
+            {
+                string message = "";
+
+                foreach (PropertyInfo propertyInfo in GetType().GetProperties())
+                {
+                    if (propertyInfo.PropertyType != typeof(string) && propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(bool))
+                    {
+                        message += propertyInfo.Name + " " + propertyInfo.PropertyType.Name + " " + propertyInfo.GetValue(this).ToString() + "\n";
+                    }
+                }
+
+                return message;
+            }
         }
         public class SmokeMotorTableData
         {
             public int SmokeMotorID { get; set; }
             public float SmokeMotorDamage { get; set; }
             public float SmokeMotorUnk01 { get; set; }
+
+            public override string ToString()
+            {
+                string message = "";
+
+                foreach (PropertyInfo propertyInfo in GetType().GetProperties())
+                {
+                    if (propertyInfo.PropertyType != typeof(string) && propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(bool))
+                    {
+                        message += propertyInfo.Name + " " + propertyInfo.PropertyType.Name + " " + propertyInfo.GetValue(this).ToString() + "\n";
+                    }
+                }
+
+                return message;
+            }
         }
         public class EngineTableData
         {
@@ -86,11 +137,41 @@ namespace ResourceTypes.Actors
             public float EngineRotHiVol { get; set; }
             public float EngineRotHi { get; set; }
             public bool EngineNoClutchLockOnly { get; set; }
+
+            public override string ToString()
+            {
+                string message = "";
+
+                foreach (PropertyInfo propertyInfo in GetType().GetProperties())
+                {
+                    if (propertyInfo.PropertyType != typeof(string) && propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(bool))
+                    {
+                        message += propertyInfo.Name + " " + propertyInfo.PropertyType.Name + " " + propertyInfo.GetValue(this).ToString() + "\n";
+                    }
+                }
+
+                return message;
+            }
         }
         public class EngineFizzTableData
         {
             public int EngineFizzSndID { get; set; }
             public float EngineFizzVolume { get; set; }
+
+            public override string ToString()
+            {
+                string message = "";
+
+                foreach (PropertyInfo propertyInfo in GetType().GetProperties())
+                {
+                    if (propertyInfo.PropertyType != typeof(string) && propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(bool))
+                    {
+                        message += propertyInfo.Name + " " + propertyInfo.PropertyType.Name + " " + propertyInfo.GetValue(this).ToString() + "\n";
+                    }
+                }
+
+                return message;
+            }
 
         }
         public class KnockingBonnetTableData
@@ -98,6 +179,21 @@ namespace ResourceTypes.Actors
             public int KnockingBonnetSndId { get; set; }
             public float KnockingBonnetSpeed { get; set; }
             public float KnockingBonnetVolume { get; set; }
+
+            public override string ToString()
+            {
+                string message = "";
+
+                foreach (PropertyInfo propertyInfo in GetType().GetProperties())
+                {
+                    if (propertyInfo.PropertyType != typeof(string) && propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(bool))
+                    {
+                        message += propertyInfo.Name + " " + propertyInfo.PropertyType.Name + " " + propertyInfo.GetValue(this).ToString() + "\n";
+                    }
+                }
+
+                return message;
+            }
         }
         public class CrashTableData
         {
@@ -105,9 +201,31 @@ namespace ResourceTypes.Actors
             public int CrashSndId { get; set; }
             public float CrashVolume { get; set; }
             public float CrashSpeed { get; set; }
+
+            public override string ToString()
+            {
+                string message = "";
+
+                foreach (PropertyInfo propertyInfo in GetType().GetProperties())
+                {
+                    if (propertyInfo.PropertyType != typeof(string) && propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(bool))
+                    {
+                        message += propertyInfo.Name + " " + propertyInfo.PropertyType.Name + " " + propertyInfo.GetValue(this).ToString() + "\n";
+                    }
+                }
+
+                return message;
+            }
         }
 
-        public int[] UnkInts0 { get; set; }
+        public int UnkInt0 { get; set; }
+        public int UnkInt1 { get; set; }
+        public int UnkInt2 { get; set; }
+        public int UnkInt3 { get; set; }
+        public int UnkInt4 { get; set; }
+        public int UnkInt5 { get; set; }
+        public int UnkInt6 { get; set; }
+        public int UnkInt7 { get; set; }
         #region Physics/RigidBody
         [LocalisedCategory("$PHYSICS_RB")]
         public float Mass { get; set; }
@@ -662,10 +780,11 @@ namespace ResourceTypes.Actors
         #endregion // EffectID Variables 2
         [LocalisedCategory("$EXPLOSION")]
         public int ExplodeID { get; set; }
+        System.Collections.Generic.Dictionary<string, dynamic> Min { get; set; }
+        System.Collections.Generic.Dictionary<string, dynamic> Max { get; set; }
 
         public ActorCar()
         {
-            UnkInts0 = new int[8];
             CenterOfMass = new EDSVector3();
             Inertia = new EDSVector3();
             GearData = new GearTableData[7];
@@ -679,10 +798,12 @@ namespace ResourceTypes.Actors
             CrashData = new CrashTableData[4];
         }
 
-        public ActorCar(MemoryStream stream, bool isBigEndian)
+        public ActorCar(MemoryStream stream, bool isBigEndian, System.Collections.Generic.Dictionary<string, dynamic> OverridesMin, System.Collections.Generic.Dictionary<string, dynamic> OverridesMax)
         {
             CenterOfMass = new EDSVector3();
             Inertia = new EDSVector3();
+            Min = OverridesMin;
+            Max = OverridesMax;
 
             ReadFromFile(stream, isBigEndian);
         }
@@ -697,13 +818,44 @@ namespace ResourceTypes.Actors
             return 3400;
         }
 
+        public override string ToString()
+        {
+            string message = "";
+
+            foreach (PropertyInfo propertyInfo in GetType().GetProperties())
+            {
+                if (propertyInfo.PropertyType.IsArray)
+                {
+                    if (!propertyInfo.PropertyType.GetElementType().IsPrimitive)
+                    {
+                        foreach (dynamic value in propertyInfo.GetValue(this) as System.Array)
+                        {
+                            message += value.ToString();
+                        }
+                    }
+                }
+                else
+                {
+                    if (propertyInfo.PropertyType != typeof(string) && propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(bool))
+                    {
+                        message += propertyInfo.Name + " " + propertyInfo.PropertyType.Name + " " + propertyInfo.GetValue(this).ToString() + "\n";
+                    }
+                }
+            }
+
+            return message;
+        }
+
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            UnkInts0 = new int[8];
-            for (int z = 0; z < 8; z++)
-            {
-                UnkInts0[z] = stream.ReadInt32(isBigEndian);
-            }
+            UnkInt0 = stream.ReadInt32(isBigEndian);
+            UnkInt1 = stream.ReadInt32(isBigEndian);
+            UnkInt2 = stream.ReadInt32(isBigEndian);
+            UnkInt3 = stream.ReadInt32(isBigEndian);
+            UnkInt4 = stream.ReadInt32(isBigEndian);
+            UnkInt5 = stream.ReadInt32(isBigEndian);
+            UnkInt6 = stream.ReadInt32(isBigEndian);
+            UnkInt7 = stream.ReadInt32(isBigEndian);
 
             Mass = stream.ReadSingle(isBigEndian);
             CenterOfMass.ReadFromFile(stream, isBigEndian);
@@ -1353,12 +1505,45 @@ namespace ResourceTypes.Actors
             // 3180 raw offset in Hex editor, 3180-68 is the offset in IDA.
         }
 
+        public void UpdateValues(System.Type t, object obj)
+        {
+            foreach (PropertyInfo propertyInfo in t.GetProperties())
+            {
+                if (propertyInfo.PropertyType.IsArray)
+                {
+                    if (!propertyInfo.PropertyType.GetElementType().IsPrimitive)
+                    {
+                        foreach (dynamic value in propertyInfo.GetValue(obj) as System.Array)
+                        {
+                            UpdateValues(propertyInfo.PropertyType.GetElementType(), value);
+                        }
+                    }
+                }
+                else
+                {
+                    if (propertyInfo.PropertyType != typeof(string) && propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(bool))
+                    {
+                        if (Min.ContainsKey(propertyInfo.Name))
+                        {
+                            propertyInfo.SetValue(obj, ConverterUtils.GenerateRandom(propertyInfo.PropertyType, Min[propertyInfo.Name], Max[propertyInfo.Name]));
+                        }
+                    }
+                }
+            }
+        }
+
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
-            for (int z = 0; z < 8; z++)
-            {
-                writer.Write(UnkInts0[z], isBigEndian);
-            }
+            UpdateValues(GetType(), this);
+
+            writer.Write(UnkInt0, isBigEndian);
+            writer.Write(UnkInt1, isBigEndian);
+            writer.Write(UnkInt2, isBigEndian);
+            writer.Write(UnkInt3, isBigEndian);
+            writer.Write(UnkInt4, isBigEndian);
+            writer.Write(UnkInt5, isBigEndian);
+            writer.Write(UnkInt6, isBigEndian);
+            writer.Write(UnkInt7, isBigEndian);
 
             writer.Write(Mass, isBigEndian);
             CenterOfMass.WriteToFile(writer, isBigEndian);
