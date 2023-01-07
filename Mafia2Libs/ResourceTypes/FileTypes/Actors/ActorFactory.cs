@@ -1,5 +1,6 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace ResourceTypes.Actors
@@ -61,12 +62,12 @@ namespace ResourceTypes.Actors
             }
         }
 
-        public static IActorExtraDataInterface LoadEntityDataStorage(ActorEDSTypes type, MemoryStream stream, bool isBigEndian, System.Collections.Generic.Dictionary<string, dynamic> OverridesMin, System.Collections.Generic.Dictionary<string, dynamic> OverridesMax, System.Collections.Generic.Dictionary<string, Array> OverridesArrays)
+        public static IActorExtraDataInterface LoadEntityDataStorage(ActorEDSTypes type, MemoryStream stream, bool isBigEndian, Dictionary<string, dynamic> OverridesMin, Dictionary<string, dynamic> OverridesMax, Dictionary<string, Array> OverridesArrays, Dictionary<int, int[]> SoundCategories, Dictionary<string, int> Categories, Dictionary<string, string> Sounds)
         {
             switch(type)
             {
                 case ActorEDSTypes.C_Car:
-                    return new ActorCar(stream, isBigEndian, OverridesMin, OverridesMax, OverridesArrays);
+                    return new ActorCar(stream, isBigEndian, OverridesMin, OverridesMax, OverridesArrays, SoundCategories, Categories, Sounds);
                 case ActorEDSTypes.C_ActionPointScript:
                     return new ActorActionPointScript(stream, isBigEndian);
                 case ActorEDSTypes.C_Train:

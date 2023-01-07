@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Utils.Extensions;
 using Utils.Helpers;
@@ -781,9 +783,12 @@ namespace ResourceTypes.Actors
         #endregion // EffectID Variables 2
         [LocalisedCategory("$EXPLOSION")]
         public int ExplodeID { get; set; }
-        System.Collections.Generic.Dictionary<string, dynamic> Min { get; set; }
-        System.Collections.Generic.Dictionary<string, dynamic> Max { get; set; }
-        System.Collections.Generic.Dictionary<string, Array> Arrays { get; set; }
+        Dictionary<string, dynamic> Min { get; set; }
+        Dictionary<string, dynamic> Max { get; set; }
+        Dictionary<string, Array> Arrays { get; set; }
+        Dictionary<int, int[]> SoundCategories { get; set; }
+        Dictionary<string, int> Categories { get; set; }
+        Dictionary<string, string> Sounds { get; set; }
 
         public ActorCar()
         {
@@ -800,13 +805,16 @@ namespace ResourceTypes.Actors
             CrashData = new CrashTableData[4];
         }
 
-        public ActorCar(MemoryStream stream, bool isBigEndian, System.Collections.Generic.Dictionary<string, dynamic> OverridesMin, System.Collections.Generic.Dictionary<string, dynamic> OverridesMax, System.Collections.Generic.Dictionary<string, Array> OverridesArrays)
+        public ActorCar(MemoryStream stream, bool isBigEndian, Dictionary<string, dynamic> OverridesMin, Dictionary<string, dynamic> OverridesMax, Dictionary<string, Array> OverridesArrays, Dictionary<int, int[]> _SoundCategories, Dictionary<string, int> _Categories, Dictionary<string, string> _Sounds)
         {
             CenterOfMass = new EDSVector3();
             Inertia = new EDSVector3();
             Min = OverridesMin;
             Max = OverridesMax;
             Arrays = OverridesArrays;
+            SoundCategories = _SoundCategories;
+            Categories = _Categories;
+            Sounds = _Sounds;
 
             ReadFromFile(stream, isBigEndian);
         }
@@ -1510,6 +1518,16 @@ namespace ResourceTypes.Actors
 
         public void UpdateValues(System.Type t, object obj)
         {
+            int[] SoundCategoryIDs = SoundCategories.Keys.ToArray();
+            Dictionary<string, int> TempCategories = new Dictionary<string, int>();
+
+            foreach (var category in Categories)
+            {
+                TempCategories.Add(category.Key, ConverterUtils.GenerateRandom(typeof(int), SoundCategoryIDs));
+            }
+
+            Categories = TempCategories;
+
             foreach (PropertyInfo propertyInfo in t.GetProperties())
             {
                 if (propertyInfo.PropertyType.IsArray)
@@ -1533,6 +1551,14 @@ namespace ResourceTypes.Actors
                         else if (Arrays.ContainsKey(propertyInfo.Name))
                         {
                             propertyInfo.SetValue(obj, ConverterUtils.GenerateRandom(propertyInfo.PropertyType, Arrays[propertyInfo.Name]));
+                        }
+                        else if (Categories.ContainsKey(propertyInfo.Name))
+                        {
+                            propertyInfo.SetValue(obj, Categories[propertyInfo.Name]);
+                        }
+                        else if (Sounds.ContainsKey(propertyInfo.Name))
+                        {
+                            propertyInfo.SetValue(obj, ConverterUtils.GenerateRandom(typeof(int), SoundCategories[Categories[Sounds[propertyInfo.Name]]]));
                         }
                     }
                 }

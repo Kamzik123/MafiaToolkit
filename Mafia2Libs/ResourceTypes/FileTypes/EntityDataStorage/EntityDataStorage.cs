@@ -5,8 +5,10 @@ using Utils.Extensions;
 using ResourceTypes.Actors;
 using Utils.Helpers.Reflection;
 using System.Xml.Linq;
+using System.Collections.Generic;
 using Gibbed.Squish;
 using System;
+using System.Linq;
 
 namespace ResourceTypes.EntityDataStorage
 {
@@ -28,10 +30,30 @@ namespace ResourceTypes.EntityDataStorage
 
         public void ReadFromFile(string fileName, bool isBigEndian)
         {
-            System.Collections.Generic.Dictionary<string, dynamic> OverridesMin = new System.Collections.Generic.Dictionary<string, dynamic>();
-            System.Collections.Generic.Dictionary<string, dynamic> OverridesMax = new System.Collections.Generic.Dictionary<string, dynamic>();
-            System.Collections.Generic.Dictionary<string, Array> OverridesArrays = new System.Collections.Generic.Dictionary<string, Array>();
+            Dictionary<string, dynamic> OverridesMin = new Dictionary<string, dynamic>();
+            Dictionary<string, dynamic> OverridesMax = new Dictionary<string, dynamic>();
+            Dictionary<string, Array> OverridesArrays = new Dictionary<string, Array>();
+            Dictionary<int, int[]> SoundCategories = new Dictionary<int, int[]>();
+            Dictionary<string, int> Categories = new Dictionary<string, int>();
+            Dictionary<string, string> Sounds = new Dictionary<string, string>();
             string[] lines = File.ReadAllLines("Resources\\EDS_Override.txt");
+            string[] SoundsByCategory = File.ReadAllLines("Resources\\SoundsByCategory.txt");
+
+            int CurrentIndex = 0;
+            List<int> CurrentValues = new List<int>();
+            foreach (string line in SoundsByCategory)
+            {
+                if (line.Contains("Category"))
+                {
+                    SoundCategories.Add(CurrentIndex, CurrentValues.ToArray());
+                    CurrentIndex = int.Parse(line.Replace("Category - ", ""));
+                    CurrentValues = new List<int>();
+                }
+                else if (line.Contains("Sound"))
+                {
+                    CurrentValues.Add(int.Parse(line.Replace("Sound - ", "")));
+                }
+            }
 
             foreach (string line in lines)
             {
@@ -51,10 +73,18 @@ namespace ResourceTypes.EntityDataStorage
 
                     OverridesArrays.Add(values[0], ArrayObject);
                 }
+                else if (values[1].Equals("category", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Categories.Add(values[0], -1);
+                }
+                else if (values[1].Equals("sound", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Sounds.Add(values[0], values[2]);
+                }
                 else
                 {
-                    OverridesMin.Add(values[0], ConverterUtils.ConvertObjectToValue(System.Type.GetType("System." + values[1]), values[2]));
-                    OverridesMax.Add(values[0], ConverterUtils.ConvertObjectToValue(System.Type.GetType("System." + values[1]), values[3]));
+                    OverridesMin.Add(values[0], ConverterUtils.ConvertObjectToValue(Type.GetType("System." + values[1]), values[2]));
+                    OverridesMax.Add(values[0], ConverterUtils.ConvertObjectToValue(Type.GetType("System." + values[1]), values[3]));
                 }
             }
 
@@ -82,7 +112,7 @@ namespace ResourceTypes.EntityDataStorage
                 {
                     using (MemoryStream stream = new MemoryStream(fileStream.ReadBytes(TableSize)))
                     {
-                        var item = ActorFactory.LoadEntityDataStorage(EntityType, stream, isBigEndian, OverridesMin, OverridesMax, OverridesArrays);
+                        var item = ActorFactory.LoadEntityDataStorage(EntityType, stream, isBigEndian, OverridesMin, OverridesMax, OverridesArrays, SoundCategories, Categories, Sounds);
                         Tables[i] = item;
                     }
                 }

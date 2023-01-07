@@ -233,6 +233,9 @@
     <None Update="Resources\SoundDummy.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\SoundsByCategory.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\texture.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
