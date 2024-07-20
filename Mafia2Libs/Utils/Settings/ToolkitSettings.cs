@@ -10,6 +10,83 @@ namespace Utils.Settings
 {
     public class ToolkitSettings
     {
+        public static string[] AssetPaths = new string[]
+        {
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_00_Body_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_00_Front_Axle_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_00_Rear_Axle_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_00_Front_Door_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_00_Rear_Door_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_01_Body_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_01_Front_Axle_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_01_Rear_Axle_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_01_Front_Door_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_01_Rear_Door_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_02_Body_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_02_Front_Axle_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_02_Rear_Axle_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_02_Front_Door_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_02_Rear_Door_Anim.txt",
+            @"C:\Users\James\Desktop\Subway_Anims\Subway_01_Body_Anim.txt",
+        };
+
+        public static (bool pos, bool rot)[] AssetTypes = new (bool pos, bool rot)[]
+        {
+            (true, true),
+            (false, true),
+            (false, true),
+            (true, false),
+            (true, false),
+            (true, true),
+            (false, true),
+            (false, true),
+            (true, false),
+            (true, false),
+            (true, true),
+            (false, true),
+            (false, true),
+            (true, false),
+            (true, false),
+            (true, true),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+            //(false, false),
+        };
+
+        public static (float x, float y, float z)[] AssetPosOffsets = new (float x, float y, float z)[]
+        {
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.0f),
+            (0.0f, 0.0f, 0.96f),
+        };
+
+        public static int CurrentAsset = 0;
+
         private static IniFile ini;
 
         //Discord keys;

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Numerics;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
 
@@ -101,6 +102,32 @@ namespace Toolkit.Mathematics
         public float M42 { get; set; } = 0.0f;
         public float M43 { get; set; } = 0.0f;
         public float M44 { get; set; } = 1.0f;
+
+        public Vector3 Euler
+        {
+            get
+            {
+                double sy = Math.Sqrt(M11 * M11 + M21 * M21);
+
+                bool singular = sy < 1e-6; // If
+
+                double x, y, z;
+                if (!singular)
+                {
+                    x = Math.Atan2(M32, M33);
+                    y = Math.Atan2(-M31, sy);
+                    z = Math.Atan2(M21, M11);
+                }
+                else
+                {
+                    x = Math.Atan2(-M23, M22);
+                    y = Math.Atan2(-M31, sy);
+                    z = 0;
+                }
+
+                return new((float)x, (float)y, (float)z);
+            }
+        }
 
         public Matrix44() { }
 

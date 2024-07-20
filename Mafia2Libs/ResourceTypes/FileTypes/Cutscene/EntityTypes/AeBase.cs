@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
 using Utils.Logging;
+using Utils.Settings;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
@@ -61,6 +62,12 @@ namespace ResourceTypes.Cutscene.AnimEntities
                     for (int i = 0; i < KeyFrames.Length; i++)
                     {
                         ICurveParam CurveParam = KeyFrames[i];
+
+                        if (CurveParam is EulerXYZ)
+                        {
+                            CurveParam = new QuaternionLinear();
+                        }
+
                         bw.Write(1000); // Write the header
 
                         byte[] keyData;

@@ -39,64 +39,52 @@ namespace ResourceTypes.Cutscene.AnimEntities
     // and then stores hashes/transforms for these objects? Unknown though, most fail to save.
     public class AeFrame : AnimEntity
     {
-        public byte Unk06 { get; set; }
-        public ulong Hash2 { get; set; }
-        public Matrix44 Transform { get; set; } = new();
-        public float Unk07 { get; set; }
-        public float Unk08 { get; set; }
-        public Matrix44 Transform1 { get; set; } = new();
-        public ulong Hash3 { get; set; }
-        public byte[] UnknownData { get; set; }
-
+        public byte Unk00 { get; set; }
+        public ulong ParentHash { get; set; }
+        public Matrix44 ParentOffset { get; set; } = new();
+        public ulong RootHash { get; set; }
+        public Matrix44 RootOffset { get; set; } = new();
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
-            UnknownData = stream.ReadBytes((int)Size-8);
-            /*
-            Unk06 = stream.ReadByte8();
+            //UnknownData = stream.ReadBytes((int)Size-8);
+            
+            Unk00 = stream.ReadByte8();
 
-            Hash2 = stream.ReadUInt64(isBigEndian);
+            ParentHash = stream.ReadUInt64(isBigEndian);
 
-            if (!string.IsNullOrEmpty(EntityName1))
+            if (ParentHash != 0)
             {
-                Hash3 = stream.ReadUInt64(isBigEndian);
+                RootHash = stream.ReadUInt64(isBigEndian);
             }
                 
-            Transform.ReadFromFile(stream, isBigEndian);
+            ParentOffset.ReadFromFile(stream, isBigEndian);
 
-            // TODO: Find out what this actually means.
-            // This cannot be distinguished by size alone.
-            if(Unk044 == 121)
+            if (ParentHash != 0)
             {
-                Transform1.ReadFromFile(stream, isBigEndian);
+                RootOffset.ReadFromFile(stream, isBigEndian);
             }
-            */
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
-            stream.Write(UnknownData);
 
-            /*
-            stream.WriteByte(Unk06);
+            stream.WriteByte(Unk00);
 
-            stream.Write(Hash2, isBigEndian);
+            stream.Write(ParentHash, isBigEndian);
 
-            if (!string.IsNullOrEmpty(FrameName))
+            if (ParentHash != 0)
             {
-                stream.Write(Hash3, isBigEndian);
+                stream.Write(RootHash, isBigEndian);
             }
             
-            Transform.WriteToFile(stream, isBigEndian);
+            ParentOffset.WriteToFile(stream, isBigEndian);
 
-            // TODO: Find out what this actually means.
-            // This cannot be distinguished by size alone.
-            if (Unk044 == 121)
+            if (ParentHash != 0)
             {
-                Transform1.WriteToFile(stream, isBigEndian);
+                RootOffset.WriteToFile(stream, isBigEndian);
             }
-            */
 
             UpdateSize(stream, isBigEndian);
         }

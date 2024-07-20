@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
 using Utils.Logging;
+using Utils.Settings;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene
@@ -179,6 +180,8 @@ namespace ResourceTypes.Cutscene
 
             public void WriteToFile(BinaryWriter Writer)
             {
+                ToolkitSettings.CurrentAsset = 0;
+
                 Writer.WriteString16(CutsceneName);
                 Writer.Write(unk05);
                 Writer.Write(unk06);
@@ -405,6 +408,7 @@ namespace ResourceTypes.Cutscene
                                 {
                                     bool isBigEndian = false;
                                     Entity.AnimEntityData.WriteToFile(EntityStream, isBigEndian);
+                                    ToolkitSettings.CurrentAsset++;
 
                                     byte[] animEntityData = EntityStream.ToArray();
 

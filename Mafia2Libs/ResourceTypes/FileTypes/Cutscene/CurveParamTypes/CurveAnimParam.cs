@@ -1,7 +1,12 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Numerics;
+using System.Windows.Markup;
+using System.Windows.Shapes;
+using Toolkit.Mathematics;
 using Utils.Extensions;
+using Utils.Settings;
 using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.CurveParams
@@ -967,7 +972,7 @@ namespace ResourceTypes.Cutscene.CurveParams
         }
 
         public FrameData[] Data { get; set; } = new FrameData[0];
-        public short Unk00 { get; set; }
+        public short Unk00 { get; set; } = 1;
 
         public QuaternionLinear()
         {
@@ -996,6 +1001,64 @@ namespace ResourceTypes.Cutscene.CurveParams
         public override void Write(BinaryWriter bw)
         {
             base.Write(bw);
+
+            List<FrameData> newData = new();
+            Matrix44Converter converter = new();
+
+            string path = ToolkitSettings.AssetPaths[ToolkitSettings.CurrentAsset];
+
+            if (!ToolkitSettings.AssetTypes[ToolkitSettings.CurrentAsset].pos)
+            {
+                goto Skip;
+            }
+
+            foreach (var line in File.ReadAllLines(path))
+            {
+                if (string.IsNullOrEmpty(line))
+                {
+                    continue;
+                }
+
+                string[] vals = line.Split('|');
+
+                int frame = int.Parse(vals[0]) - 1;
+
+                Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
+                System.Numerics.Matrix4x4 m = System.Numerics.Matrix4x4.Identity;
+
+                m.M11 = matrix.M11;
+                m.M12 = matrix.M12;
+                m.M13 = matrix.M13;
+                m.M14 = matrix.M14;
+                m.M21 = matrix.M21;
+                m.M22 = matrix.M22;
+                m.M23 = matrix.M23;
+                m.M24 = matrix.M24;
+                m.M31 = matrix.M31;
+                m.M32 = matrix.M32;
+                m.M33 = matrix.M33;
+                m.M34 = matrix.M34;
+                m.M41 = matrix.M41;
+                m.M42 = matrix.M42;
+                m.M43 = matrix.M43;
+                m.M44 = matrix.M44;
+
+                var quat = Quaternion.CreateFromRotationMatrix(m);
+
+                FrameData f = new();
+
+                f.StartFrame = frame;
+                f.EndFrame = frame;
+                f.Unk00 = true;
+                f.Value = quat;
+
+                newData.Add(f);
+            }
+
+        Skip:;
+
+            Data = newData.ToArray();
+
             bw.Write(Data.Length);
 
             foreach (var data in Data)
@@ -1392,6 +1455,88 @@ namespace ResourceTypes.Cutscene.CurveParams
         {
             base.Write(bw);
             bw.Write(Unk00);
+
+            List<FrameDataWrapper.FloatData> XData = new();
+            List<FrameDataWrapper.FloatData> YData = new();
+            List<FrameDataWrapper.FloatData> ZData = new();
+
+            Matrix44Converter converter = new();
+
+            string path = ToolkitSettings.AssetPaths[ToolkitSettings.CurrentAsset];
+            var offset = ToolkitSettings.AssetPosOffsets[ToolkitSettings.CurrentAsset];
+
+            if (!ToolkitSettings.AssetTypes[ToolkitSettings.CurrentAsset].pos)
+            {
+                goto Skip;
+            }
+
+            foreach (var line in File.ReadAllLines(path))
+            {
+                if (string.IsNullOrEmpty(line))
+                {
+                    continue;
+                }
+
+                string[] vals = line.Split('|');
+
+                int frame = int.Parse(vals[0]) - 1;
+
+                Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
+                System.Numerics.Matrix4x4 m = System.Numerics.Matrix4x4.Identity;
+
+                m.M11 = matrix.M11;
+                m.M12 = matrix.M21;
+                m.M13 = matrix.M31;
+                m.M14 = matrix.M41;
+                m.M21 = matrix.M12;
+                m.M22 = matrix.M22;
+                m.M23 = matrix.M32;
+                m.M24 = matrix.M42;
+                m.M31 = matrix.M13;
+                m.M32 = matrix.M23;
+                m.M33 = matrix.M33;
+                m.M34 = matrix.M43;
+                m.M41 = matrix.M14;
+                m.M42 = matrix.M24;
+                m.M43 = matrix.M34;
+                m.M44 = matrix.M44;
+
+                var t = m.Translation;
+
+                FrameDataWrapper.FloatData x = new();
+                FrameDataWrapper.FloatData y = new();
+                FrameDataWrapper.FloatData z = new();
+
+                x.StartFrame = frame;
+                x.EndFrame = frame;
+                x.Unk00 = true;
+                x.Value = t.X + offset.x;
+
+                y.StartFrame = frame;
+                y.EndFrame = frame;
+                y.Unk00 = true;
+                y.Value = t.Y + offset.y;
+
+                z.StartFrame = frame;
+                z.EndFrame = frame;
+                z.Unk00 = true;
+                z.Value = t.Z + offset.z;
+
+                XData.Add(x);
+                YData.Add(y);
+                ZData.Add(z);
+            }
+
+        Skip:;
+
+            X.Type = 0;
+            Y.Type = 0;
+            Z.Type = 0;
+
+            X.Data = XData.ToArray();
+            Y.Data = YData.ToArray();
+            Z.Data = ZData.ToArray();
+
             X.Write(bw);
             Y.Write(bw);
             Z.Write(bw);
@@ -1606,6 +1751,89 @@ namespace ResourceTypes.Cutscene.CurveParams
         {
             base.Write(bw);
             bw.Write(Unk00);
+
+            List<FrameDataWrapper.FloatData> XData = new();
+            List<FrameDataWrapper.FloatData> YData = new();
+            List<FrameDataWrapper.FloatData> ZData = new();
+
+            Matrix44Converter converter = new();
+
+            string path = ToolkitSettings.AssetPaths[ToolkitSettings.CurrentAsset];
+
+            if (!ToolkitSettings.AssetTypes[ToolkitSettings.CurrentAsset].rot)
+            {
+                goto Skip;
+            }
+
+            foreach (var line in File.ReadAllLines(path))
+            {
+                if (string.IsNullOrEmpty(line))
+                {
+                    continue;
+                }
+
+                string[] vals = line.Split('|');
+
+                int frame = int.Parse(vals[0]) - 1;
+
+                Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
+                System.Numerics.Matrix4x4 m = System.Numerics.Matrix4x4.Identity;
+
+                m.M11 = matrix.M11;
+                m.M12 = matrix.M21;
+                m.M13 = matrix.M31;
+                m.M14 = matrix.M41;
+                m.M21 = matrix.M12;
+                m.M22 = matrix.M22;
+                m.M23 = matrix.M32;
+                m.M24 = matrix.M42;
+                m.M31 = matrix.M13;
+                m.M32 = matrix.M23;
+                m.M33 = matrix.M33;
+                m.M34 = matrix.M43;
+                m.M41 = matrix.M14;
+                m.M42 = matrix.M24;
+                m.M43 = matrix.M34;
+                m.M44 = matrix.M44;
+
+                matrix = new(m);
+
+                var t = matrix.Euler;
+
+                FrameDataWrapper.FloatData x = new();
+                FrameDataWrapper.FloatData y = new();
+                FrameDataWrapper.FloatData z = new();
+
+                x.StartFrame = frame;
+                x.EndFrame = frame;
+                x.Unk00 = true;
+                x.Value = t.X;
+
+                y.StartFrame = frame;
+                y.EndFrame = frame;
+                y.Unk00 = true;
+                y.Value = t.Y;
+
+                z.StartFrame = frame;
+                z.EndFrame = frame;
+                z.Unk00 = true;
+                z.Value = t.Z;
+
+                XData.Add(x);
+                YData.Add(y);
+                ZData.Add(z);
+            }
+
+        Skip:;
+
+            X.Type = 0;
+            Y.Type = 0;
+            Z.Type = 0;
+
+            X.Data = XData.ToArray();
+            Y.Data = YData.ToArray();
+            Z.Data = ZData.ToArray();
+
             X.Write(bw);
             Y.Write(bw);
             Z.Write(bw);
