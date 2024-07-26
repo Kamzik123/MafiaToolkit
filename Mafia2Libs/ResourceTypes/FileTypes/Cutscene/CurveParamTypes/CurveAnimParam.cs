@@ -112,6 +112,54 @@ namespace ResourceTypes.Cutscene.CurveParams
         public override void Write(BinaryWriter bw)
         {
             base.Write(bw);
+
+            List<FrameData> newData = new();
+
+            if (ToolkitSettings.CurrentAsset >= ToolkitSettings.AssetPaths.Length || ToolkitSettings.CurrentKeyFrame != ToolkitSettings.FloatKeyFrameIndex[ToolkitSettings.CurrentAsset])
+            {
+                goto Skip;
+            }
+
+            string path = ToolkitSettings.AssetPaths[ToolkitSettings.CurrentAsset];
+            var offset = ToolkitSettings.AssetPosOffsets[ToolkitSettings.CurrentAsset];
+
+            if (!ToolkitSettings.AssetTypes[ToolkitSettings.CurrentAsset].f)
+            {
+                goto Skip;
+            }
+
+            foreach (var line in File.ReadAllLines(path))
+            {
+                if (string.IsNullOrEmpty(line))
+                {
+                    continue;
+                }
+
+                string[] vals = line.Split('|');
+
+                int frame = int.Parse(vals[0]) - 1;
+
+                float val = vals[1].ToSingle();
+
+                if (val.Equals(ToolkitSettings.PrevFloat))
+                {
+                    continue;
+                }
+
+                ToolkitSettings.PrevFloat = val;
+
+                FrameData f = new();
+
+                f.StartFrame = frame;
+                f.EndFrame = frame;
+                f.Unk00 = true;
+                f.Value = val;
+
+                newData.Add(f);
+            }
+
+            Data = newData.ToArray();
+        Skip:;
             bw.Write(Data.Length);
 
             foreach (var data in Data)
@@ -704,6 +752,80 @@ namespace ResourceTypes.Cutscene.CurveParams
         public override void Write(BinaryWriter bw)
         {
             base.Write(bw);
+
+            List<FrameData> newData = new();
+            Matrix44Converter converter = new();
+
+            if (ToolkitSettings.CurrentAsset >= ToolkitSettings.AssetPaths.Length)
+            {
+                goto Skip;
+            }
+
+            string path = ToolkitSettings.AssetPaths[ToolkitSettings.CurrentAsset];
+            var offset = ToolkitSettings.AssetPosOffsets[ToolkitSettings.CurrentAsset];
+
+            if (!ToolkitSettings.AssetTypes[ToolkitSettings.CurrentAsset].pos)
+            {
+                goto Skip;
+            }
+
+            foreach (var line in File.ReadAllLines(path))
+            {
+                if (string.IsNullOrEmpty(line))
+                {
+                    continue;
+                }
+
+                string[] vals = line.Split('|');
+
+                int frame = int.Parse(vals[0]) - 1;
+
+                Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
+
+                if (matrix.Equals(ToolkitSettings.PrevMatrix))
+                {
+                    continue;
+                }
+
+                ToolkitSettings.PrevMatrix = matrix;
+                System.Numerics.Matrix4x4 m = System.Numerics.Matrix4x4.Identity;
+
+                m.M11 = matrix.M11;
+                m.M12 = matrix.M21;
+                m.M13 = matrix.M31;
+                m.M14 = matrix.M41;
+                m.M21 = matrix.M12;
+                m.M22 = matrix.M22;
+                m.M23 = matrix.M32;
+                m.M24 = matrix.M42;
+                m.M31 = matrix.M13;
+                m.M32 = matrix.M23;
+                m.M33 = matrix.M33;
+                m.M34 = matrix.M43;
+                m.M41 = matrix.M14;
+                m.M42 = matrix.M24;
+                m.M43 = matrix.M34;
+                m.M44 = matrix.M44;
+
+                var t = m.Translation;
+
+                t.X = t.X + offset.x;
+                t.Y = t.Y + offset.y;
+                t.Z = t.Z + offset.z;
+
+                FrameData f = new();
+
+                f.StartFrame = frame;
+                f.EndFrame = frame;
+                f.Unk00 = true;
+                f.Value = t;
+
+                newData.Add(f);
+            }
+
+        Skip:;
+            Data = newData.ToArray();
+
             bw.Write(Data.Length);
 
             foreach (var data in Data)
@@ -1005,9 +1127,14 @@ namespace ResourceTypes.Cutscene.CurveParams
             List<FrameData> newData = new();
             Matrix44Converter converter = new();
 
+            if (ToolkitSettings.CurrentAsset >= ToolkitSettings.AssetPaths.Length)
+            {
+                goto Skip;
+            }
+
             string path = ToolkitSettings.AssetPaths[ToolkitSettings.CurrentAsset];
 
-            if (!ToolkitSettings.AssetTypes[ToolkitSettings.CurrentAsset].pos)
+            if (!ToolkitSettings.AssetTypes[ToolkitSettings.CurrentAsset].rot)
             {
                 goto Skip;
             }
@@ -1024,6 +1151,13 @@ namespace ResourceTypes.Cutscene.CurveParams
                 int frame = int.Parse(vals[0]) - 1;
 
                 Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
+
+                if (matrix.Equals(ToolkitSettings.PrevMatrix))
+                {
+                    continue;
+                }
+
+                ToolkitSettings.PrevMatrix = matrix;
                 System.Numerics.Matrix4x4 m = System.Numerics.Matrix4x4.Identity;
 
                 m.M11 = matrix.M11;
@@ -1462,6 +1596,11 @@ namespace ResourceTypes.Cutscene.CurveParams
 
             Matrix44Converter converter = new();
 
+            if (ToolkitSettings.CurrentAsset >= ToolkitSettings.AssetPaths.Length)
+            {
+                goto Skip;
+            }
+
             string path = ToolkitSettings.AssetPaths[ToolkitSettings.CurrentAsset];
             var offset = ToolkitSettings.AssetPosOffsets[ToolkitSettings.CurrentAsset];
 
@@ -1482,23 +1621,30 @@ namespace ResourceTypes.Cutscene.CurveParams
                 int frame = int.Parse(vals[0]) - 1;
 
                 Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
+
+                if (matrix.Equals(ToolkitSettings.PrevMatrix))
+                {
+                    continue;
+                }
+
+                ToolkitSettings.PrevMatrix = matrix;
                 System.Numerics.Matrix4x4 m = System.Numerics.Matrix4x4.Identity;
 
                 m.M11 = matrix.M11;
-                m.M12 = matrix.M21;
-                m.M13 = matrix.M31;
-                m.M14 = matrix.M41;
-                m.M21 = matrix.M12;
+                m.M12 = matrix.M12;
+                m.M13 = matrix.M13;
+                m.M14 = matrix.M14;
+                m.M21 = matrix.M21;
                 m.M22 = matrix.M22;
-                m.M23 = matrix.M32;
-                m.M24 = matrix.M42;
-                m.M31 = matrix.M13;
-                m.M32 = matrix.M23;
+                m.M23 = matrix.M23;
+                m.M24 = matrix.M24;
+                m.M31 = matrix.M31;
+                m.M32 = matrix.M32;
                 m.M33 = matrix.M33;
-                m.M34 = matrix.M43;
-                m.M41 = matrix.M14;
-                m.M42 = matrix.M24;
-                m.M43 = matrix.M34;
+                m.M34 = matrix.M34;
+                m.M41 = matrix.M41;
+                m.M42 = matrix.M42;
+                m.M43 = matrix.M43;
                 m.M44 = matrix.M44;
 
                 var t = m.Translation;
@@ -1758,6 +1904,11 @@ namespace ResourceTypes.Cutscene.CurveParams
 
             Matrix44Converter converter = new();
 
+            if (ToolkitSettings.CurrentAsset >= ToolkitSettings.AssetPaths.Length)
+            {
+                goto Skip;
+            }
+
             string path = ToolkitSettings.AssetPaths[ToolkitSettings.CurrentAsset];
 
             if (!ToolkitSettings.AssetTypes[ToolkitSettings.CurrentAsset].rot)
@@ -1777,23 +1928,30 @@ namespace ResourceTypes.Cutscene.CurveParams
                 int frame = int.Parse(vals[0]) - 1;
 
                 Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
+
+                if (matrix.Equals(ToolkitSettings.PrevMatrix))
+                {
+                    continue;
+                }
+
+                ToolkitSettings.PrevMatrix = matrix;
                 System.Numerics.Matrix4x4 m = System.Numerics.Matrix4x4.Identity;
 
                 m.M11 = matrix.M11;
-                m.M12 = matrix.M21;
-                m.M13 = matrix.M31;
-                m.M14 = matrix.M41;
-                m.M21 = matrix.M12;
+                m.M12 = matrix.M12;
+                m.M13 = matrix.M13;
+                m.M14 = matrix.M14;
+                m.M21 = matrix.M21;
                 m.M22 = matrix.M22;
-                m.M23 = matrix.M32;
-                m.M24 = matrix.M42;
-                m.M31 = matrix.M13;
-                m.M32 = matrix.M23;
+                m.M23 = matrix.M23;
+                m.M24 = matrix.M24;
+                m.M31 = matrix.M31;
+                m.M32 = matrix.M32;
                 m.M33 = matrix.M33;
-                m.M34 = matrix.M43;
-                m.M41 = matrix.M14;
-                m.M42 = matrix.M24;
-                m.M43 = matrix.M34;
+                m.M34 = matrix.M34;
+                m.M41 = matrix.M41;
+                m.M42 = matrix.M42;
+                m.M43 = matrix.M43;
                 m.M44 = matrix.M44;
 
                 matrix = new(m);

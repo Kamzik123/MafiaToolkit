@@ -61,6 +61,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
                     for (int i = 0; i < KeyFrames.Length; i++)
                     {
+                        ToolkitSettings.CurrentKeyFrame = i;
+
                         ICurveParam CurveParam = KeyFrames[i];
 
                         if (CurveParam is EulerXYZ)
