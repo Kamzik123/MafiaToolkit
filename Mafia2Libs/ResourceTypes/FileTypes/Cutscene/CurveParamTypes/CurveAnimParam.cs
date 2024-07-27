@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
@@ -782,7 +783,7 @@ namespace ResourceTypes.Cutscene.CurveParams
 
                 Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
 
-                if (matrix.Equals(ToolkitSettings.PrevMatrix))
+                if (matrix.Equals(ToolkitSettings.PrevMatrix) && frame != 0 && frame != 26278)
                 {
                     continue;
                 }
@@ -1152,7 +1153,7 @@ namespace ResourceTypes.Cutscene.CurveParams
 
                 Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
 
-                if (matrix.Equals(ToolkitSettings.PrevMatrix))
+                if (matrix.Equals(ToolkitSettings.PrevMatrix) && frame != 0 && frame != 26278)
                 {
                     continue;
                 }
@@ -1622,7 +1623,11 @@ namespace ResourceTypes.Cutscene.CurveParams
 
                 Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
 
-                if (matrix.Equals(ToolkitSettings.PrevMatrix))
+                var x1 = Math.Abs(matrix.M41 - ToolkitSettings.PrevMatrix.M41);
+                var y1 = Math.Abs(matrix.M42 - ToolkitSettings.PrevMatrix.M42);
+                var z1 = Math.Abs(matrix.M43 - ToolkitSettings.PrevMatrix.M43);
+
+                if (x1 < 1e-4f && y1 < 1e-4f && z1 < 1e-4f && frame != 0 && frame != 26278)
                 {
                     continue;
                 }
@@ -1929,7 +1934,7 @@ namespace ResourceTypes.Cutscene.CurveParams
 
                 Matrix44 matrix = (Matrix44)converter.ConvertFromInvariantString(vals[1]);
 
-                if (matrix.Equals(ToolkitSettings.PrevMatrix))
+                if (matrix.Equals(ToolkitSettings.PrevMatrix) && frame != 0 && frame != 26278)
                 {
                     continue;
                 }
