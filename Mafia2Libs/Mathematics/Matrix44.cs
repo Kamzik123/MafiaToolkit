@@ -252,22 +252,56 @@ namespace Toolkit.Mathematics
 
             Matrix44 m = obj as Matrix44;
 
-            return  Math.Abs(m.M11 - M11) < 1e-5f &&
-                    Math.Abs(m.M12 - M12) < 1e-5f &&
-                    Math.Abs(m.M13 - M13) < 1e-5f &&
-                    Math.Abs(m.M14 - M14) < 1e-5f &&
-                    Math.Abs(m.M21 - M21) < 1e-5f &&
-                    Math.Abs(m.M22 - M22) < 1e-5f &&
-                    Math.Abs(m.M23 - M23) < 1e-5f &&
-                    Math.Abs(m.M24 - M24) < 1e-5f &&
-                    Math.Abs(m.M31 - M31) < 1e-5f &&
-                    Math.Abs(m.M32 - M32) < 1e-5f &&
-                    Math.Abs(m.M33 - M33) < 1e-5f &&
-                    Math.Abs(m.M34 - M34) < 1e-5f &&
-                    Math.Abs(m.M41 - M41) < 1e-5f &&
-                    Math.Abs(m.M42 - M42) < 1e-5f &&
-                    Math.Abs(m.M43 - M43) < 1e-5f &&
-                    Math.Abs(m.M44 - M44) < 1e-5f;
+            return  Math.Abs(m.M11 - M11) < 1e-4f &&
+                    Math.Abs(m.M12 - M12) < 1e-4f &&
+                    Math.Abs(m.M13 - M13) < 1e-4f &&
+                    Math.Abs(m.M14 - M14) < 1e-4f &&
+                    Math.Abs(m.M21 - M21) < 1e-4f &&
+                    Math.Abs(m.M22 - M22) < 1e-4f &&
+                    Math.Abs(m.M23 - M23) < 1e-4f &&
+                    Math.Abs(m.M24 - M24) < 1e-4f &&
+                    Math.Abs(m.M31 - M31) < 1e-4f &&
+                    Math.Abs(m.M32 - M32) < 1e-4f &&
+                    Math.Abs(m.M33 - M33) < 1e-4f &&
+                    Math.Abs(m.M34 - M34) < 1e-4f &&
+                    Math.Abs(m.M41 - M41) < 1e-4f &&
+                    Math.Abs(m.M42 - M42) < 1e-4f &&
+                    Math.Abs(m.M43 - M43) < 1e-4f &&
+                    Math.Abs(m.M44 - M44) < 1e-4f;
+        }
+
+        public bool RotationEquals(object obj)
+        {
+            if (obj is not Matrix44)
+            {
+                return false;
+            }
+
+            Matrix44 m = obj as Matrix44;
+
+            return  Math.Abs(m.M11 - M11) < 1e-4f &&
+                    Math.Abs(m.M12 - M12) < 1e-4f &&
+                    Math.Abs(m.M13 - M13) < 1e-4f &&
+                    Math.Abs(m.M21 - M21) < 1e-4f &&
+                    Math.Abs(m.M22 - M22) < 1e-4f &&
+                    Math.Abs(m.M23 - M23) < 1e-4f &&
+                    Math.Abs(m.M31 - M31) < 1e-4f &&
+                    Math.Abs(m.M32 - M32) < 1e-4f &&
+                    Math.Abs(m.M33 - M33) < 1e-4f;
+        }
+
+        public bool TranslationEquals(object obj)
+        {
+            if (obj is not Matrix44)
+            {
+                return false;
+            }
+
+            Matrix44 m = obj as Matrix44;
+
+            return  Math.Abs(m.M41 - M41) < 1e-4f &&
+                    Math.Abs(m.M42 - M42) < 1e-4f &&
+                    Math.Abs(m.M43 - M43) < 1e-4f;
         }
     }
 }
