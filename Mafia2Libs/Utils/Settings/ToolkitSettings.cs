@@ -116,6 +116,12 @@ namespace Utils.Settings
             //0,
 
             1,
+            1,
+            1,
+
+            1,
+            1,
+            1,
         };
 
         public static string[] AssetPaths = new string[]
@@ -220,7 +226,13 @@ namespace Utils.Settings
             //@"G:\Mods\Mafia II\Subway\Subway_Anims\Subway_Camera_Anim.txt",
             //@"G:\Mods\Mafia II\Subway\Subway_Anims\Subway_Camera_Anim.txt",
 
-            @"G:\Mods\Mafia II\Subway\Subway_Anims\Subway_Main_Sound_Intensity.txt",
+            @"G:\Mods\Mafia II\Subway\Subway_Anims\Subway_01_Main_Sound_Intensity.txt",
+            @"G:\Mods\Mafia II\Subway\Subway_Anims\Subway_04_Main_Sound_Intensity.txt",
+            @"G:\Mods\Mafia II\Subway\Subway_Anims\Subway_07_Main_Sound_Intensity.txt",
+
+            @"G:\Mods\Mafia II\Subway\Subway_Anims\Subway_01_Stat1_Sound_Intensity.txt",
+            @"G:\Mods\Mafia II\Subway\Subway_Anims\Subway_04_Stat1_Sound_Intensity.txt",
+            @"G:\Mods\Mafia II\Subway\Subway_Anims\Subway_07_Stat1_Sound_Intensity.txt",
         };
 
         public static (bool pos, bool rot, bool f)[] AssetTypes = new (bool pos, bool rot, bool f)[]
@@ -325,6 +337,12 @@ namespace Utils.Settings
             //(true, true, false),
             //(true, true, false),
 
+            (false, false, true),
+            (false, false, true),
+            (false, false, true),
+
+            (false, false, true),
+            (false, false, true),
             (false, false, true),
 
             //(false, false, false),
@@ -447,6 +465,12 @@ namespace Utils.Settings
             //(0.0f, 0.0f, 1.0f),
             //(0.0f, 0.0f, 1.0f),
 
+            (0.0f, 0.0f, 1.0f),
+            (0.0f, 0.0f, 1.0f),
+            (0.0f, 0.0f, 1.0f),
+
+            (0.0f, 0.0f, 1.0f),
+            (0.0f, 0.0f, 1.0f),
             (0.0f, 0.0f, 1.0f),
         };
 

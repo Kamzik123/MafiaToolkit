@@ -529,6 +529,7 @@ namespace ResourceTypes.Cutscene
                             bool isBigEndian = false;
 
                             Entity.AnimEntityData.WriteToFile(EntityStream, isBigEndian);
+                            ToolkitSettings.CurrentAsset++;
 
                             byte[] animEntityData = EntityStream.ToArray();
 

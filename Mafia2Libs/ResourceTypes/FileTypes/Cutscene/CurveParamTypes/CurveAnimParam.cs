@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Numerics;
@@ -139,7 +140,7 @@ namespace ResourceTypes.Cutscene.CurveParams
 
                 float val = vals[1].ToSingle();
 
-                if (val.Equals(ToolkitSettings.PrevFloat))
+                if (Math.Abs(val - ToolkitSettings.PrevFloat) < 1e-4f && frame != 0 && frame != 26278)
                 {
                     continue;
                 }
